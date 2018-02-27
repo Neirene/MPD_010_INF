@@ -1,0 +1,54 @@
+
+	<div class="row mt10">
+		<div class="col-sm-4">
+			<span data-text="-name"></span>
+			<input class="form-control required" id="campaignName"/>
+		</div>
+		<div class="col-sm-2 date-container">
+			<span data-text="-from"></span>
+			<date-picker input-class="gold" id="date-from"></date-picker>
+		</div>
+		<div class="col-sm-2 date-container">
+			<span data-text="-to"></span>
+			<date-picker input-class="gold" id="date-to"></date-picker>
+		</div>
+	</div>
+	<div class="row mt20 campaign-view-click">
+		<div class="col-sm-12">
+			<paper-checkbox id="views">Usuarios que han visto la campaña</paper-checkbox>
+			<paper-checkbox id="clicks" class="ml10" >Usuarios que han hecho click</paper-checkbox>
+		</div>		
+	</div>
+	
+	<div class="row mt20" id="cluster-selector-container">
+		<div class="col-sm-3">
+			<span>Seleccionar un cluster de origen</span>
+			<cluster-selector id="origin"></cluster-selector>
+		</div>
+		<div class="col-sm-3 mt60 ml10" id="cluster-info">
+		</div>
+		<div class="col-sm-12">
+			<hr/>
+		</div>
+	</div>
+	
+	<div class="mt20" id="kpi-container">
+		
+	</div>
+	<div class="row mt20">
+		<div class="col-sm-6">
+			<button class="btn btn-primary" id="add-ph-kpi">Añadir kpi físico</button>
+			<button class="btn btn-alternative ml10" id="add-dig-kpi">Añadir kpi digital</button>
+		</div>
+	</div>
+	<div class="row mt20">
+		<div class="col-sm-12 text-center">
+			<button class="btn btn-primary ma-create" id="save-model">Generar customer journey</button>
+		</div>
+	</div>
+
+
+<script th:inline="javascript">
+	var id_campaign = [[${id_campaign}]];
+</script>
+<script src="/js/attribution_model/attribution-model_creation.js"></script>

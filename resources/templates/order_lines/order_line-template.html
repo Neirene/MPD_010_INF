@@ -1,0 +1,35 @@
+
+
+
+<div class="new_button">
+	<a class="btn btn-primary save-order-line" >Guardar línea de pedido</a>&nbsp;&nbsp;
+</div>
+
+
+<div class="container-fluid pb20 ol-bxslider ">
+	<infinia-tabs id="ol-tabs"
+				data-text="orderLine.configuration,inventory, targeting, sites, creatives, summary">
+				
+		<div  slot="0" th:include="order_lines/order_line-data "></div>
+		<div slot="1" th:include="order_lines/order_line_inventory"></div>
+		<div slot="2" th:include="order_lines/order_line_targeting"></div>
+		<div slot="3" th:include="order_lines/order_line_sites"></div>
+		<div slot="4" th:include="order_lines/order_line_creatives"></div>
+		<div slot="5" th:include="order_lines/order_line_summary"></div>
+		
+	</infinia-tabs>
+	
+	<div class="row mt20">
+		<div class="col-sm-12 text-center">
+			<button type="button" class="btn btn-primary save-order-line">Guardar línea de pedido</button>
+		</div>
+	</div>
+</div>
+
+<script th:inline="javascript">
+	var id_campaign = [[${id_campaign}]];
+	var id_order_line = [[${id_order_line}]];
+</script>
+
+<script src="/js/order_lines/order_line.js"></script>
+<script src="/js/postBehaviour.js"></script>

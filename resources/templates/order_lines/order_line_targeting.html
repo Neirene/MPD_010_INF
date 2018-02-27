@@ -1,0 +1,303 @@
+
+<div class="container-fluid pb20">
+
+	<div class="row mb10">
+		<div class="col-sm-12">
+		&nbsp;
+		</div>
+	</div>
+	<collapsible-content title="location" style-class="gold">
+		<div class="row">
+			<div class="col-sm-12">
+				<p data-text="-orderLine.locationTitle"></p>
+				<div class="row">
+					<multi-list-selector id="location-widget"></multi-list-selector>
+				</div>
+			</div>
+		</div>
+		
+		<div class="row mt10">
+			<div class="col-sm-12">
+				<p data-text="-zipCodes"></p>
+				<div class="row">
+					<div class="col-sm-12">
+						<file-loader name="zipCodesFile" accept="csv"></file-loader>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<div class="row mt10">
+			<div class="col-sm-12">
+				<p data-text="-coordinates"></p>
+				<div class="row">
+					<div class="col-sm-12">
+						<file-loader name="coordinatesFile" accept="csv"></file-loader>
+					</div>
+				</div>
+			</div>
+		</div>
+	</collapsible-content>
+	
+	<collapsible-content title="Cluster" style-class="gold">
+		<div class="row ">
+			<div class="col-sm-12">
+				<p>Cluster</p>
+			</div>
+			<div class="col-sm-12">
+				<list-accept-block id="cluster"></list-accept-block>
+			</div>
+		</div>
+	</collapsible-content>
+	
+	<collapsible-content title="Pixel retargeting" style-class="gold">
+		<div class="row mt10">
+			<div class="col-sm-12">
+				<list-accept-block id="location"></list-accept-block>
+			</div>
+		</div>
+	</collapsible-content>
+	
+	<collapsible-content title="Contextual" style-class="gold" id="contextualContainer">
+		<div class="row">
+			<div class="col-sm-12">
+				<div class="row">
+					<multi-list-selector id="contextual"></multi-list-selector>
+				</div>
+			</div>
+		</div>
+	</collapsible-content>
+	
+	<!--collapsible-content title="3rd party data" style-class="gold">
+		<div class="row">
+			<div class="col-sm-12">
+				<list-accept-block id="party-data"></list-accept-block>
+			</div>
+		</div>
+	</collapsible-content>
+	
+	
+	<collapsible-content title="Verticales" style-class="gold">
+		<div class="row">
+			<div class="col-sm-12">
+				<list-accept-block id="verticales"></list-accept-block>
+			</div>
+		</div>
+	</collapsible-content-->
+	
+	<collapsible-content title="technology" style-class="gold">
+	
+		<div class="row">
+			<div class="col-sm-12">
+				<p>Dispositivo</p>
+			</div>
+			<div class="col-sm-12">
+				<multi-list-selector id="device"></multi-list-selector>
+			</div>
+		</div>
+		
+		<div class="row mt20">
+			<div class="col-sm-12">
+				<p>Conexión</p>
+			</div>
+			<div class="col-sm-12">
+				<list-accept-block id="connection"></list-accept-block>
+			</div>
+		</div>
+		
+		<div class="row mt20">
+			<div class="col-sm-12">
+				<p>Tipo de inventario</p>
+			</div>
+			<div class="col-sm-12">
+				<list-accept-block id="inventory"></list-accept-block>
+			</div>
+		</div>
+		
+		<div class="row mt20">
+			<div class="col-sm-12">
+				<p>Navegador</p>
+			</div>
+			<div class="col-sm-12">
+				<list-accept-block id="browser"></list-accept-block>
+			</div>
+		</div>
+		
+		<div class="row mt20">
+			<div class="col-sm-12">
+				<p>Operador</p>
+			</div>
+			<div class="col-sm-12">
+				<list-accept-block id="isp"></list-accept-block>
+			</div>
+		</div>
+	</collapsible-content>
+	
+	<collapsible-content title="video" id="videoContainer" style-class="gold">
+	<div class="row mt20">
+		<div class="col-sm-12">
+			<p>Player Size</p>
+		</div>
+		<div class="col-sm-12">
+			<list-accept-block id="playerSize"></list-accept-block>
+		</div>
+	</div>
+	<div class="row mt20">
+		<div class="col-sm-12">
+			<p>Linear Format</p>
+		</div>
+		<div class="col-sm-12">
+			<list-accept-block id="linearFormat"></list-accept-block>
+		</div>
+	</div>
+	<div class="row mt20">
+		<div class="col-sm-12">
+			<p>Content Initiation</p>
+		</div>
+		<div class="col-sm-12">
+			<list-accept-block id="contentInitiation"></list-accept-block>
+		</div>
+	</div>
+	<div class="row mt20">
+		<div class="col-sm-12">
+			<p>Audio</p>
+		</div>
+		<div class="col-sm-12">
+			<list-accept-block id="audio"></list-accept-block>
+		</div>
+	</div>
+	</collapsible-content>
+	
+	<div class="mt10">
+		<collapsible-content class="mt10" title="ad_exchanges" style-class="gold">
+		<div class="row">
+			<div class="form-group col-sm-8" id="supplies-list">
+				<list-accept-block id="supply-sources" hide-block="true"></list-accept-block>
+			</div>
+		</div>
+		</collapsible-content>
+	</div>
+	
+	<collapsible-content title="dateAndHour" style-class="gold">
+		<div class="col-sm-12 mt10">
+			<p>Horario</p>
+		</div>
+		<div class="col-sm-12">
+			<time-table-selector></time-table-selector>
+		</div>
+	</collapsible-content>
+	
+</div>
+
+<script>
+	
+	// Location
+	$('#accept-location').on('click', function() {
+		document.querySelector("#location-accept-block").accept({id:$('#location').val(), value:$('#location')[0].text()});
+	});
+	
+	$('#block-location').on('click', function() {
+		document.querySelector("#location-accept-block").block({id:$('#location').val(), value:$('#location')[0].text()});
+	});
+	
+	// DMA
+	$('#accept-dma').on('click', function() {
+		document.querySelector("#dma-accept-block").accept({id:$('#dma').val(), value:$('#dma')[0].text()});
+	});
+	
+	$('#block-dma').on('click', function() {
+		document.querySelector("#dma-accept-block").block({id:$('#dma').val(), value:$('#dma')[0].text()});
+	});
+	
+	// Cluster
+	$('#accept-cluster').on('click', function() {
+		document.querySelector("#cluster-accept-block").accept({id:$('#cluster').val(), value:$('#cluster')[0].text()});
+	});
+	
+	$('#block-cluster').on('click', function() {
+		document.querySelector("#cluster-accept-block").block({id:$('#cluster').val(), value:$('#cluster')[0].text()});
+	});
+	
+	// Device
+	$('#accept-device').on('click', function() {
+		document.querySelector("#device-accept-block").accept({id:$('#device').val(), value:$('#device')[0].text()});
+	});
+	
+	$('#block-device').on('click', function() {
+		document.querySelector("#device-accept-block").block({id:$('#device').val(), value:$('#device')[0].text()});
+	});
+	
+	// Connection
+	$('#accept-connection').on('click', function() {
+		document.querySelector("#connection-accept-block").accept({id:$('#connection').val(), value:$('#connection')[0].text()});
+	});
+	
+	$('#block-connection').on('click', function() {
+		document.querySelector("#connection-accept-block").block({id:$('#connection').val(), value:$('#connection')[0].text()});
+	});
+	
+	// Inventory
+	$('#accept-inventory').on('click', function() {
+		document.querySelector("#inventory-accept-block").accept({id:$('#inventory').val(), value:$('#inventory')[0].text()});
+	});
+	
+	$('#block-inventory').on('click', function() {
+		document.querySelector("#inventory-accept-block").block({id:$('#inventory').val(), value:$('#inventory')[0].text()});
+	});
+	
+	// Browser
+	$('#accept-browser').on('click', function() {
+		document.querySelector("#browser-accept-block").accept({id:$('#browser').val(), value:$('#browser')[0].text()});
+	});
+	
+	$('#block-browser').on('click', function() {
+		document.querySelector("#browser-accept-block").block({id:$('#browser').val(), value:$('#browser')[0].text()});
+	});
+	
+	// ISP
+	$('#accept-isp').on('click', function() {
+		document.querySelector("#isp-accept-block").accept({id:$('#isp').val(), value:$('#isp')[0].text()});
+	});
+	$('#block-isp').on('click', function() {
+		document.querySelector("#isp-accept-block").block({id:$('#isp').val(), value:$('#isp')[0].text()});
+	});
+	
+	// Contextual
+	$('#accept-contextual').on('click', function() {
+		document.querySelector("#contextual-accept-block").accept({id:$('#contextual').val(), value:$('#contextual')[0].text()});
+	});
+	$('#block-contextual').on('click', function() {
+		document.querySelector("#contextual-accept-block").block({id:$('#contextual').val(), value:$('#contextual')[0].text()});
+	});
+	
+	// Video
+	$('#accept-playerSize').on('click', function() {
+		document.querySelector("#playerSize-accept-block").accept({id:$('#playerSize').val(), value:$('#playerSize')[0].text()});
+	});
+	
+	$('#block-playerSize').on('click', function() {
+		document.querySelector("#playerSize-accept-block").block({id:$('#playerSize').val(), value:$('#playerSize')[0].text()});
+	});
+	
+	$('#accept-linearFormat').on('click', function() {
+		document.querySelector("#linearFormat-accept-block").accept({id:$('#linearFormat').val(), value:$('#linearFormat')[0].text()});
+	});
+	$('#block-linearFormat').on('click', function() {
+		document.querySelector("#linearFormat-accept-block").block({id:$('#linearFormat').val(), value:$('#linearFormat')[0].text()});
+	});
+	
+	$('#accept-contentInitiation').on('click', function() {
+		document.querySelector("#contentInitiation-accept-block").accept({id:$('#contentInitiation').val(), value:$('#contentInitiation')[0].text()});
+	});
+	$('#block-contentInitiation').on('click', function() {
+		document.querySelector("#contentInitiation-accept-block").block({id:$('#contentInitiation').val(), value:$('#contentInitiation')[0].text()});
+	});
+	
+	$('#accept-audio').on('click', function() {
+		document.querySelector("#audio-accept-block").accept({id:$('#audio').val(), value:$('#audio')[0].text()});
+	});
+	
+	$('#block-audio').on('click', function() {
+		document.querySelector("#audio-accept-block").block({id:$('#audio').val(), value:$('#audio')[0].text()});
+	});
+</script>

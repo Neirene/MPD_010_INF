@@ -1,0 +1,61 @@
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDW_hi5jQm2Ffb4GIa98vJdszgrma-qlJM&amp;libraries=places,drawing"></script>
+<script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js"></script>
+<script src="/js/libraries/maps/CartoUtils.js"></script>
+
+<div th:include="campaigns/campaign-breadcrumb"></div>
+
+<div class="container-fluid">
+	
+	<div class="row mt10">
+		<div class="col-sm-3">
+				<infinia-select id="profile-selector" style="min-width:200px;" disable-sort="true" class="icon"></infinia-select>
+		</div>
+		<div class="col-sm-6">
+			<paper-radio-group selected="view" id="view-click-selector">
+				<paper-radio-button name="view">Views</paper-radio-button>
+				<paper-radio-button name="click">Clicks</paper-radio-button>
+			</paper-radio-group>
+			
+				
+			
+		</div>
+		<div class="col-sm-3 text-right">
+			<button class="btn btn-primary" id="generate_cluster">Generar cluster</button>
+		</div>
+	</div>
+	
+	
+	
+	
+	
+	<div id="slider-campaign-profile" >
+		
+		<div class=" section row mt20 demographic" id="main-pies-container">
+			<div class="col-sm-4">
+				<infinia-card id="genderCard" title="gender" title-icon="notification:wc"></infinia-card>
+			</div>
+			
+			<div class="col-sm-4">
+				<infinia-card id="ageCard" title="age" title-icon="icons:face"></infinia-card>
+			</div>
+			
+			<div class="col-sm-4">
+				<infinia-card id="income_levelCard" title="income.level" title-icon="editor:attach-money"></infinia-card>
+			</div>
+		</div>
+	
+		<div class="section psychographic" th:include="common/psychographic" id="psychographic-container"></div>
+		<div class="section behavioral"  th:include="common/behavioral" id="behavioral-container"><p class="mt10">No hay datos suficientes para la muestra</p></div>
+		<div class="section summary"><summary-data id="summary-data"></summary-data></div>
+	</div>
+</div>
+
+<script th:inline="javascript">
+	var id_campaign = [[${id_campaign}]];
+	var type = "infinia";
+	var endpoint = "campaigns";
+	var cartoTable = "";
+
+</script>
+<script src="/js/campaigns/campaign_profile.js"></script>

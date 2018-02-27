@@ -1,0 +1,19 @@
+<div class="new_button">
+	<a class="btn btn-primary" th:href="@{/order_lines_ds/order_line_ds(id_campaign_ds=${id_campaign_ds})}">Nueva línea de pedido</a>
+</div>
+
+<div>
+	<ul class="section-breadcrumb mt20">
+		<li th:unless="${id_campaign_ds}" class="active"><a>Nueva linea de pedido</a></li>
+		<li th:if="${id_campaign_ds}" th:classappend="${campaign_ds_breadcrumb} ? active : ''"><a th:href="@{/campaigns_ds/{id_campaign_ds}(id_campaign_ds=${id_campaign_ds})}" class="campaign_name" id="campaign_ds-name-breadcrumb"></a></li>
+		<li th:if="${id_campaign_ds}" th:classappend="${order_lines_ds_breadcrumb} ? active : ''"><a th:href="@{/campaigns_ds/{id_campaign_ds}/order_lines_ds(id_campaign_ds=${id_campaign_ds})}">Líneas de pedido</a></li>
+	</ul>
+</div>
+
+<div class="table-container">
+</div>
+
+<script th:inline="javascript">
+	var id_campaign_ds = [[${id_campaign_ds}]];
+</script>
+<script src="/js/digital_signage/order_lines_ds/order_lines_ds.js"></script>

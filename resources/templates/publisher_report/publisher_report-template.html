@@ -1,0 +1,69 @@
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDW_hi5jQm2Ffb4GIa98vJdszgrma-qlJM&amp;libraries=places,drawing"></script>
+
+<div class="container-fluid mt20">
+	<div class="row">
+		<div class="col-sm-12">
+			<h3 id="publisherName"></h3>
+		</div>
+	</div>
+	
+	<div class="row mt10">
+		<div class="col-sm-6">
+			<p>Publisher</p>
+			<infinia-select name="apps" disable-sort="true"></infinia-select>
+		</div>
+		<div class="col-sm-6">
+			<p>Periodo de tiempo</p>
+			<infinia-select name="days" disable-sort="true"></infinia-select>			
+		</div>
+	</div>
+	
+	
+	<infinia-tabs data-text="quantitativeAnalytical,cluster.demographic">
+		
+		<div slot="0" id="cuantitative-container" >
+			<div class="row mt20">
+				<div class="col-sm-6">
+					<h3><span class="label label-default">Totales por sistema operativo</span></h3>
+					<div class="table-container-so">
+					</div>
+				</div>
+				<div class="col-sm-6">
+					<h3><span class="label label-default">Totales por dispositivos</span></h3>
+					<div class="table-container-apps">
+					</div>
+				</div>
+			</div>			
+		</div>
+		
+		<div  slot="1">
+				<div class="row mt20" id="main-pies-analytics">
+					<div class="col-sm-3">
+						<infinia-card id="genderCard" title="gender" title-icon="notification:wc"></infinia-card>
+
+					</div>
+					
+					<div class="col-sm-3">
+						<infinia-card id="ageCard" title="age" title-icon="icons:face"></infinia-card>
+					</div>
+					
+					<div class="col-sm-3">
+						<infinia-card id="income_levelCard" title="income.level" title-icon="editor:attach-money"></infinia-card>
+					</div>
+					
+					<div class="col-sm-3">
+						<infinia-card id="countryCard" title="nationality" title-icon="icons:flag"></infinia-card>
+					</div>
+				</div>
+			</div>	
+	
+	</infinia-tabs>
+	
+	
+	
+	
+	
+	
+</div>
+<script src="/js/publisher_report/publisher_report.js"></script>

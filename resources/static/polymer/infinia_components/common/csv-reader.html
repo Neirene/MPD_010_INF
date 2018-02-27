@@ -1,0 +1,177 @@
+
+<dom-module id="csv-reader">
+	<template>
+		<style include="common-styles"></style>
+		<style>
+		
+		.container{
+			position:relative;
+			margin:5px;
+		}
+
+		iron-input, input {
+			width:100%;
+			background-color:transparent;
+			display:none;
+		}
+
+		input {
+			padding:3px 5px;
+			margin-top:3px;
+			border:0;
+			border-bottom:1px solid var(--input-bottom);
+    		outline: none;
+    		font-size:14px;
+    		display:none;
+		}
+
+		label {
+			
+			left:5px;
+			top:20px;
+			cursor:text;
+			color:var(--input-label);
+			font-size:14px;
+		}
+		
+		iron-icon {
+			cursor:pointer;
+			color:var(--input-label)
+		}
+		
+		#files-container {
+			display:flex;
+			padding:5px;
+			flex-wrap:wrap;
+		}
+		
+		#files-container .file-wrapper {
+			height:130px;
+			width:200px;
+			margin-right:10px;
+			display:flex;
+			justify-content:center;
+			align-items:center;
+		}
+		
+		#files-container .file-wrapper img {
+			max-height:100%;
+			max-width:80%;
+		}
+		
+		.image-resize {
+			max-height:70px;
+			max-width:70px;
+			margin-left:20px;
+			opacity:1!important;
+		}
+		
+		.vertical-container {
+			display:flex;
+			flex-direction:column;
+			justify-content:center;
+		}
+		
+		#actions-container {
+			margin-left:10px;
+		}
+		
+		.center-content {
+			display:flex;
+			align-items:center;
+			justify-content:center;
+		}
+	
+		
+		
+		</style>
+		
+		<div class="container">
+			
+			<label for="input" >{{text}}</label>
+			
+			<div class="mt10">
+				<div class="vertical-container">
+					<div style="display:flex">
+						<label class="cursor-pointer" for="input" >
+							<iron-icon icon="icons:file-upload"></iron-icon>
+							<span>{{_localize('loadCSV')}}</span>
+						</label>
+						<iron-input>
+							<input id="input" name="file" type="file" multiple$={{multipleFiles}}>
+						</iron-input>
+					</div>
+					
+				</div>
+				
+				<div id="files-container">{{fileName}}</div>
+				
+			</div>
+			
+			
+		</div>
+	</template> 
+	
+	<script>
+		
+		class CSVReader extends Polymer.Element {
+
+	        static get is() { return  'csv-reader' }
+	
+	        static get properties() {
+	          return {
+	           	text:String,
+	           	maxSize:{type:Number, value: 3145728},
+	           	maxHeight:{type:Number, value: 2000},
+	           	maxWidth:{type:Number, value: 2000},
+	           	accept:String,
+	           	multipleFiles:{type:String},
+	           	fileName:String
+	          }
+	        }
+	
+	        constructor() {
+	          super();
+	        }
+	
+	        ready() {
+	          	super.ready();
+	          	var _this = this;
+	          	_this.data = {};
+	          	this.newFiles = [];
+	          	
+	          	var fileInput = this.$.input;
+	          	fileInput.addEventListener('change', function(e){
+	          		let fileInput = _this.$.input;
+	          		$(fileInput.files).each(function(index, file) {
+	          			_this.newFiles.push(file);
+	          			_this.fileName = file.name;
+	          			
+	          			utils.importCSV(file, (data) => {
+	          				var event = new CustomEvent('fileLoaded',{'detail':data});
+	        	        	_this.dispatchEvent(event); 
+	        	        	_this.data = data;
+	          			})
+	          		})
+	          	})
+	        }
+	        
+	        reset() {
+	        	this.$.input.value = "";
+	        	this.fileName = "";
+	        }
+	        
+	       
+	        _localize(text) {
+	        	return localizer.get(text) ||text;
+	        }
+	        
+	        getFileName() {
+	        	return this.$.input.value;
+	        }
+	    }
+	    
+	    customElements.define(CSVReader.is, CSVReader);
+	    
+    </script> 
+</dom-module>

@@ -1,0 +1,214 @@
+
+<dom-module id="pie-chart">
+	<template>
+		<style include="common-styles"></style>
+		
+		<style>
+			.content {
+				display:flex;
+				justify-content:space-between;
+				flex-wrap:wrap;
+			}
+			
+			.content > div {
+				min-width:300px;
+			}
+			
+			.check {
+				color:var(--success);
+				cursor:pointer;
+			}
+			
+			.block {
+				color:var(--error);
+				cursor:pointer;
+			}
+		
+			.imports {
+				justify-content:flex-end;
+				margin-bottom:5px;
+			}
+			.container {
+				display:flex;
+				margin-top:20px;
+			}
+			
+			
+			
+			header {
+				padding:10px;
+				background-color:var(--lighter-background);
+			}
+			
+			.selectable-list {
+				overflow:auto;
+				max-height:200px;
+			}
+			
+			li {
+				border:1px solid var(--lighter-background);
+				padding:10px;
+				display:flex;
+				justify-content:space-between;
+			}
+			
+			
+			@media(min-width:700px) {
+				.container {
+					margin-top:0;
+				}
+			}
+			
+			a, li {
+				cursor:pointer;
+			}
+			
+			.mr10 {
+				margin-right:10px;
+			}
+			
+			.mr20 {
+				margin-right:20px;
+			}
+			
+			.header {
+				padding:10px;
+				background-color:var(--lighter-background);
+			}
+			
+			#selected-list {
+				border: 1px solid var(--lighter-background);
+				height:200px;
+				overflow-y:auto;
+			}
+			
+			#selected-list li {
+				border-right:none;
+				border-left:none;
+			}
+			
+			.search {
+				margin-bottom:10px;
+				display:flex;
+				justify-content:space-between;
+			}
+			
+			input {
+				outline:none;
+				border:none;
+				border-bottom:1px solid var(--input-border);
+			}
+			
+			.list {
+				width:40%;
+			}
+			
+			.accept-block {
+				width:50%;
+			}
+			
+			.idelem {
+				display:flex;
+			}
+			
+		</style>
+		<div id="chart"></div>	
+		<chart-legend id="legend" legend-values={{data}} graph-name={{graphTitle}} color-selected={{colorSelected}}></chart-legend>
+	</template> 
+	
+	
+	<script>
+
+	
+	
+	class PieChart extends Polymer.Element {
+
+        static get is() { return  'pie-chart' }
+
+        static get properties() {
+          	return {
+				title:String,
+				graphTitle:{type:String},   
+          		data:{type:Object, value:function(){return [];}},
+          	}
+        }
+
+        constructor() {
+          super();
+        }
+
+        ready() {
+          	super.ready();
+          	this.colors = {
+          		primary: ['#132f37','#c6a278'],
+          		blue: ['#012c40', '#5da6ca'],
+          		red:['#DA324F', '#7a1b2b']
+          	};
+			this.colorSelected = "primary";
+        }
+
+        attached() {
+          	super.attached();
+        }
+        
+        drawChart() {
+			let _this = this;
+			let colors = this.colors[this.colorSelected];
+			let dat = _this.data;
+			let sortedData = [];
+			let finalValues = [];
+			let finalColors = [];
+			let highestValue;
+
+			
+			
+
+			// Calculate the Highest Value by evaluating the highest integer on the pie chart graph parameter and updating colors accordingly.
+
+			
+			for (var i = 0; i < dat.length; i++) {
+				finalValues.push(dat[i][1]);
+			}
+			
+			for (i = 0; i < finalValues.length; i++) {
+				finalColors.push(colors[1])
+			}
+
+			highestValue = finalValues.indexOf(Math.max(...finalValues)) -1;
+			finalColors.splice(highestValue, 1, colors[0]);
+
+        	google.charts.load('current', {'packages':['corechart']});
+            google.charts.setOnLoadCallback(function() {
+            	
+            	
+	            var options = {
+	              title: _this.title,
+	              legend: { position: 'none' },
+	              chartArea: {'left':'5%','width': '80%', 'height': '80%'},
+				  colors: finalColors,
+				  slices: {highestValue: {offset:0.2}}
+	            };
+	
+				var chart = new google.visualization.PieChart(_this.$.chart);
+	            let data =  google.visualization.arrayToDataTable(dat);
+	            chart.draw(data, options);
+        	})
+	
+			this.$.legend.showLegend();
+
+		}
+        
+        setData(dat) {
+        	this.data = dat;
+        }
+        
+        setTitle(tit) {
+        	this.title = localizer.get(tit);
+		}
+		
+	}
+	    
+	customElements.define(PieChart.is, PieChart);
+	    
+    </script> 
+</dom-module>

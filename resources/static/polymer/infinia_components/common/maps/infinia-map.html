@@ -1,0 +1,695 @@
+
+
+
+
+<dom-module id="infinia-map">
+	<template>
+		<style include="common-styles"></style>
+		<style>
+		
+		
+		* {
+			box-sizing:border-box;
+			font-family: 'Lato', sans-serif;
+		
+		}
+		
+		.selector {
+			outline: none;
+			width: 100%;
+			padding: 10px;
+			border: 1px solid #2196F3;
+			background-color: #2196F3;
+			color: white;
+			cursor: pointer;
+			-webkit-appearance: none;
+			-moz-appearance: none;
+			appearance: none;
+			padding: 6px 12px;
+			border-radius: 0;
+			font-size: 14px;
+		}
+		
+		.shadow {
+			box-shadow: 0 0px 10px rgba(0, 0, 0, 0.3);
+			-webkit-box-shadow: 0 0px 10px rgba(0, 0, 0, 0.3);
+		}
+		
+		ul, li {
+			list-style: none;
+			display: block;
+			padding: 0;
+		}
+		
+		.colorShow {
+			height: 8px;
+			width: 8px;
+			display: inline-block;
+			margin-right: 5px;
+			border-radius: 50%;
+			margin-top: 5px;
+		}
+		
+		.fields-list {
+			margin-top: 5px;
+		}
+		
+		.fields-list li {
+			font-size: 14px;
+			padding: 2px 10px;
+		}
+		
+		.field-name {
+			cursor: pointer;
+			font-size:14px;
+		}
+		
+		.content {
+			display:flex;
+			position:relative;
+		}
+		
+		.search-container {
+			width:0;
+		}
+		
+		.search {
+			margin :10px;padding:5px;
+			width:40%;
+		}
+		
+		
+		
+		.actions-selector-container {
+		    display: flex;
+		    flex-wrap: wrap;
+		    flex-direction: column;
+		    position: absolute;
+		    right: 0px;
+		    padding-top:20px;
+		}
+		
+		
+		.full-width {
+			width:100%;
+		}
+		
+		.space-between {
+			display:flex;
+			justify-content:space-between;
+			
+		}
+
+		
+		.action-selector {
+			padding:5px 10px;
+			color:white;
+			border-radius: 5px 0 0 5px;
+			cursor:pointer;
+			margin-bottom:10px;
+			background-color:var(--map-action-selection);
+		}
+		
+
+		
+		.side-container label{
+			display:block;
+		} 
+		
+		.side-container {
+		   
+		    
+		    width: 100%;
+		    position: absolute;
+		    right: 0;
+		    background-color: white;
+		    height: 100%;
+		    -webkit-box-shadow: -2px 0px 5px 1px var(--primary-color);
+          	box-shadow: -2px 0px 5px 1px var(--lighter-background);
+          	z-index:500;
+		}
+		
+		.side-container .title {
+			padding:10px ;
+			background-color:var(--lighter-background);
+		    border-bottom: 1px solid var(--primary-color);
+		}
+		
+		.side-content {
+		padding:5px 15px;}
+		
+		@media (min-width:600px) {
+			.side-container {
+				width:30%;
+				min-width:300px;
+			}
+		}
+		
+		
+		
+		</style>
+		
+		<div class="content">
+			<div id="map-container" class="shadow" style$="height:{{height}}; width:{{width}};"></div>
+			<div class$="search-container {{_searcherClass()}}">
+				<input id="searchInput" class="search" placeholder$="{{_localize('search')}}..."/>
+			</div>
+			
+			<div class="actions-selector-container">
+				<label class$="action-selector  {{_cartoClass()}}" on-click="_showClusterVisualization">{{_localize('cluster.visualization')}}</label>
+				<label class$="action-selector  {{_cartoClass()}}" on-click="_showCartoManager">{{_localize('profiling')}}</label>
+				<label class$="action-selector  {{_cartoClass()}}" on-click="getCartoImage">{{_localize('exportImage')}}</label>
+				
+				<label class$="action-selector  {{_poisClass()}}" on-click="_showPoisManager">{{_localize('pois')}}</label>
+				<label class$="action-selector  {{_csvClass()}}" on-click="_showCSVLoader">{{_localize('loadCSV')}}</label>
+			</div>
+		
+			<div class="side-container hidden" id="carto_manager">
+				<div class="space-between title" style="width:100%; position:relative;">
+					<b>{{_localize('profiling')}}</b>
+					<iron-icon icon="icons:close" class="cursor-pointer"
+						on-click="_hideSideContainer"></iron-icon>
+				</div>
+				<div style="width:100%; position:relative;"><carto-manager id="cartoManager"></carto-manager></div>
+			</div>
+		
+		
+			<div class="side-container hidden" id="pois_container">
+				<div class="space-between title">
+					<b>{{_localize('pois')}}</b>
+					<iron-icon icon="icons:close" class="cursor-pointer" on-click="_hideSideContainer"></iron-icon>
+
+				</div>
+				<div class="side-content">
+					<div class="mt10">
+						<a class="cursor-pointer" on-click="clearPois">Borrar puntos</a>
+					</div>
+					<div class="mt10">
+						<label>{{_localize('category')}}</label>
+						<infinia-select id="poi_categories"></infinia-select>
+					</div>
+					<div class="mt10">
+						<label>{{_localize('text')}}</label>
+						<iron-input bind-value="{{poiTextSearch}}"> <input
+							class="form-control" /> </iron-input>
+					</div>
+					<div class="mt10">
+						<label>{{_localize('radius')}} (m)</label>
+						<iron-input bind-value="{{poiRadius}}"> <input
+							class="form-control"> </iron-input>
+					</div>
+					<div class="mt10">
+						<div id="poi_btn_container">
+							<button class="btn btn-primary" id="poi_btn">{{_localize('search')}}</button>
+						</div>
+						<div id="poi_load" class="hidden">
+							<paper-spinner active="active"></paper-spinner>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			
+			
+			<div class="side-container hidden" id="csv_manager_container">
+				<div class="space-between title">
+					<b>{{_localize('loadCSV')}}</b>
+					<iron-icon icon="icons:close" class="cursor-pointer"
+						on-click="_hideSideContainer"></iron-icon>
+				</div>
+				<csv-manager id="csv_manager"></csv-manager>
+			</div>
+			
+			<div class="side-container hidden" id="cluster_visualization">
+				<div class="space-between title">
+					<b>{{_localize('Visualizar Cluster')}}</b>
+					<iron-icon icon="icons:close" class="cursor-pointer"
+						on-click="_hideSideContainer"></iron-icon>
+				</div>
+				<div style="padding:20px;">
+				<cluster-selector id="cluster_selector"></cluster-selector>	
+				</div>
+			</div>
+		</div>
+	</template> 
+	
+	<script>
+
+		class InfiniaMap extends Polymer.Element {
+	       
+	        static get is() { return  'infinia-map' }
+	
+	        static get properties() {
+	          return {
+	            zoom:{type:Number, value:6},
+	            draw:{type:Boolean, value:false},
+	            circles:{type:Object, value:function() {return []}},
+	            pois:{type:Object, value:function() {return []}},
+	            selectablePois:{type:Boolean, value:false},
+	            selectedPois:{type:Object, value:function() {return []}},
+	            height:{type:String,value:"400px"},
+	            width:{type:String,value:"100%"},
+	            onStart:{type:Boolean, value:false},
+	            showSearcher:{type:Boolean, value:false},
+	            poiSearch:{type:Boolean, value:false},
+	            poiRadius:{type:Number, value:100},
+	            poiTextSearch:{type:String, value:""},
+	            cartoManagement:{type:Boolean, value:false},
+	            loadCsv:{type:Boolean, value:false}
+	          }
+	        }
+	
+	        constructor() {
+	          super();
+	        }
+	
+	        ready() {
+	          	super.ready();
+	          	if(typeof map_center == "undefined" || !map_center)
+	          		map_center = {lat: 40.4378698,lng: -3.819623};
+	          	this.mapCenter = map_center;
+	          	
+	          	if(this.onStart)
+	          		this.init();
+	        }
+	
+	        init() {
+	        	
+	        	if(!this.map) {
+	        	
+					var _this = this;
+		          	
+		          	var map = new google.maps.Map(this.$["map-container"], {
+			            center: _this.mapCenter,
+			            zoom:  this.zoom,
+			            streetViewControl: false,
+			            mapTypeId: google.maps.MapTypeId.ROADMAP,
+			            mapTypeControl:false,
+			            fullscreenControl:false,
+			            styles: [{"featureType":"administrative","elementType":"labels.text.fill","stylers":[{"color":"#444444"}]},{"featureType":"administrative.locality","elementType":"labels","stylers":[{"visibility":"on"}]},{"featureType":"landscape","elementType":"all","stylers":[{"color":"#f2f2f2"},{"visibility":"simplified"}]},{"featureType":"poi","elementType":"all","stylers":[{"visibility":"on"}]},{"featureType":"poi","elementType":"geometry","stylers":[{"visibility":"simplified"},{"saturation":"-65"},{"lightness":"45"},{"gamma":"1.78"}]},{"featureType":"poi","elementType":"labels","stylers":[{"visibility":"off"}]},{"featureType":"poi","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"road","elementType":"all","stylers":[{"saturation":-100},{"lightness":45}]},{"featureType":"road","elementType":"labels","stylers":[{"visibility":"on"}]},{"featureType":"road","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"road.highway","elementType":"all","stylers":[{"visibility":"simplified"}]},{"featureType":"road.highway","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"road.arterial","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"transit.line","elementType":"geometry","stylers":[{"saturation":"-33"},{"lightness":"22"},{"gamma":"2.08"}]},{"featureType":"transit.station.airport","elementType":"geometry","stylers":[{"gamma":"2.08"},{"hue":"#ffa200"}]},{"featureType":"transit.station.airport","elementType":"labels","stylers":[{"visibility":"off"}]},{"featureType":"transit.station.rail","elementType":"labels.text","stylers":[{"visibility":"off"}]},{"featureType":"transit.station.rail","elementType":"labels.icon","stylers":[{"visibility":"simplified"},{"saturation":"-55"},{"lightness":"-2"},{"gamma":"1.88"},{"hue":"#ffab00"}]},{"featureType":"water","elementType":"all","stylers":[{"color":"#bbd9e5"},{"visibility":"simplified"}]}]
+		          	});
+		          	this.map = map;
+		         
+		          	if(this.draw) {
+		          		this.initDrawingManager();
+		          	}
+		          	
+		          	if(this.showSearcher) {
+		               this.initSearcher();
+		          	}
+		          	
+		          	if(this.poiSearch) {
+		          		this.initPoiSearch();
+		          	}
+		          	
+		          	this.circles.forEach((circle) => {
+		          		circle.setMap(this.map);	
+		          	})
+		          	
+		          	this.pois.forEach((poi) => {
+		          		poi.setMap(this.map);	
+		          	})
+		          	
+		          	if(this.loadCsv) {
+		          		this.initCSVLoad();
+		          	}
+		          	
+		          	if(this.cartoManagement) {
+		          		this.initCartoManagement();
+		          	}
+	        	}
+	        }
+	        
+	        initPoiSearch() {
+	        	let _this = this;
+	        	utils.apiGet('/poi/_categories', {}, (response) => {
+          			let categories = [];
+          			response.forEach((elem) => {
+          				categories.push({id:elem, value:elem})	
+          			})
+          			this.$.poi_categories.setOptions(categories);
+          		})
+          		
+          		$(this.$.poi_btn).on('click', function() {
+          			
+          			let _button = this;
+          			$(_this.$.poi_btn_container).addClass('hidden');
+          			$(_this.$.poi_load).removeClass('hidden');
+          			let rad = utils.getVisibleRadius(_this.map);
+                    let lat = _this.map.getCenter().lat();
+                    let lon = _this.map.getCenter().lng();
+          			
+                    let exists = false;
+                    _this.pois.some((elem) => {
+                    	if(_this.poiTextSearch == elem.search && $(_this.$['poi_categories']).val() == elem.category) {
+							exists = true;
+                    		return true;
+                    	}
+                    })
+                    
+                   	if(!exists) {
+	                    utils.apiGet("/poi?rad="+rad+"&lat="+lat+"&lon="+lon+"&text="+_this.poiTextSearch+"&category="+$(_this.$.poi_categories).val(), {}, function(response) {
+	                    	_this._hideSideContainer();
+	                    	response.forEach((elem) => {
+	                    		_this.addPoi(Number(elem.lat), Number(elem.lon),(Number(_this.poiRadius)));
+	                    	})
+
+	                    });
+                   	}
+                   	else {
+                   		_this._hideSideContainer();
+
+                   	}
+                    
+            		$(_this.$.poi_load).addClass('hidden');
+            		$(_this.$.poi_btn_container).removeClass('hidden');
+          		})
+	        }
+	        
+	        clearPois(category) {
+	        	let _this = this;
+	        	let positions = [];
+	        	let i = this.pois.length;
+	        	
+	        	while(i--){
+	        		
+	        		if(typeof category == "object") {
+	        			if(this.pois[i].category != "csv-coords") {
+	        				this.pois[i].setMap(null);
+	        				this.pois.splice(i, 1);
+	        			}
+	        		}
+	        		else {
+	        			let cat = category.split(" - ");
+	        			if (cat.length === 1) { cat[1] = ""} 
+	        			if((cat[0] == this.pois[i].category &&	cat[1] == this.pois[i].search) ||
+	        				this.pois[i].category == "csv-coords" && cat[0] == "csv-coords"){
+	        				this.pois[i].setMap(null);
+		        			this.pois.splice(i, 1);
+	        			}
+	        		}
+	        		
+	        	}
+                
+	        	let event = new CustomEvent('poisRemoved');
+	        	this.dispatchEvent(event);
+	        }
+	        
+	        clearCircles() {
+	        	let _this = this;
+	        	let i = this.circles.length;
+	        	while (i--){
+	        		this.circles[i].setMap(null);
+	        		this.circles.splice(i, 1);		        	
+	        	}
+	        }
+	        
+	        
+	        initDrawingManager() {
+	        	let _this = this;
+          		var drawingManager = new google.maps.drawing.DrawingManager({
+          			drawingControl: true,
+          			drawingControlOptions: {
+          				position: google.maps.ControlPosition.TOP_CENTER,
+          				drawingModes: [
+          					google.maps.drawing.OverlayType.CIRCLE,
+          					]
+          			},
+          			circleOptions: {
+          				strokeColor: '#785123',
+          				strokeWeight: 0.5,
+          				fillOpacity: 0.1,
+          				clickable: true,
+          				editable: true,
+          				zIndex: 1
+          			},
+          		});
+          		drawingManager.setMap(this.map);
+          		google.maps.event.addListener(drawingManager, 'circlecomplete', function(e){
+          			_this._drawCircle(e, 'circles');				
+          		});
+	        }
+	        
+	        initSearcher() {
+	        	let _this = this;
+	        	 var input = this.$.searchInput;
+	             var searchBox = new google.maps.places.SearchBox(input);
+	             this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+	        	
+	             
+	            _this.markers = [];
+	        	searchBox.addListener('places_changed', function() {
+	        		 var places = searchBox.getPlaces();
+
+	                 if (places.length == 0) {
+	                   return;
+	                 }
+	                 var bounds = new google.maps.LatLngBounds();
+	                 places.forEach(function(place) {
+	                   if (!place.geometry) {
+	                     console.log("Returned place contains no geometry");
+	                     return;
+	                   }
+	                   var icon = {
+	                     url: place.icon,
+	                     size: new google.maps.Size(71, 71),
+	                     origin: new google.maps.Point(0, 0),
+	                     anchor: new google.maps.Point(17, 34),
+	                     scaledSize: new google.maps.Size(25, 25)
+	                   };
+
+	                   let marker = new google.maps.Marker({
+	                     map: _this.map,
+	                     icon: icon,
+	                     title: place.name,
+	                     position: place.geometry.location
+	                   })
+	                  
+	                   _this.markers.push(marker);
+	                  
+	                   
+	                   google.maps.event.addListener(marker, 'click', function (e) {
+	         				
+	                	   utils.removeFromArray(_this.markers, marker);
+	                	   
+	         		        marker.setMap(null);
+	         		      	let event = new CustomEvent('markerRemoved', {'detail':marker});
+	     	        		_this.dispatchEvent(event);
+	         		    });
+	                 });
+	                 _this.markers.forEach((marker) => {
+	                	 bounds.extend(marker.position);
+	                 })
+	                 _this.map.fitBounds(bounds);
+	                 if(_this.markers.length == 1)
+	                	_this.map.setZoom(12);
+	        	})
+	        }
+	        
+			//Circles management
+	        addCircle(latitude, longitude, radius) {
+	        	var _this = this;
+	        	var circle = new google.maps.Circle({
+	        		strokeColor: '#785123',
+      				strokeWeight: 0.5,
+      				fillOpacity: 0.1,
+      				clickable: true,
+      				editable: true,
+      				zIndex: 1,
+	        		map: _this.map,
+	        		center: {lat: latitude, lng: longitude},
+	        		radius: radius
+	        	});
+	        	this._drawCircle(circle, 'circles');
+	        }
+			     
+	        addPoi(latitude, longitude, rad, category, search) {
+	        	this.addPoiElement(latitude, longitude, rad, category, search);
+	        }
+	        
+	        addSelectedPoi(latitude, longitude, rad, category, search) {
+	        	this.addPoiElement(latitude, longitude, rad, category, search, true);
+	        }
+	        
+	        addPoiElement(latitude, longitude, rad, category, search, selected) {
+	        	if(isNaN(latitude) || isNaN(longitude) || isNaN(rad) || latitude == 0 || longitude == 0)
+	        		return false;
+	        	
+	        	var _this = this;
+	        	
+	        	let map = null; 
+	        	if(this.pois.length < 1000) {
+	        		map = this.map;
+	        	}
+	        	
+	        	let color = selected ? "red" :  '#0550af';
+	        	
+		        var poi = new google.maps.Circle({
+	        		strokeColor: color,
+	        		strokeOpacity: 1,
+	        		strokeWeight: 3,
+	        		fillColor: color,
+	        		fillOpacity: 1,
+	        		map: map,
+	        		center: {lat: latitude, lng: longitude},
+	        		radius: rad
+	        	});
+	        	
+		        if(selected) {
+		        	this.selectedPois.push(poi);
+		        	poi.clickCount = 1;
+		        }
+	        	
+	        	poi.search = search ? search : this.poiTextSearch;
+	        	poi.category = category ? category : $(this.$['poi_categories']).val();	
+	        	this._drawCircle(poi, 'pois');
+	        	return true;
+	        }
+	        
+	        addPoiMaps(circle) {
+	        	this._drawCircle(circle, 'pois');
+	        	
+	        }
+	        
+			_drawCircle(circle, type) {
+				this[type].push(circle);
+				this.setCircleEvent(circle, type);
+				if(circle.map!= null) {
+					let event = new CustomEvent('circleAdded', {'detail':{circle:circle, type:type}});
+	        		this.dispatchEvent(event);
+				}
+			}
+			
+			setCircleEvent(circle, type) {
+				let _this = this;
+				google.maps.event.addListener(circle, 'click', function (e) {
+					
+					if(_this.selectablePois && type=="pois") {
+						if(circle.clickCount)
+							circle.clickCount++;
+						else circle.clickCount = 1;
+						
+						if(circle.clickCount == 1) {
+							circle.setOptions({strokeColor:"red", fillColor: 'red'});
+							_this.selectedPois.push(circle);
+							let event = new CustomEvent('circleSelected', {'detail':{circle:circle, type:type}});
+				        	_this.dispatchEvent(event);
+						}
+						else if(circle.clickCount == 2) {
+							//_this.removeCircle(circle, type);
+							circle.clickCount = 0;
+							circle.setOptions({strokeColor:"#0550af", fillColor: '#0550af'});
+							_this.selectedPois.splice(_this.selectedPois.indexOf(circle), 1);
+							let event = new CustomEvent('circleUnselected', {'detail':{circle:circle, type:type}});
+				        	_this.dispatchEvent(event);
+						}
+					}
+					else {
+						_this.removeCircle(circle, type);	
+					}
+      		    });
+	        	return circle;
+			}
+			
+			removeCircle(circle, type) {
+				let _this = this;
+				_this[type].splice(_this[type].indexOf(circle), 1);
+  		        circle.setMap(null);
+  		      	let event = new CustomEvent('circleRemoved', {'detail':{circle:circle, type:type}});
+	        	_this.dispatchEvent(event);
+			}
+			
+			initCarto(sql, css) {
+				this.$.cartoManager.cartoCss = css;
+				this.$.cartoManager.addCartoLayer('main', sql);
+			}
+			
+	        //CSV load
+	        initCSVLoad() {
+	        	this.$.csv_manager.map = this;
+	        }
+	        
+	        redraw() {
+		        google.maps.event.trigger(this.map,'resize');
+	        } 
+	        
+	        _searcherClass() {
+	        	return this.showSearcher ? "" : "hidden";
+	        }
+	        
+	        _poisClass() {
+	        	return this.poiSearch ? "" : "hidden";
+	        }
+	        
+	        _cartoClass() {
+	        	return this.cartoManagement ? "" : "hidden";
+	        }
+	        
+	        _csvClass() {
+	        	return this.loadCsv ? "" : "hidden";
+	        }
+	        
+	        _localize(text) {
+	        	return localizer.get(text);
+	        }
+	        
+	        _hideSideContainer() {
+	        	$(this.root).find('.side-container').addClass('hidden');
+	        }
+	        
+	        _showPoisManager() {
+	        	$(this.$['pois_container']).removeClass('hidden');
+	        }
+	        
+	        _showCartoManager() {
+	        	$(this.$['carto_manager']).removeClass('hidden');
+	        }
+	        
+	        _showCSVLoader() {
+	        	$(this.$['csv_manager_container']).removeClass('hidden');
+	        }
+	        
+	        _showClusterVisualization() {
+	        	$(this.$['cluster_visualization']).removeClass('hidden');
+	        	if(this.$.cluster_selector.$.clusters_list.list.length == 0)
+	        		this.$.cluster_selector.doSearch(this.$.cluster_selector.$.clusters_list, "");
+	        }
+	        
+	        sendCircleAddedEvent() {
+	        	let event = new CustomEvent('circleAdded');
+	    		this.dispatchEvent(event);
+	        }
+	        
+	        getCartoOptionsSelected() {
+	        	return this.$.cartoManager.getOptionsSelected();
+	        }
+	        
+	        getCartoImage() {
+	        	this.$.cartoManager.getCartoImage();
+	        }
+	        
+	        initCartoManagement() {
+	        	let _this = this;
+          		this.$.cartoManager.map = this.map;
+          		
+          		$(this.$.cluster_selector).on('clusterSelected', function(e) {
+          			_this.$.cartoManager.clearCarto();
+	          		let sql = CartoUtils.getClusterHomeQuery(e.detail);
+	          		
+	          		_this.$.cartoManager.subLayers = [];
+	          		_this.$.cartoManager.addCartoLayer(e.detail, sql);
+          		})
+          		
+          		$(this.$.cluster_selector).on('clusterRemoved', function(e) {
+          			_this.$.cartoManager.clearCarto();
+	          		_this.$.cartoManager.subLayers = [];
+	          		_this.$.cartoManager.addCartoLayer('main', _this.$.cartoManager.mainSql);
+          		})
+	        }
+	        
+ 	    }
+	    
+	    customElements.define(InfiniaMap.is, InfiniaMap);
+	    
+    </script> 
+</dom-module>

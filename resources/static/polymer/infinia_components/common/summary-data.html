@@ -1,0 +1,114 @@
+
+<dom-module id="summary-data">
+	<template>
+		<style include="common-styles"></style>
+		
+		<style>
+			.summary iron-icon {
+				height: 80px;
+			    width: 80px;
+			    color:var(--primary-color);
+			}
+			
+			.summary .top-value {
+				font-size:25px;
+				font-weight:bold;
+				color:var(--dark-background);
+			}
+			
+			p {
+				margin:0;
+				padding:0;
+				
+			}
+			.flex-center {
+				margin:15px 10px;
+				
+			}
+			
+			
+		</style>
+		
+		<div class="summary">
+			<div class="flex-center mt20 mb20 content">
+				<div class="flex-center mb20"> 
+					<iron-icon class="summary" icon="notification:wc" style=""></iron-icon>
+					<p style="width:100%;" class="mt10 center-content top-value" id="summary-top-gender">{{gender}}</p>
+					<p>{{localize('gender')}}</p>
+				</div>
+				
+				<div class="flex-center mb20"> 
+					<iron-icon class="summary" icon="icons:face"></iron-icon>
+					<p style="width:100%;" class="mt10 center-content top-value" id="summary-top-age">{{age}}</p>
+					<p>{{localize('age')}}</p>
+				</div>
+				
+				<div class="flex-center mb20"> 
+					<iron-icon class="summary" icon="editor:attach-money"></iron-icon>
+					<p style="width:100%;" class="mt10 center-content top-value" id="summary-top-income_level">{{income_level}}</p>
+					<p >{{localize('income.level')}}</p>
+				</div>
+				
+				<div class="flex-center mb20"> 
+					<iron-icon class="summary" icon="icons:bookmark-border"></iron-icon>
+					<p style="width:100%;" class="mt10 center-content top-value" id="summary-top-categories_app">{{categories_app}}</p>
+					<p>{{localize('categories_app')}}</p>
+				</div>
+				
+				<div class="flex-center mb20"> 
+					<iron-icon class="summary" icon="icons:hardware:smartphone"></iron-icon>
+					<p style="width:100%;" class="mt10 center-content top-value" id="summary-top-apps">{{apps}}</p>
+					<p >{{localize('app')}}</p>
+				</div>
+			
+				
+				<div class="flex-center mb20"> 
+					<iron-icon class="summary" icon="icons:track-changes"></iron-icon>
+					<p style="width:100%;" class="mt10 center-content top-value" id="summary-top-iab">{{iab}}</p>
+					<p >{{localize('iab')}}</p>
+				</div>
+				
+				<div class="flex-center mb20"> 
+					<iron-icon class="" icon="av:new-releases"></iron-icon>
+					<p style="width:100%;" class="mt10 center-content top-value" id="summary-top-interests">{{interests}}</p>
+					<p >{{localize('interests')}}</p>
+				</div>
+			</div>	
+		</div>
+	</template> 
+	
+	<script>
+
+		class SummaryData extends Polymer.Element {
+
+	        static get is() { return  'summary-data' }
+	
+	        static get properties() {
+	          return {
+	           	gender:{type:String, value:"-"},
+	           	age:{type:String, value:"-"},
+	           	income_level:{type:String, value:"-"},
+	           	categories_app:{type:String, value:"-"},
+	           	apps:{type:String, value:"-"},
+	           	iab:{type:String, value:"-"},
+	           	interests:{type:String, value:"-"}
+	          }
+	        }
+	
+	        constructor() {
+	          super();
+	        }
+	
+	        ready() {
+	          	super.ready();
+	        }			
+	        
+	        localize(text) {
+	        	return localizer.get(text);
+	        }
+	    }
+	    
+	    customElements.define(SummaryData.is, SummaryData);
+	    
+    </script> 
+</dom-module>

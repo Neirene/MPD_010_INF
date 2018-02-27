@@ -1,0 +1,84 @@
+
+<dom-module id="campaign_ds-actions">
+	<template>
+		<style include="common-styles"></style>
+		
+			<infinia-context id="context">
+					<ul slot="context-slot" class="context-ul">
+						<li on-click="editCampaign"> <iron-icon icon="image:edit"></iron-icon> Editar</li>
+						<li on-click="publicateCampaign" id="edit_campaign"> <iron-icon icon="av:play-arrow"></iron-icon> Publicar</li>
+						<li on-click="reporting"> <iron-icon icon="icons:assessment"></iron-icon> Reporting</li>
+						<li on-click="duplicate"> <iron-icon icon="icons:content-copy"></iron-icon> Duplicar</li>
+					</ul>
+				</infinia-context>
+	</template> 
+	
+	<script>
+
+		class CampaignDSActions extends Polymer.Element {
+
+	        static get is() { return  'campaign_ds-actions' }
+	
+	        static get properties() {
+	          return {
+	          	elemId:Number
+	          }
+	        }
+	
+	        constructor() {
+	          super();
+	        }
+	
+	        ready() {
+	          	super.ready();
+	          	
+	          	utils.lockScreen();
+	          	var that = this;
+	          	utils.get('api/campaigns_ds/' + this.elemId, {}, (response) => {
+					utils.unlockScreen();
+		          	if(response.type == 'OUTDOOR') {
+		          		$(that.$.edit_campaign).remove();
+		          	}
+	          	});
+          	}
+	        
+
+	        show() {
+	        	this.$.dropdown.open();
+			}
+	        
+	        hide() {
+	        	this.$.dropdown.close();
+			}
+	        
+	        publicateCampaign() {
+	        	utils.publicateAdmiraCampaign(this.elemId);
+	        }
+	        
+	        editCampaign() {
+	        	window.location.href = "/campaigns_ds/"+this.elemId;
+	        }
+	    
+	        duplicate() {
+				utils.lockScreen();
+				utils.get('/api/campaigns_ds/' + this.elemId + '/duplicate', {}, 
+				(response) => {
+					utils.unlockScreen();
+					window.location.href = "/campaigns_ds";
+				}, 
+				(error) => {
+					utils.unlockScreen();
+					console.log('Error duplicating order line', this.elemId, error);
+				});
+	        }
+	        
+	        reporting() {
+	        	window.location.href = "/campaigns_ds/"+this.elemId+"/reporting";
+	        }
+	        
+	    }
+	    
+	    customElements.define(CampaignDSActions.is, CampaignDSActions);
+	    
+    </script> 
+</dom-module>

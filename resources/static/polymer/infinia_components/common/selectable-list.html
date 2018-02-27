@@ -1,0 +1,663 @@
+
+<dom-module id="selectable-list">
+	<template>
+		<style include="common-styles"></style>
+		
+		<style>
+			.content {
+				display:flex;
+				justify-content:space-between;
+				flex-wrap:wrap;
+				background-color:white;
+			}
+			
+			.content > div {
+				min-width:300px;
+			}
+			
+			.check {
+				color:var(--success);
+				cursor:pointer;
+			}
+			
+			.block {
+				color:var(--error);
+				cursor:pointer;
+			}
+		
+			.imports {
+				justify-content:flex-end;
+				margin-bottom:5px;
+			}
+			.container {
+				display:flex;
+				margin-top:20px;
+			}
+			
+			
+			
+			header {
+				padding:10px;
+				background-color:var(--lighter-background);
+			}
+			
+			.selectable-list {
+				overflow:auto;
+				max-height:230px;
+				
+			}
+			
+			li {
+				border:1px solid var(--lighter-background);
+				padding:10px;
+				display:flex;
+				justify-content:space-between;
+			}
+			
+			
+			@media(min-width:700px) {
+				.container {
+					margin-top:0;
+				}
+			}
+			
+			a, li {
+				cursor:pointer;
+			}
+			
+			.mr10 {
+				margin-right:10px;
+			}
+			
+			.mr20 {
+				margin-right:20px;
+			}
+			
+			.header {
+				padding:10px;
+				background-color:var(--lighter-background);
+			}
+			
+			#selected-list {
+				border: 1px solid var(--lighter-background);
+				height:200px;
+				overflow-y:auto;
+			}
+			
+			#selected-list li {
+				border-right:none;
+				border-left:none;
+			}
+			
+			.search {
+				margin-bottom:10px;
+				display:flex;
+				justify-content:space-between;
+			}
+			
+			input {
+				outline:none;
+				border:none;
+				border-bottom:1px solid var(--input-border);
+			}
+			
+			.list {
+				width:40%;
+			}
+			
+			.accept-block {
+				width:50%;
+			}
+			
+			.idelem {
+				display:flex;
+			}
+			
+			.selected {
+				background-color:var(--lighter-background);
+			}
+			
+		</style>
+		<div class="content">
+			<div class="list">
+				<div class="search" >
+					<div id="searchContainer">
+						<label>Buscar: </label><iron-input bind-value="{{filterValue}}">
+						<input value="{{value::input}}"/>
+					</iron-input>
+					</div>
+					<div>
+						<template is="dom-if" if={{_showAcceptAll()}}><iron-icon on-click="_acceptAll" icon="icons:check" class="check"></iron-icon></template>
+						<template is="dom-if" if={{_showBlock()}}> <iron-icon on-click="_blockAll" icon="icons:block" class="block"></iron-icon></template>
+					</div>
+				</div>
+				<div id="spinner-container">
+					<paper-spinner active="active"></paper-spinner>
+				</div>
+				
+				
+				<ul class="list-group selectable-list" id="selectable-list">
+					<template id="list-template" is="dom-repeat" items="{{list}}" filter="_search" sort="_sort">
+						<li data-id="{{item.id}}" on-click="_selectClick">
+							<span class="text">{{item.value}}</span>
+							<span class="center-content">
+								<template is="dom-if" if={{_showAccept(item)}}>
+									<paper-checkbox on-checked-changed="_acceptClick"></paper-checkbox>
+									<!-- iron-icon on-click="_acceptClick" icon="icons:check" class="check"></iron-icon-->
+								</template>
+								<template is="dom-if" if={{_showBlock(item)}}><iron-icon on-click="_blockClick" icon="icons:block" class="block"></iron-icon></template>
+								<template is="dom-if" if={{showChevron}}><iron-icon icon="icons:chevron-right" class="ml10"></iron-icon></template>
+							</span>
+						</li>
+					</template>
+				</ul>
+			</div>
+			
+		</div>	
+	</template> 
+	
+	
+	<script>
+
+	class SelectableList extends Polymer.Element {
+
+        static get is() { return  'selectable-list' }
+
+        static get properties() {
+          return {
+        	filterValue:{type:String,observer:"_filterType"},
+           	list:{type:Object, value:function(){return []}},
+        	hideBlock:{type:String, value:false},
+        	hideAccept:{type:String, value:false},
+        	accepted:{type:Object, value:function(){return []}},
+           	blocked:{type:Object, value:function(){return []}},
+           	selected:{type:Object, value:function(){return []}},
+           	selectable:{type:String, value:"false"},
+           	multiSelect:{type:Boolean, value:false},
+           	disableSort:{type:Boolean, value:false},
+           	selectOne:{type:Boolean, value:false},
+           	showChevron:{type:Boolean, value:false},
+           	disableSearch:{type:Boolean, value:false},
+           	hideLoader:{type:Boolean, value:false}
+          }
+        }
+
+        constructor() {
+          super();
+        }
+
+        ready() {
+          	super.ready();
+			var _this = this;
+			
+			setTimeout(function() {
+				$(_this.$['spinner-container']).empty();
+          	}, 4000)
+          	
+          	if(this.disableSearch) {
+          		$(this.$.searchContainer).css('visibility', 'hidden');
+          	}
+			
+			if(this.hideLoader) {
+				this.removeLoader();
+			}
+		}
+        
+        _search(item) {
+        	if(item && item.value) {
+        		var str = item.value.toLowerCase()
+        		return !this.filterValue || str.indexOf(this.filterValue.toLowerCase()) !== -1;
+        	}
+        }
+        
+        _filterType() {
+        	var event = new CustomEvent('filterList', {'detail':this.filterValue});
+    		this.dispatchEvent(event);
+    		this._filterList();
+        }
+        	
+        
+        _filterList() {
+        	
+        	
+        	
+        	let _this = this;
+        	this.list = this.list.slice();
+        	setTimeout(() => {
+        		$(_this.$['selectable-list']).find('.accepted').removeClass('accepted');
+            	$(_this.$['selectable-list']).find('.blocked').removeClass('blocked');
+
+        		_this.blocked.forEach(function(elem){
+        			$(_this.$['selectable-list']).find('li').each(function(index, li) {
+                		if(elem.id == $(li).prop('dataId'))
+                			$(li).addClass('blocked');
+                	});
+        		})
+        		
+        		_this.accepted.forEach(function(elem){
+        			$(_this.$['selectable-list']).find('li').each(function(index, li) {
+                		if(elem.id == $(li).prop('dataId'))
+                			$(li).addClass('accepted');
+                	});
+        		})
+        		
+        		_this.selected.forEach(function(elem){
+        			$(_this.$['selectable-list']).find('li').each(function(index, li) {
+                		if(elem.id == $(li).prop('dataId'))
+                			$(li).addClass('selected');
+                	});
+        		})
+        	}, 200)
+        }
+
+        _sort(a, b) {
+        	
+        	if(!this.disableSort){
+        		return utils.sortAsc(a,b);
+        	}
+        	else {
+        		
+	        	let aIndex = this.list.indexOf(a);
+	        	let bIndex = this.list.indexOf(b);
+	        	return aIndex - bIndex;
+	        	
+        	}
+        }
+        
+        _acceptClick(e) {
+        	let li = this.getClickedLi(e);
+        	
+        	if(li.hasClass('accepted')) {
+        		this.removeAccepted({id:li.prop('dataId')});
+        		var event = new CustomEvent('acceptedRemoved', {'detail':{id:li.prop('dataId')}});
+	        	this.dispatchEvent(event);
+        	}
+        	else {
+        		this.accept(this.getClickedLi(e));
+        	}
+        	e.stopPropagation();
+        }
+        _blockClick(e) {
+        	let li = this.getClickedLi(e);
+        	if(li.hasClass('blocked')) {
+        		this.removeBlocked({id:li.prop('dataId')})
+        		var event = new CustomEvent('blockedRemoved', {id:li.prop('dataId')});
+	        	this.dispatchEvent(event);
+        	}
+        	else {
+        		this.block(this.getClickedLi(e));
+        	}
+        	e.stopPropagation();
+        }
+        _selectClick(e) {
+        	
+        	if(this.hideAccept) {
+        		this._acceptClick(e);
+        	}
+        	else {
+        	
+	        	if(this.selectable=="true") {
+		        	let li = this.getClickedLi(e);
+		        	
+		        	if(li.hasClass('selected')) {
+		        		li.removeClass('selected');
+		        		let id = li.prop('dataId');
+		        		let selected;
+		        		let i;
+		        		for(i in this.selected) {
+		        			if(this.selected[i].id == id) {
+								selected = this.selected[i];
+		        				break;	        				
+		        			}
+		        			i++;
+		        		}
+		        		this.splice('selected', i, 1);
+			        	var event = new CustomEvent('elemUnClicked', {'detail':selected});
+			        	this.dispatchEvent(event);
+		        		return;
+		        	}
+		        	
+		        	else {
+			        	if(!this.multiSelect){
+			        		this.selected =[];
+		        			$(this.root).find('.selected').removeClass('selected');
+			        	}
+			        	li.toggleClass('selected');
+			        	let id = li.prop('dataId');
+			        	let selected;
+			        	this.list.forEach((elem) => {
+			        		if(id == elem.id)
+			        			selected = elem;
+			        	})
+			        	
+	
+			        	this.push('selected', selected);
+			        	var event = new CustomEvent('elemClicked', {'detail':selected});
+			        	this.dispatchEvent(event);
+		        	}
+	        	}
+        	}
+        }
+        
+        
+        getClickedLi(e) {
+        	var clickedLi;
+        	if(typeof e.target.nodeName == 'LI')
+        		clickedLi = e.target;
+        	else
+        		clickedLi = $(e.target).closest('li');
+        	
+        	return $(clickedLi);
+        }
+        
+        
+        acceptItem(item) {
+        	let _this = this;
+        	$(this.$['selectable-list']).find('li').each(function(index, li) {
+        		if($(li).prop('dataId') == item.id) {
+        			_this.accept($(li));
+        		}
+        	})
+        }
+        
+        blockItem(item) {
+        	let _this = this;
+        	$(this.$['selectable-list']).find('li').each(function(index, li) {
+        		if($(li).prop('dataId') == item.id) {
+        			_this.block($(li));
+        		}
+        	})
+        }
+        
+        accept(li) {
+        	let _this = this;
+        	li.find('paper-checkbox').prop('checked', true)
+        	li.addClass('accepted');
+        	li.removeClass('blocked');
+        	let id = li.prop('dataId');
+        	
+        	if(this.selectOne) {
+        		$(_this.root).find('.accepted').removeClass('accepted');
+        		li.addClass('accepted');
+        		
+        		this.list.forEach(function(elem) {
+        			if(elem.id == id) {
+        				_this.accepted = [];
+        				_this.push('accepted', elem);
+        				var event = new CustomEvent('itemAccepted', {'detail':elem});
+    	 	        	_this.dispatchEvent(event);
+        			}
+        		})
+        	}
+        	
+        	else {
+        		this.list.forEach(function(elem) {
+            		if(elem.id == id) {
+            			let exists = false;
+            			_this.accepted.forEach((ac) => {
+            				if(ac.id == elem.id) exists = true;
+            			})
+            			
+            			let i = 0;
+            			_this.blocked.forEach((ac) => {
+            				if(ac.id == elem.id) {
+            					_this.blocked.splice(i, 1);
+            				}
+            				i++;
+            			})
+            			
+            			if(!exists) {
+            				_this.accepted.push(elem);
+            				var event = new CustomEvent('itemAccepted', {'detail':elem});
+        	 	        	_this.dispatchEvent(event);
+            			}
+            		}        			
+            	})
+        	}
+        }
+        
+        block(li) {
+        	let _this = this;
+        	li.addClass('blocked');
+        	li.removeClass('accepted');
+        	let id = li.prop('dataId');
+        	
+        	if(this.selectOne) {
+        		$(_this.root).find('.blocked').removeClass('blocked');
+        		li.addClass('blocked');
+        		this.list.forEach(function(elem) {
+        			if(elem.id == id) {
+        				_this.accepted = [];
+        				_this.push('accepted', elem);
+        			}
+        		})
+        	}
+        	
+        	else {
+
+        	
+	        	this.list.forEach(function(elem) {
+	        		if(elem.id == id) {
+	        			let exists = false;
+	        			_this.blocked.forEach((ac) => {
+	        				if(ac.id == elem.id) exists = true;
+	        			})
+	        			
+	        			
+	        			
+	        			let i = 0;
+	        			_this.accepted.forEach((bl) => {
+	        				if(bl.id == elem.id) {
+	        					_this.accepted.splice(i, 1);
+	        				}
+	        				i++;
+	        			})
+	        			
+	        			if(!exists) {
+	        				_this.blocked.push(elem);
+	        				var event = new CustomEvent('itemBlocked', {'detail':elem});
+	    	 	        	_this.dispatchEvent(event);
+	        			}
+	        		}        			
+	        	})
+        	}
+        }
+        
+        removeAccepted(elem) {
+        	let _this = this;
+        	
+        	$(this.$['selectable-list']).find('li').each(function(index, li) {
+        		if($(li).prop('dataId') == elem.id) {
+        			$(li).find('paper-checkbox').prop('checked', false);
+        			$(li).removeClass('accepted');
+        		}
+        		
+        		let i = 0;
+        		_this.accepted.forEach((bl) => {
+    				if(bl.id == elem.id) {
+    					_this.splice('accepted', i, 1);
+    				}
+    				i++;
+    			})
+        	})
+        }
+        
+        removeBlocked(elem) {
+        	let _this = this;
+        	$(this.$['selectable-list']).find('li').each(function(index, li) {
+        		if($(li).prop('dataId') == elem.id)
+        			$(li).removeClass('blocked');
+        		
+        		let i = 0;
+        		_this.blocked.forEach((bl) => {
+    				if(bl.id == elem.id) {
+    					_this.splice('blocked', i, 1);    					
+    				}
+    				i++;
+    			})
+        	})
+        }
+       
+        setAccepted(accList) {
+        	let _this = this;
+        	accList.forEach((elem) => {
+        		$(this.$['selectable-list']).find('li').each(function(index, li) {
+	        		if(elem.id == $(li).prop('dataId'))
+        				_this.accept($(li))        			
+        		})
+        	})
+        }
+        
+        setBlocked(accList) {
+        	let _this = this;
+        	accList.forEach((elem) => {
+        		$(this.$['selectable-list']).find('li').each(function(index, li) {
+	        		if(elem.id == $(li).prop('dataId'))
+        				_this.block($(li))        			
+        		})
+        	})
+        }
+        
+        _acceptAll() {
+        	let _this = this;
+        	if(!this.allAccepted) {
+        		this.allAccepted = true;
+        		$(this.$['selectable-list']).find('li').each(function(index, li) {
+            		_this.accept($(li))
+            	});
+        	}
+        	else {
+        		this.allAccepted = false;
+        		$(this.$['selectable-list']).find('li').each(function(index, li) {
+        			_this.removeAccepted({id:$(li).prop('dataId')});
+        			var event = new CustomEvent('acceptedRemoved', {'detail':{id:$(li).prop('dataId')}});
+    	        	_this.dispatchEvent(event);
+            	});
+        		
+        	}
+        }
+        
+        _blockAll() {
+        	let _this = this;
+        	if(!this.allBlocked) {
+        		this.allBlocked = true;
+        		$(this.$['selectable-list']).find('li').each(function(index, li) {
+            		_this.block($(li))
+            	});
+        	}
+        	else {
+        		this.allBlocked = false;
+        		$(this.$['selectable-list']).find('li').each(function(index, li) {
+        			_this.removeBlocked({id:$(li).prop('dataId')});
+        			var event = new CustomEvent('blockedRemoved', {'detail':{id:$(li).prop('dataId')}});
+    	        	_this.dispatchEvent(event);
+            	});
+        		
+        	}
+        }
+        
+        setList(list) {
+        	this.list = list;
+        	this.list.forEach((elem) => {
+        		elem.value = elem.value.replace("&amp;", "&")
+        	})
+        	this._filterList();
+        	$(this.$['spinner-container']).empty();
+        }
+        
+        addList(list) {
+
+        	list.forEach((elem) => {
+        		let exists = false;
+        		this.list.some((el) => {
+        			if(elem.id == el.id) {
+        				exists = true;
+        				return true;
+        			}
+        		})
+        		if(!exists) {
+        			elem.value = elem.value.replace("&amp;", "&")
+        			this.push('list', elem);
+        		}
+        	})
+        	this._filterList();
+        	$(this.$['spinner-container']).empty();
+        }
+        
+        getData() {
+        	return {accepted: this.accepted, blocked: this.blocked};
+        }
+        
+        setAcceptedBlocked(data) {
+        	this.setAccepted(data.accepted);
+        	this.setBlocked(data.blocked);
+        	this._filterList();
+        }
+        
+        setSelected(data) {
+        	this.selected = data;
+        	this._filterList();
+        }
+        
+        _showBlock(item) {
+        	if (item && item.hideBlock){
+				return !item.hideBlock;
+        	}
+			return !this.hideBlock || this.hideBlock == "false";
+		}
+        
+        _showAccept(item) {
+        	if (item && item.hideAccept){
+				return !item.hideAccept;
+        	}
+			return !this.hideAccept || this.hideAccept == "false";
+		}
+        
+        clear(id) {
+        	let _this = this;
+        	$(this.$['selectable-list']).find('li').each(function(index, listelem) {
+        		_this.removeAccepted({id:id});
+        		_this.removeBlocked({id:id});
+        	})
+        }
+        
+       	setLoader() {
+       		$(this.$['spinner-container']).html('<paper-spinner active="active"></paper-spinner>');
+       	}
+       	
+        
+        removeLoader() {
+       		$(this.$['spinner-container']).empty();
+       	}
+       	
+       	removeAllAccepted() {
+       		let i = this.accepted.length;
+			while (i--) {
+				this.removeAccepted(this.accepted[i]);
+			}
+       	}
+       	
+       	_showAcceptAll() {
+    		return !this.selectOne;
+    	}
+       	
+       	addItem(item) {
+       		let exists = false;
+       		this.list.some(elem => {
+       			if(elem.id == item.id){
+       				exists;
+       				return true;
+       			}	
+       		})
+       		if(!exists) {
+       			this.push('list', item);
+       		}
+       	}
+	}
+	
+	
+	    
+	customElements.define(SelectableList.is, SelectableList);
+	    
+    </script> 
+</dom-module>

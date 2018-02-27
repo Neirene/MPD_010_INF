@@ -1,0 +1,48 @@
+
+
+<div  class="row space-between" id="lookalike-container" >
+	<div class="col-sm-4 mt20 " id="lookalike-pies-container">
+		<div class="row mt20">
+		<div class="col-sm-12 mt20">
+				<infinia-card id="genderCard" title="gender"
+					title-icon="notification:wc"></infinia-card>
+			</div>
+
+			<div class="col-sm-12 mt20 flex-between">
+				<infinia-card id="ageCard" title="age" title-icon="icons:face"></infinia-card>
+			</div>
+
+			<div class="col-sm-12 flex-between mt20 ">
+				<infinia-card id="income_levelCard" title="income.level"
+					title-icon="editor:attach-money"></infinia-card>
+			</div>
+		</div>
+	</div>
+ 
+	<div class="col-sm-4" >
+		<div class="row mt10">
+			<div class="col-sm-12" id="lookSelectContainer">
+				<infinia-select onchange="utils.agencyLinkSelectBehavior()" id="lookalike-selector"></infinia-select>
+			</div>	
+			<div class="col-sm-0" id="lookIconContainer">
+				<iron-icon class="hide" icon="icons:attachment" onclick="utils.agencyLinkType('lookalike')" id="linkLookIcon" alt="Asociar unicamente este lookalike a una agencia."></iron-icon>
+			</div>	
+			<div id="lookalike-compare-pies-container" class="hidden">	
+				<div class="col-sm-12 mt20 ">
+					<infinia-card id="genderCard" title="genderLookalike"
+						title-icon="notification:wc"></infinia-card>
+				</div>
+	
+				<div class="col-sm-12 mt20 flex-between">
+					<infinia-card id="ageCard" title="ageLookalike" title-icon="icons:face"></infinia-card>
+				</div>
+	
+				<div class="col-sm-12 flex-between mt20 ">
+					<infinia-card id="income_levelCard" title="income.lookalike"
+						title-icon="editor:attach-money"></infinia-card>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+

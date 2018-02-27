@@ -1,0 +1,50 @@
+
+<dom-module id="agency-actions">
+	<template>
+		<style include="common-styles"></style>
+		
+		<infinia-context id="context">
+					<ul slot="context-slot">
+
+						<li on-click="editAgency"> <iron-icon icon="image:edit"></iron-icon> Editar</li>
+					</ul>
+				</div>
+			</iron-dropdown>
+		</infinia-context>
+	</template> 
+	
+	<script>
+
+		class AgencyActions extends Polymer.Element {
+
+	        static get is() { return  'agency-actions' }
+	
+	        static get properties() {
+	          return {
+	          	elemId:Number
+	          }
+	        }
+	
+	        constructor() {
+	          super();
+	        }
+	
+	        ready() {
+	          	super.ready();
+	        }
+
+	        show(e) {
+	        	var path = utils.getPath(e.target);
+				$(path[0]).next()[0].open();
+			}
+	        
+	        editAgency() {
+	        	window.location.href = "/agencies/"+this.elemId;
+	        }
+	        
+	    }
+	    
+	    customElements.define(AgencyActions.is, AgencyActions);
+	    
+    </script> 
+</dom-module>

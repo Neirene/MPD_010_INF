@@ -1,0 +1,149 @@
+
+<dom-module id="infinia-header">
+	<template>
+		<style include="common-styles"></style>
+		<style>
+
+			header {
+				padding:5px;
+				display:flex;
+				justify-content:center;
+				background-color:var(--dark-background);
+				color:var(--text-color);
+				flex-wrap:wrap;
+			}	
+			
+			.title-section {
+				padding:10px;
+			}
+
+			.known-users {
+				padding-left:10px;
+				font-weight:bold;
+			}
+			
+			img {
+				max-height:30px;
+			}
+			a, a:hover {
+				text-decoration:none;
+				color:inherit;
+				position:relative;
+				top:-5px;
+			}
+			
+			account-menu {
+				position:absolute;
+				right:10px;
+				top:15px;
+			}
+			
+			.vertical {
+				flex-direction:column;
+				font-size:10pt;
+			}
+			
+			
+
+			.vertical b {
+				font-size:22pt;
+			}
+			
+			.m50 {
+					margin:0 50px;
+				}
+				
+			iron-icon.big {
+				display:none;
+			}
+			@media (min-width:700px) {
+				iron-icon.big {
+					--iron-icon-height:60px;
+					--iron-icon-width:60px;
+					margin-right:10px;
+					display:block;
+				}
+			}
+			
+		</style>
+		
+		<header>
+			<div class="flex m50">
+				<iron-icon class="big" icon="social:public"></iron-icon>
+				<div class="flex vertical">
+					<b>{{totalUsers}}</b>
+					<a id="am_link" target="_blank">
+						{{_upper('known_users_total')}} 
+					</a>
+				</div>
+			</div>
+			<div class="flex m50">
+				<iron-icon class="big" icon$="maps:{{_getUserCountry()}}"></iron-icon>
+				<div class="flex vertical">
+					<b>{{users}}</b>
+					<a id="am_link" target="_blank">
+						{{_upper('known_users_local')}} 
+					</a>
+				</div>
+			</div>
+			
+				
+			
+			<account-menu id="menu"></account-menu>
+			
+		</header>
+		
+		
+	</template> 
+	
+	<script>
+
+		class InfiniaHeader extends InfiniaPolymer {
+
+	        static get is() { return  'infinia-header' }
+	
+	        static get properties() {
+	          return {
+	           	users:String,
+	           	totalUsers:String
+	          }
+	        }
+	
+	        constructor() {
+	          super();
+	        }
+	
+	        ready() {
+	          	super.ready();
+	          	var _this = this;
+	          	utils.get("/api/users/_active", {}, function(response) {
+	          		_this.users = Number(response).toLocaleString();
+	          	})
+	          	
+	          	utils.get("/api/users/_active/total", {}, function(response) {
+	          		_this.totalUsers = Number(response).toLocaleString();
+	          	})
+	          	
+	          	var header = localStorage.getItem('accountData')
+	          	if(header) {
+	          		header = JSON.parse(header);
+	          		if(header.userHeader.username == "fausto") {
+	          			$(this.$.am_link).prop('href', 'https://s3.console.aws.amazon.com/s3/buckets/infinia-dmp-landing-pro/?region=eu-west-1&tab=management');
+	          		};
+	          	}
+	        }
+
+			_localize(text) {
+				return localizer.get(text);
+			}
+			_upper(text) {
+				return this._localize(text).toUpperCase();
+			}
+			
+			
+	    }
+	    
+	    customElements.define(InfiniaHeader.is, InfiniaHeader);
+	    
+    </script> 
+</dom-module>

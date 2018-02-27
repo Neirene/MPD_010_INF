@@ -1,0 +1,320 @@
+
+<div class="new_button">
+	<a class="btn btn-primary save-campaign" >Guardar Campaña</a>&nbsp;&nbsp;
+	<a class="btn btn-primary hide-create" onclick="utils.checkCampaign(id_campaign,true)">Publicar Campaña</a>&nbsp;&nbsp;
+	<a class="btn btn-primary hide-create" onclick="utils.checkCampaign(id_campaign,false)">Validar Campaña</a>
+</div>
+
+
+<div th:include="campaigns/campaign-breadcrumb"></div>
+
+<div class="container-fluid pb20">
+
+	<form class="mt20" id="campaign-form">
+		<input type="hidden" class="form-control" name="mediamathId"/>
+		<input type="hidden" class="form-control" name="reportClicks"/>
+		<input type="hidden" class="form-control" name="reportImpressions"/>
+		<input type="hidden" class="form-control" name="reportCtr"/>
+		<input type="hidden" class="form-control" name="reportTotalSpend"/>
+		<input type="hidden" class="form-control" name="reportImpressionsToday"/>
+		<input type="hidden" class="form-control" name="reportImpressionsYesterday"/>
+	
+		<div class="form-section-title">
+			Datos de la campaña
+		</div>
+		
+		<div class="row mt20">
+			<div class="form-group col-sm-6">
+				<label>Nombre campaña</label>
+				<input class="form-control  required" name="name" maxlength="150"/>
+			</div>
+			
+			<div class="col-sm-3">
+				<p data-text="-buyOrder"></p>
+				<div class="row">
+					<div class="col-sm-12">
+						<file-loader name="buyOrder" accept="pdf"></file-loader>
+					</div>
+				</div>
+			</div>
+			<div class="form-group col-sm-3">
+				<label>Zona Horaria</label>
+				<infinia-select class="required"  name="timeZone"></infinia-select>
+			</div>
+		</div>
+		<div class="row">
+			<div class="form-group col-sm-4" id="resellerDiv">
+				<label>Reseller</label>
+				<infinia-select class="required"  name="idReseller"></infinia-select>
+			</div>
+			<div class="form-group col-sm-4">
+				<label>Agencia</label>
+				<infinia-select name="idAgency" class="required"></infinia-select>
+			</div>
+		</div>
+		<div class="row">
+			<div class="form-group col-sm-4">
+				<label>Advertiser</label>
+				<infinia-select class="required" name="idAdvertiser" />
+			</div>
+			<div class="form-group col-sm-4">
+				<label>Oficina</label>
+				<infinia-select name="idOffice"></infinia-select>
+			</div>
+			
+			<div class="form-group col-sm-4">
+				<label>Trafficker / Owner</label>
+				<infinia-select  name="idTrafficker"></infinia-select>
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="form-group col-sm-4">
+				<label>IO REF</label>
+				<input class="form-control" name="ioRef"/>
+			</div>
+			
+		</div>
+		
+		<div class="row">
+			<div class="col-sm-4 form-group">
+				<label>Bill to</label>
+				<infinia-select name="billTo"></infinia-select>
+			</div>
+		
+			<div class="col-sm-2 col-xs-6 form-group">
+				<label>Fecha inicio</label>
+				<date-picker text="Fecha inicio" show-time="true" name="startDate" class="required" hour="00" min="00"></date-picker>
+			</div>
+			<div class="col-sm-2 col-xs-6 form-group">
+				<label>Fecha fin</label>
+				<date-picker text="Fecha fin" show-time="true"  name="endDate" class="required" hour="23" min="59"></date-picker>
+			</div>
+		
+		</div>
+
+	
+		<div class="form-section-title pt10 mt20">
+			Configuración de la campaña
+		</div>
+		
+		<div class="row mt20">
+			<div class="col-sm-12">
+				<p>Objetivo</p>
+			</div>
+			<div class="col-sm-2 form-group">
+				<label>Tipo</label>
+				<infinia-select name="goalType" class="required"></infinia-select>
+			</div>
+			<div class="col-sm-2 form-group" id="goalValueContainer">
+				<label>Valor</label>
+				<input type="number" class="form-control decimalOnly" name="goalValue" min='0.01' step='0.01'/>
+			</div>
+		</div>
+		<div class="row mt20">
+			<div class="col-sm-2 form-group" id="budgetContainer">
+				<label>Presupuesto</label>
+				<input type="number" class="form-control decimalOnly required" name="budget" min='1' step='10'/>
+			</div>
+			<div class="col-sm-2  form-group" id="impressionsContainer">
+				<label>Impresiones</label>
+				<input type="number" class="form-control numbersOnly" name="impressions" min='1' step='100'/>
+			</div>
+		</div>
+		
+		<div class="row" id="markupsContainer">
+			<div class="col-sm-4 form-group">
+				<label>KPI 1</label>
+				<input  class="form-control kpi" />
+			</div>
+			
+			<div class="col-sm-4 form-group">
+				<label>KPI 2</label>
+				<input   class="form-control kpi" />
+			</div>
+			
+			<div class="col-sm-4 form-group">
+				<label>KPI 3</label>
+				<input   class="form-control kpi" />
+			</div>
+		</div>
+		
+		<div class="row" id="costsContainer">
+			<div class="col-sm-4 form-group">
+				<label>Delivery cost</label>
+				<input type="number"  class="form-control decimalOnly" name="deliveryCost"/>
+			</div>
+			
+			<div class="col-sm-4 form-group">
+				<label>Data cost</label>
+				<input type="number"  class="form-control decimalOnly" name="dataCost"/>
+			</div>
+			
+			<div class="col-sm-4 form-group">
+				<label>Other cost</label>
+				<input type="number"  class="form-control decimalOnly" name="otherCost"/>
+			</div>
+		</div>
+		<div id = "capsContainer">
+			<div class="form-section-title pt10 mt20">
+				Frequency Cap
+			</div>
+			<div class="row mt20">
+				<div class="col-sm-2 form-group">
+					<label>Tipo</label>
+					<infinia-select name="frequencyType"></infinia-select>
+				</div>
+				<div id="frequencyContainer" class="col-sm-8 form-group">
+					<div class="col-sm-4 form-group">
+						<label>Impactos</label>
+						<input type="number" class="form-control numbersOnly" name="frequencyAmount"/>
+					</div>
+					<div class="col-sm-4 form-group">
+						<label>Unidad tiempo</label>
+						<infinia-select class="input unit-time" name="frequencyInterval"></infinia-select>
+					</div>
+				</div>
+			</div>
+			
+			<div class="form-section-title pt10 mt20">
+				Daily Pacing (Budget)
+			</div>
+			<div class="row mt20">
+				<div class="col-sm-2 form-group">
+					<label>Tipo</label>
+					<infinia-select name="budgetCappingType"></infinia-select>
+				</div>
+				<div id="budgetCappingContainer" class="col-sm-6 form-group">
+					<div class="col-sm-4 form-group">
+						<label>Spend</label>
+						<input type="number" class="form-control numbersOnly" name="budgetCappingAmount"/>
+					</div>
+					<div class="col-sm-4 form-group">
+					<label>Unidad tiempo</label>
+						<input type="number" class="form-control numbersOnly" name="budgetCappingTimeAmount"/>
+					</div>
+					<div class="col-sm-4 form-group pt22">
+						<infinia-select class="input unit-daily" name="budgetCappingTimeInterval"></infinia-select>
+					</div>
+				</div>
+			</div>
+			
+			<div class="form-section-title pt10 mt20">
+				Daily Pacing (Impressions)
+			</div>
+			<div class="row mt20">
+				<div class="col-sm-2 form-group">
+					<label>Tipo</label>
+					<infinia-select name="impressionsCappingType"></infinia-select>
+				</div>
+				<div id="impressionsCappingContainer" class="col-sm-6 form-group">
+					<div class="col-sm-4 form-group">
+						<label>Spend</label>
+						<input type="number" class="form-control numbersOnly" name="impressionsCappingAmount"/>
+					</div>
+					<div class="col-sm-4 form-group">
+					<label>Unidad tiempo</label>
+						<input type="number" class="form-control numbersOnly" name="impressionsCappingTimeAmount"/>
+					</div>
+					<div class="col-sm-4 form-group pt22">
+						<infinia-select class="input unit-daily" name="impressionsCappingTimeInterval"></infinia-select>
+					</div>
+				</div>
+			</div>
+			
+		</div>
+		<div class="row" id="attWindow">
+			<div class="col-sm-4 form-group mt22">
+				<label>Píxeles asociados</label>
+				<textarea class="form-control" name="thirdPartyPixel"></textarea>
+			</div>
+			
+			<div class="col-sm-8 form-group">
+				
+				<label>Ventana atribución</label>
+				<div class="row">
+					<div class="col-sm-6 form-group">
+						<div class="row">
+							<div class="col-sm-12">
+								<label>Post click</label>
+							</div>
+							<div class="col-sm-6">
+								<input type="number" class="form-control numbersOnly" name="postClick"/>
+							</div>
+							<div class="col-sm-6">
+								<infinia-select class="unit-time" name="postClickTimeUnit"></infinia-select>
+							</div>
+						</div>
+					</div>
+					<div class="col-sm-6 form-group">
+						<div class="row">
+							<div class="col-sm-12">
+								<label>Post impresión</label>
+							</div>
+							<div class="col-sm-6">
+								<input type="number" class="form-control numbersOnly" name="postImpression"/>
+							</div>
+							<div class="col-sm-6">
+								<infinia-select class="unit-time" name="postImpressionTimeUnit"></infinia-select>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		
+		
+		<div class="form-section-title pt10 mt20" data-text="-Servicios adicionales"></div>
+		<div class="row mt20">
+			<!--  <div class="col-sm-12">
+				<paper-checkbox name="attributionModel">Habilitar Modelo de atribución</paper-checkbox>
+			</div>
+			
+			<div class="col-sm-12 mt10">
+				<paper-checkbox name="profiling">Habilitar Perfilado</paper-checkbox>
+			</div>-->
+			<div class="form-group col-sm-3">
+				<label>Servicios Adicionales</label>
+				<infinia-select disable-sort="true" id="idPaymentType" name="idPaymentType"></infinia-select>
+			</div>
+			
+			<div class="form-group col-sm-3">
+			<label>&nbsp;</label>
+				<p><iron-icon icon="icons:help" id="helpWindowPopup" onclick="utils.openInfiniaPopup()"></iron-icon></p>
+				<paper-tooltip for="helpWindowPopup" position="right" animation-delay="0"><span data-text="-furtherInfo"></span></paper-tooltip>
+			</div>
+			
+		</div>
+		
+		
+		<div class="row mt20">
+			<div class="col-sm-12 text-center">
+				<button type="button" class="btn btn-primary save-campaign" >Guardar campaña</button>
+			</div>
+		</div>
+	
+	</form>
+	
+	<infinia-popup>
+	<div slot="pop-contents">
+		<div  class="promo-profile-container">
+			<h2>Servicios Adicionales</h2>
+			<ul>
+				<li onclick="selectAdditionalService(1)"><dl><dt><img src="../img/share-alt.svg" /><h3 data-text="-campaignServices.SERVICE_BASIC_REPORT"></h3></dt><dd data-text="-campaignServices.SERVICE_BASIC_REPORT_DESC"></dd></dl></li>
+				<li onclick="selectAdditionalService(2)"><dl><dt><img src="../img/share-alt.svg" /><h3 data-text="-campaignServices.SERVICE_ADVANCED_REPORT"></h3></dt><dd data-text="-campaignServices.SERVICE_ADVANCED_REPORT_DESC_A"></dd><dd>&nbsp;</dd><dd data-text="-campaignServices.SERVICE_ADVANCED_REPORT_DESC_B"></dd><dd>&nbsp;</dd><dd data-text="-campaignServices.SERVICE_ADVANCED_REPORT_DESC_C"></dd><dd>&nbsp;</dd><dd data-text="-campaignServices.SERVICE_ADVANCED_REPORT_DESC_D"></dd></dl></li>
+				<li onclick="selectAdditionalService(3)"><dl><dt><img src="../img/share-alt.svg" /><h3 data-text="-campaignServices.SERVICE_PREMIUM_REPORT"></h3></dt><dd data-text="-campaignServices.SERVICE_PREMIUM_REPORT_DESC_A"></dd><dd>&nbsp;</dd><dd data-text="-campaignServices.SERVICE_PREMIUM_REPORT_DESC_B"></dd></dl></li>
+				<li onclick="selectAdditionalService(4)"><dl><dt><img src="../img/tasks.svg" /><h3 data-text="-campaignServices.SERVICE_ATTR_REPORT"></h3></dt><dd data-text="-campaignServices.SERVICE_ATTR_REPORT_DESC"></dd></dl></li>
+				<li onclick="selectAdditionalService(5)"><dl><dt><img src="../img/arrow-chart.svg" /><h3 data-text="-campaignServices.SERVICE_PLUS_REPORT"></h3></dt><dd data-text="-campaignServices.SERVICE_PLUS_REPORT_DESC"></dd></dl></li>
+			</ul>
+		</div>
+	</div>
+	</infinia-popup>
+	
+</div>
+<script th:inline="javascript">
+	var id_campaign = [[${id_campaign}]];
+</script>
+<script src="/js/campaigns/campaign.js"></script>
+<script src="/js/postBehaviour.js"></script>
+

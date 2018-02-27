@@ -1,0 +1,15 @@
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+<div class="new_button">
+	<a class="btn btn-primary" href="/clusters/new" data-text="-cluster.new"></a>
+</div>
+
+<div class="clusters demographic pb20">
+	<infinia-tabs data-text='cluster.demographic, cluster.list' icons="icons:supervisor-account,icons:list">
+		<div slot="0" th:include="common/demographic"></div>
+		<div slot="1" th:include="clusters/clusters/clusters-list"></div>
+	</infinia-tabs>
+</div>
+
+<script src="/js/clusters/clusters.js"></script>
+

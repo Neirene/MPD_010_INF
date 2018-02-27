@@ -1,0 +1,284 @@
+<script src="/js/libraries/bootstrap-toggle.min.js"></script>
+
+<style is="custom-style">
+	paper-slider.gold {
+		--paper-slider-active-color: #C4AA72;
+		--paper-slider-secondary-color: #CCCCCC;
+		--paper-slider-pin-color: #C4AA72;
+		--paper-slider-knob-color: #C4AA72;
+		--paper-slider-pin-start-color: #C4AA72;
+		--paper-slider-knob-start-color: #C4AA72;
+		--paper-slider-knob-start-border-color: #C4AA72;
+	}
+	
+	#map {
+        width: 1000px;
+        height: 600px;
+        margin: 0 auto;
+        border: 1px solid #000000;                
+    }
+
+    .controls {
+        margin-top: 10px;
+        border: 1px solid transparent;
+        border-radius: 2px 0 0 2px;
+        box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        height: 32px;
+        outline: none;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    #pac-input {
+        background-color: #fff;
+        font-family: Roboto;
+        font-size: 15px;
+        font-weight: 300;
+        margin-left: 12px;
+        padding: 0 11px 0 13px;
+        text-overflow: ellipsis;
+        width: 300px;
+    }
+
+    #pac-input:focus {
+        border-color: #4d90fe;
+    }
+
+    .pac-container {
+        font-family: Roboto;
+    }
+
+    #type-selector {
+        color: #fff;
+        background-color: #4d90fe;
+        padding: 5px 11px 0px 11px;
+    }
+
+    #type-selector label {
+        font-family: Roboto;
+        font-size: 13px;
+        font-weight: 300;
+    }
+    #target {
+        width: 345px;
+    }
+</style>
+
+<div class="new_button" id="btn_publicate_pushwooshNotification" style="display: none;">
+	<a class="btn btn-primary" onclick="utils.publicateNotificationPushwoosh(idPushwooshNotification, idPushwooshCampaign)">
+		Publicar notificación
+	</a>
+</div>
+
+<div class="container-fluid pb20">
+    <form class="mt20" id="notification_pushwoosh-form">
+    		<input type="hidden" name="aPriority" value="0" />
+    		<input type="hidden" name="aGcmTtl" value="0" />
+    		
+		<!-- Values for geozone -->
+    		<input type="hidden" name="radius" />
+    		<input type="hidden" name="lng" />
+    		<input type="hidden" name="lat" />
+    		<input type="hidden" name="name" />
+    		
+    		<div id="representation-selector">
+			<ul class="section-breadcrumb">			
+				<li class="active showSelector" data-section="notifications"><a>Notificación</a></li>
+				<li class="showSelector" data-section="send"><a>Envío</a></li>			
+			</ul>
+		</div>
+		
+		<div id="notifications-container">
+			<div class="row mt20">
+	            <div class="col-sm-6 form-group">
+	                <label>Mensaje</label>
+	                <textarea class="form-control required" name="content" style="resize: none;" rows="10"></textarea>
+	            </div>
+            </div>
+            
+            <div class="row">
+            		<div class="col-sm-4 form-group">
+					<label><input type="checkbox" id="check_send_rate" /> Tasa de envío</label>
+					<input type="number" name="sendRate" class="form-control" value="1000" 
+					min="100" max="1000" step="100" id="sendRate" disabled="true" style="width: 8em;" />
+				</div>		    				
+				<div class="form-group col-sm-4" id="clustersDiv">
+					<label>Clusters</label>
+					<infinia-select name="clusterId"></infinia-select>	
+				</div>
+            </div>
+        		
+        		<div class="form-section-title">
+            		Acción
+        		</div>
+        		
+        		<div class="row">
+	        		<div class="col-sm-4 form-group">
+	        			<div class="radio">
+	        				<label><input type="radio" name="optradioActionApp" value="openApp" checked="checked" />Abrir en app</label>
+	        			</div>
+	        			<div class="radio">
+	        				<label><input type="radio" name="optradioActionApp" value="url" />URL</label>
+	        			</div>
+	        			<div class="radio">
+	        				<label><input type="radio" name="optradioActionApp" value="richMedia" />Rich media</label>
+	        			</div>
+	        			
+	        			<div id="textURL" style="display: none;">
+	        				<label>URL</label>
+	        				<input class="form-control" name="link" maxlength="150" type="text" id="link" placeholder="http://" />
+	        			</div>
+	        			<div id="textRichMedia" style="display: none;">
+	        				<label>Página remota</label>
+	        				<input class="form-control" name="remotePage" maxlength="150" type="text" id="remotePage" />
+	        			</div>
+	        		</div>
+        		</div>
+		
+			
+			<div class="form-section-title">
+	        		Ajustes para plataforma Android
+	        </div>
+	                
+	        <div class="row">
+	        		<div class="col-sm-4 form-group">
+	                <file-loader text="Icono" id="icon-loader" accept="image"></file-loader>
+	            </div>
+	            
+	            <div class="col-sm-4 form-group">
+	                <file-loader text="Banner" id="banner-loader" accept="image"></file-loader>
+	            </div>
+	        </div>
+	                
+	        <div class="row">
+		    		<div class="col-sm-2 form-group">
+		   			<label>Badges</label>
+		   			<input type="number" name="aBadges" class="form-control" value="0" />	
+		    		</div>
+		    		<div class="col-sm-2 form-group">
+	                <label>Cabecera</label>
+	                <input type="text" class="form-control required" name="header" maxlength="100" />
+	            </div>
+		    		<div class="col-sm-2 form-group">
+		    			<label>Sonido</label>
+		    			<br/>
+		    			<input id="sound" type="checkbox" data-toggle="toggle" data-size="small" name="aSound" />
+		    		</div>
+	    		</div>
+	        
+	        <div class="row">
+		        	<div class="col-sm-2 form-group">
+		        		<label>Color de led</label>
+		        		<input type="color" name="aLed" value="#ffffff" class="form-control" />
+		        	</div>	        	
+		        	<div class="col-sm-2 form-group">
+		        		<label>Color de fondo</label>
+		        		<input type="color" name="aIbc" value="#ffffff" class="form-control" />
+		        	</div>
+		        	<div class="col-sm-2 form-group">
+		        		<label>Vibración</label>
+		        		<br/>
+		        		<input id="vibration" type="checkbox" data-toggle="toggle" data-size="small" name="aVibration" />
+		        	</div>
+	        </div>
+	        
+	        <div class="row">
+		        	<div class="col-sm-2 form-group">
+		        		<label>Parámetros root</label>
+		        		<input type="text" name="aRootParams" class="form-control" />
+		        	</div>
+	        </div>
+	        
+	        <div class="row">
+	        		<div class="col-sm-4 form-group">
+	        			<label>Android priority</label>
+	        			<paper-slider id="android_priority" pin="true" value="0" max="2" min="-2" class="gold"></paper-slider>
+	        			<span id="text_android_priority" style="text-align: center;">
+	        				<b>everything else</b> (and all legacy notification)
+	    				</span>
+	        		</div>
+	        		
+	        		<div class="col-md-4 form-group">
+	        			<label>Expiration time</label>
+	        			<paper-slider id="expiration_time" value="0" max="11" min="0" class="gold"></paper-slider>
+	        			<span id="text_expiration_time" style="text-align: center;">
+	        				0        				
+	    				</span>
+	        		</div>
+	        </div>
+		</div>
+		
+		<div id="send-container" class="hidden">
+			<div class="row">
+	   			<div class="col-sm-4 form-group">
+	   				<div class="radio">
+	   					<label><input type="radio" name="optradioTimeSendMessage" value="now" 
+	   					checked="checked" />Enviar ahora</label>
+					</div>
+					<div class="radio">
+	   					<label><input type="radio" name="optradioTimeSendMessage" value="dateToSelect" />Enviar en</label>
+	   					<!-- Será requerido solamente cuando el radioButton "Enviar en" sea seleccionado. -->
+	   					<date-picker text="Fecha de envío" show-time="true" name="sendDate"></date-picker>
+					</div>				
+	   			</div>   			
+	   			<div class="col-sm-4 form-group">
+	   				<label>Enviar según la zona horaria del usuario</label>
+	   				<input id="ignoreUserTimezone" type="checkbox" data-toggle="toggle" name="ignoreUserTimezone" 
+	   				disabled="disabled" data-size="normal" />
+	   			</div>
+	    		</div>
+	    		
+	    		<div class="row">
+	        		<div class="col-sm-12 form-group">
+					<label>Set Geozone</label>
+					<br/>
+					<input id="setGeozone" type="checkbox" data-toggle="toggle" name="setGeozone" data-size="normal" />
+	   			</div>
+	        </div>
+	        
+	        <div id="map_geozone" class="row hidden">
+	        		<div class="col-sm-10 form-group">
+	        			<input id="pac-input" class="controls" type="text" placeholder="Buscar dirección..." />
+			        <div id="map">            
+			        </div>	
+	        		</div>
+	        		<div class="col-sm-2 form-group">
+	        			<div class="panel panel-default">
+	  					<div class="panel-body">
+	  						<label><strong>Rango(metros)</strong></label>
+	  						<input id="map-radius" type="number" min="50" max="1000" class="form-control" value="50" />
+	  						<span>Rango actual: <strong id="current_range">50</strong> metros.</span>
+	  					</div>
+					</div>
+	        		</div>
+	        </div>
+		</div>
+   </form>   
+   
+    <div class="row mt20">
+        <div class="col-sm-12 text-center">
+            <button type="button" class="btn btn-primary" id="save-notification-push">
+                Guardar notificaci&oacute;n
+            </button>
+        </div>
+    </div>    
+</div>
+<script th:inline="javascript">	
+	var idPushwooshCampaign = [[${idPushwooshCampaign}]];
+	var idPushwooshNotification = [[${idPushwooshNotification}]];
+	var openMap = false;
+	
+	if(idPushwooshNotification) {
+		//Comprobamos si la notificación ya ha sido publicada, si ha sido publicada, no mostramos el botón de publicar.
+		utils.get('/api/pushwoosh_notifications/' + idPushwooshNotification, {}, function(response) {
+			if(response.sendingStatus == "SENDED") {
+				$("#btn_publicate_pushwooshNotification").hide();
+			}
+			else {
+				$("#btn_publicate_pushwooshNotification").show();
+			}
+		});	
+	}	
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDW_hi5jQm2Ffb4GIa98vJdszgrma-qlJM&amp;libraries=places"></script>
+<script src="/js/pushwoosh_notifications/pushwoosh_notification.js"></script>

@@ -1,0 +1,49 @@
+
+<dom-module id="deal-actions">
+	<template>
+		<style include="common-styles"></style>
+	<infinia-context id="context">
+					<ul slot="context-slot">
+						<li on-click="editDeal"> <iron-icon icon="image:edit"></iron-icon>
+							Editar
+						</li>
+					</ul>
+				</infinia-context>
+	</template> 
+	<script>
+
+		class DealActions extends Polymer.Element {
+
+	        static get is() { return  'deal-actions' }
+	
+	        static get properties() {
+	          return {
+	          	elemId:Number
+	          }
+	        }
+	
+	        constructor() {
+	          super();
+	        }
+	
+	        ready() {
+	          	super.ready();
+	        }
+
+	        show(e) {
+	        	var path = utils.getPath(e.target);
+				$(path[0]).next()[0].open();
+			}
+
+	        editDeal() {
+	        	publisherFunctions.editDeal(this.elemId);
+	        }
+	        
+	    }
+	    
+	    customElements.define(DealActions.is, DealActions);
+	    
+
+    </script> 
+
+</dom-module>

@@ -1,0 +1,181 @@
+
+<dom-module id="campaign-content-card">
+	<template>
+		<style include="common-styles"></style>
+		
+		<style>
+			.content {
+				position:relative;
+				background-color:#f1f1f1;
+				margin-bottom:10px;
+				display:flex;
+			}
+			
+			.img-container {
+				display:flex;
+				justify-content:center;
+				align-items:center;
+				max-height:200px;
+				width:100px;	
+			}
+			
+			.img-container img {
+				max-height:100%;
+				max-width:100%;
+			}
+		
+			.content-data {
+				padding-left:10px;
+				width:calc(100% - 135px);
+			}
+			.title {
+				background-color:#cecece;
+				width:100%;
+				padding:5px;
+			}
+			
+			.checkbox {
+				width:35px;
+				padding:5px;
+				display:flex;
+				align-items:center;
+				justify-content:center;
+			}
+		
+			.delete-container {
+				position:absolute;
+				right:10px;
+				top:4px;
+			}
+			
+			.hidden {
+				display:none!important;
+			}
+			
+			
+			.flex-no-wrap {
+				display:flex;
+			}
+			.flex-1 > * {
+				flex:1;
+			}
+			
+			.rules {
+				padding:15px;
+			}
+			.rules > div {
+				margin-right:30px;
+			}
+		</style>
+		
+		<div class="content">
+			<div class$="[[hiddenDelete]] delete-container"><iron-icon icon="delete" class="cursor-pointer" on-click="_delete"></iron-icon></div>
+			
+			<div class$="[[hiddenCheckbox]] checkbox">
+				<paper-checkbox id="selected"></paper-checkbox>
+			</div>
+			<template is="dom-if" if="{{_fileTypeIs('image')}}">
+				<div class="img-container"><img src="{{fileUrl}}" /></div>
+				
+			</template>
+			<template is="dom-if" if="{{_fileTypeIs('video')}}">
+				<div class="img-container">
+					<video height="100" width="100" controls>
+						<source  src="{{fileUrl}}"/>
+					</video>
+				</div>
+			</template>
+			<div class="content-data">
+				<div class="title">{{title}}</div>
+				<div class="flex space-between" style="padding:0 30px;">
+					<div >
+						<p>Duración: {{duration}}s</p>
+						<p>{{startDate}} - {{endDate}}</p>
+					</div>
+					
+					<div class$="{{hiddenRules}} flex" style="padding-top:10px;justify-content:flex-end; align-items:center">
+						<div style="margin-right:20px;  margin-top:3px;">
+							<span>Aplicar contenido cuando se cumple el cluster:</span>
+							<div style="width:60%; margin-left:20px; margin-right:20px;position:relative; bottom:10px;">
+								<cluster-typeahead label="Cluster"></cluster-typeahead>
+							</div>
+						</div>
+						<div>
+							<span>Cuando se cumpla con un porcentaje de</span>
+							<paper-slider editable="true"></paper-slider>
+						</div>
+					</div>
+				</div>
+				
+				<div style="margin:20px;">
+					<div id="dateDayPickersList"></div>
+				</div>
+			</div>
+		</div>
+			
+	</template> 
+	
+	<script>
+
+		class CampaignContentCard extends InfiniaPolymer {
+
+	        static get is() { return  'campaign-content-card' }
+	
+	        static get properties() {
+	          return {
+	        	idcontent:{type : Number, value:0},
+	           	fileUrl:{type : String, value:""},
+	           	fileType:String,
+	          	title:{type : String, value:""},
+	          	startDate:{type : String, value:""},
+	          	endDate:{type : String, value:""},
+	     		duration:{type : Number, value:0},
+	          	hiddenCheckbox : String,
+	          	hiddenDelete : String,
+	           	hiddenHourPasses:String,
+	           	hiddenRules:String
+	          }
+	        }
+	
+	        constructor() {
+	          super();
+	        }
+	
+	        ready() {
+	          	super.ready();
+	          	
+	        }
+	        
+	        _delete() {
+	        	$(this).remove();
+	        	let event = new CustomEvent('removed')
+	        	this.dispatchEvent(event);
+	        }
+	        
+	        clearDateDayPickers() {
+	        	$(this.$.dateDayPickersList).empty();
+	        }
+	        
+	        appendDateDayPicker(ddp) {
+	        	$(this.$.dateDayPickersList).append(ddp);
+	        }
+	        
+	        getData() {
+	        	// [ { idContent : 2, data : [ ] } , { } ]
+	        	let ddpData = { idcontent : this.idcontent, data: []};
+	        	var that = this;
+	        	$(this.$.dateDayPickersList).find('date-day-picker').each(function(index, elem) {
+	        		ddpData.data.push(elem.getData());
+	        	});
+	        	return ddpData;
+	        }
+	        
+	       _fileTypeIs(type) {
+	    	   return this.fileType == type;
+	       }
+	    }
+	    
+	    customElements.define(CampaignContentCard.is, CampaignContentCard);
+	    
+    </script> 
+</dom-module>

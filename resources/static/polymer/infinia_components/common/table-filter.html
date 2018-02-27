@@ -1,0 +1,201 @@
+
+<dom-module id="table-filter">
+	<template>
+		<style include="common-styles"></style>
+		<style>
+		
+		:host {
+			width:100%;
+			padding-bottom:10px;
+		}
+		
+		a {
+			cursor:pointer;
+			color:var(--primary-color);
+		}
+		
+		#filter-list {
+			display:flex;
+			flex-wrap:wrap;
+			border-bottom:2px solid var(--lighter-background);
+			padding-bottom:5px;
+			width:100%;
+		}
+		
+		#filter-list > div {
+			margin-right:20px;
+			margin-bottom:10px;
+		}
+		
+		input.gold, select {
+			
+			padding:3px 8px;
+			border:1px solid var(--primary-color);
+			border-radius: 10px;
+		}
+		
+		select {
+			background-color:var(--primary-color);
+			margin-right:3px;
+			color:white;
+			opacity:0.8;
+		}
+		
+		.flex-end {
+			display:flex;
+			justify-content:flex-end;
+			width:100%;
+		}
+		
+		label {
+			display:block;
+		}
+		
+		
+		.container {
+			width:100%;
+		}
+		
+		@media(min-width:1000px) {
+			#filter-list {
+				flex-wrap:nowrap;
+			}
+		}
+		
+		</style>
+		
+		
+			<div class="container">
+				
+				<div class="mt10" id="filter-list">
+					<template is="dom-repeat" items="{{fields}}" as="field">
+					
+						<template is="dom-if" if="{{checkDropdown(field)}}" >
+							<div><input placeholder$="{{_localize(field.name)}}" type="text" class="gold keyup" name="{{field.name}}" /></div>
+						</template>
+					
+						<template is="dom-if" if="{{field.date}}" >
+							<div>
+								
+								<div style="display:flex;">
+								<select on-change="setFilter">
+									<option value="<">{{_localize('lowerThan')}}</option>
+									<option value="=">{{_localize('equal')}}</option>
+									<option value=">">{{_localize('greaterThan')}}</option>
+								</select>
+									<date-picker id="{{field.name}}" input-class="gold" placeholder$="{{_localize(field.name)}}"></date-picker>
+								</div>
+							</div>
+						</template>
+						
+						<template is="dom-if" if="{{field.dropdown}}" >
+							<div>
+		
+								<div style="display:flex;">
+								
+									<select on-change="setFilter" id="dspStatus" data-id="{{field.name}}">
+										<option value="ALL">{{_localize('Todos')}}</option>
+										<option value="ACTIVE">{{_localize('Activa')}}</option>
+										<option value="PENDING">{{_localize('Borrador')}}</option>
+										<option value="SUCCESS">{{_localize('Publicada')}}</option>
+										<option value="ERROR">{{_localize('Error')}}</option>
+										<option value="ERROR_PARTIAL">{{_localize('Error Parcial')}}</option>
+										<option value="SENDED">{{_localize('Enviando')}}</option>
+										<option value="ONLINE">{{_localize('Online')}}</option>
+										<option value="FINALIZED">{{_localize('Finalizada')}}</option>
+									</select>
+									
+								</div>
+							</div>
+						</template>
+						
+					</template>
+				</div>
+			</div>
+		
+	</template> 
+	
+	<script>
+
+		class TableFilter extends Polymer.Element {
+			
+	        static get is() { return  'table-filter' }
+	
+	        static get properties() {
+	          return {
+	        	  fields:{type:Object, value: function() {return [];}, observer:"_setEvents"},
+	          }
+	        }
+	
+	        constructor() {
+	          super();
+	        }
+	
+	        ready() {
+	          	super.ready();          	
+	        }
+
+	        checkDropdown(field) {
+	        	return !field.date && !field.dropdown; 
+	        }
+	        
+	        show(e) {
+	        	$(this.$['filter-list']).toggleClass("hidden");
+			}
+	        
+	        setFilter() {
+	        	let data={};
+	        	$(this.root).find('input').each((index, elem) => {
+	        		if($(elem).val())
+	        			data[$(elem).prop('name')] = $(elem).val();
+	        	})
+	        	$(this.root).find('date-picker').each((index, elem) => {
+	        		let dat = elem.getValue();
+	        		if(dat) {
+	        			dat = new Date(dat);
+	        			let date = dat.getFullYear()+"-"+(dat.getMonth()+1)+"-"+dat.getDate()+" 00:00:00";
+	        			data[$(elem).attr('id')] = date + "|" + $(elem).prev().val(); 
+	        		}
+	        	})
+	        	
+        		let id = $(this.root).find('#dspStatus').prop("dataId");
+        		let value = $(this.root).find('#dspStatus').val();
+        		
+
+        		if(id){
+        			if (value == "ALL"){
+            			data[id] = "";
+            		} else {
+            			data[id] = value;
+            		}
+        			
+        		}
+        		
+        		
+	          	var event = new CustomEvent('applyFilter', {'detail':data});
+	        	this.dispatchEvent(event);
+	        	
+	        	return data;
+	        }
+	        
+	        _localize(textId) {
+	        	return localizer.get(textId);
+	        }
+	        
+	        _setEvents () {
+	        	setTimeout(() => {
+	        		$(this.root).find('.keyup').keyup(() => {
+		          		this.setFilter();
+		          	})
+		          	
+		          	$(this.root).find('date-picker').on('dateSelected',() => {
+		          		this.setFilter();
+		          	})
+	        	}, 100)
+	        }
+	    }
+	    
+	    customElements.define(TableFilter.is, TableFilter);
+	    
+    </script> 
+</dom-module>

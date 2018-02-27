@@ -1,0 +1,42 @@
+
+<div class="container-fluid pb20">
+	<form class="mt20" id="trafficker-form">
+		<div class="form-section-title">Datos del trafficker</div>
+
+		<div class="row mt20">
+			<div class="form-group col-sm-4">
+				<label>Nombre</label> 
+				<input class="form-control required" name="name" />
+			</div>
+			<div class="form-group col-sm-4">
+				<label>Oficina</label>
+				<infinia-select class="required" name="idOffice"></infinia-select>
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="form-group col-sm-4">
+				<label>Email</label> 
+				<input class="form-control required" name="email" />
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="form-group col-sm-4">
+				<label>Teléfono</label> 
+				<input class="form-control required" name="phone" />
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-sm-12 text-center">
+				<button type="button" class="btn btn-primary" id="save-trafficker">Guardar trafficker</button>
+			</div>
+		</div>
+	</form>
+</div>
+
+<script src="/js/traffickers/trafficker.js"></script>
+<script th:inline="javascript">
+	var traffickerId = [[${id_trafficker}]];
+</script>

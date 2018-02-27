@@ -1,0 +1,293 @@
+
+<dom-module id="side-bar"> 
+
+	<template>
+		<style include="styles-conf"></style>
+		<style include="common-styles"></style>
+		<style>
+			.content {
+				display:none;
+				height:100%;
+				z-index: 1000;
+				position:fixed; 
+				overflow:hidden;
+				align-items:flex-start;
+				background-color: var(--lighter-background);
+				color: #fff;
+				padding-top:30px; 
+				
+			}
+			
+			.content:hover {
+				overflow-y:auto;
+			}
+			
+			ul , li { 
+				list-style : none;
+				margin: 0;
+				padding: 0;
+			}
+			
+			ul {
+				flex-wrap:wrap;
+				margin-top:30px;
+			}
+			
+			li {
+				width:100%;
+				display:flex;
+				padding: 5px 12px;
+				cursor: pointer; 
+				white-space:nowrap;
+				color:white;
+			}
+			
+			li a { 
+				text-decoration:none;
+				margin-left: 10px;
+				padding-top: 3px;
+				color:inherit;
+				padding-right:10px;	
+				cursor:pointer;		
+				color:var(--primary-color)!important;	
+			}
+			li:hover {
+				background-color: var(--light-background);
+				color:var(--dark-background);
+			}
+			
+			li:hover a, li:hover iron-icon {
+				color:var(--text-color)!important;
+			}
+			
+			.close-sidebar {
+				position: absolute;
+				top: 10px;
+				right: 10px;
+				color:black;
+			}
+			
+			.active {
+				color: var(--primary-color);
+			}
+				
+			
+			
+			.content:hover img {
+				visibility:visible;
+			}
+			
+			img {
+				display: block;
+				width:100%;
+				margin-bottom:20px;
+				height:70px;
+				visibility:hidden;
+			}
+			
+			.submenu {
+				width:100%;
+			}
+			
+			.submenu li {
+				margin-left:20px;
+			}
+			
+			.hidden {
+				display:none;
+			}
+			
+			
+			.menu-button {
+				border:none;
+				background-color:var(--primary-color);
+				padding:5px;
+				outline: none;
+				position:absolute;
+			}
+			
+			
+			@media (min-width: 800px) {
+				
+			
+				.content {
+					padding-top:10px;
+					display:flex;
+				}
+			}
+			
+			.active {
+				background-color:var(--dark-background);
+				position:relative;
+			}
+			
+			.active:after {
+				content: "";
+			    position: absolute;
+			    width: 0;
+			    height: 0;
+			    right: 0;
+			    top: 0;
+			    border-top: 17px solid transparent;
+			    border-bottom: 17px solid transparent;
+			    border-right: 17px solid var(--lighter-background);
+			}
+			
+			.primary {
+				color:var(--primary-color);
+			}
+			
+		</style>
+		
+		
+		<button id="menu-button" class="menu-button"><iron-icon icon="icons:menu"></iron-icon></button>
+		<div class="content">
+			<div id="close-sidebar" on-click="close" class="close-sidebar">
+				<iron-icon icon="icons:close"></iron-icon>
+			</div>
+
+			<ul id="ul" class="hidden">
+				<template is="dom-repeat" items="{{listElems}}" >
+					<li class$="{{_active(item.url)}}" data-url="{{item.url}}" on-click="menuClick">
+						<iron-icon class="primary" icon$="{{_getIcon(item.name)}}"></iron-icon>
+						<a href="{{item.url}}">{{_localize(item.name)}}</a>
+					</li>
+					<ul class="submenu hidden">
+						<template is="dom-repeat" items="{{item.sub_menu}}" as="sub">
+							<li data-url="{{sub.url}}" on-click="menuClick">
+								<a href="{{sub.url}}">{{_localize(sub.name)}}</a>
+							</li>
+						</template>
+					</ul>
+				</template>
+
+				<!--li style="text-align: center;">
+					<iron-icon icon="icons:explore"></iron-icon>
+					<a href="#" style="text-decoration: none;">Attribution model</a>
+				</li-->
+
+			</ul>
+		</div>
+	
+	
+	
+	
+	</template> 
+	<script>
+
+		class Sidebar extends Polymer.Element {
+
+	        static get is() { return  'side-bar' }
+	
+	        static get properties() {
+	          return {
+	          	 listElems:Object
+	          }
+	        }
+	
+	        constructor() {
+	          super();
+	        }
+	
+	        ready() {
+	          	super.ready();
+	          	var _this = this;
+	          	
+	          	
+	          	this.listElems = JSON.parse(localStorage.getItem("accountData")).userHeader.tabs;
+	        	/*this.listElems = [
+	          		{url:"/campaigns", text:"Campañas", icon:"icons:folder"},
+	          		{url:"/creatives", text:"Creatividades", icon:"image:brush"},
+	          		{url:"/publishers", text:"Publishers", icon:"hardware:phone-android"},
+	          		/*{url:"", text:"Campañas push", icon:"file-download",
+	          			sub_menu:[{url:"http://www.google.com", text:"Campañas"}]
+	          		},*
+	          		
+	          		{url:"/agencies", text:"Agencias", icon:"icons:stars"},
+	          		{url:"/advertisers", text:"Anunciantes", icon:"icons:chrome-reader-mode"},
+	          		
+	          		{url:"/offices", text:"Oficinas", icon:"icons:account-balance"},
+	          		{url:"/traffickers", text:"Traffickers", icon:"icons:accessibility"}
+	          		
+	          	];*/
+	          	$(this.$['menu-button']).on('click', function() {
+	          		$(_this.$.ul).removeClass("hidden");
+	    		})
+	    		
+	    		$(window).click((e) => {
+	    			if(e.target != this)
+	    				this.close();
+	    		})
+	    		
+	        }
+	        
+	        close() {
+	        	$(this.$.ul).addClass("hidden");
+	        }
+
+	        menuClick(e) {
+	        	$(this.root).find('.submenu').addClass('hidden');
+	        	
+	        	var $elem = $(e.srcElement);
+          		if($elem.prop('nodeName') !== "LI") {
+          			$elem = $elem.closest('li');
+          		}
+          		
+          		$elem.addClass('active');
+          		if(!$elem.find('a').attr('href')) {
+          			$elem.next().toggleClass('hidden');
+          		}
+          		else {
+          			$elem.find('a')[0].click();
+          		}
+          	}
+
+			_getIcon(name) {
+				let icons = {};
+					
+				icons.campaigns = "icons:folder";
+				icons.creatives = "image:brush";
+				icons.publishers = "hardware:phone-android";
+				icons.agencies = "icons:stars";
+				icons.advertisers = "icons:chrome-reader-mode";
+				icons.offices = "icons:account-balance";
+				icons.traffickers = "icons:accessibility";
+				icons.dashboard = "icons:dashboard";
+				icons.pushwoosh_campaigns = "icons:cloud-download";
+				icons.pushwoosh_notifications = "icons:cloud-download";
+				icons.push_notifications = "icons:cloud-download";
+				icons.clusters = "icons:language";
+				icons.indoor_analytics = "editor:show-chart";
+				icons.outdoor_analytics = "image:wb-sunny";
+				icons.omnia = "image:wb-sunny";
+				icons.customer_journey = "icons:chrome-reader-mode";
+				icons.publisher_report = "social:poll";
+				icons.users = "social:people";
+				icons.contents = "editor:attach-file";
+				icons.blocks = "icons:group-work";
+				icons.playlists = "editor:format-list-numbered";
+				icons.retailers = "icons:shopping-cart";
+				icons.campaigns_ds = "icons:folder";
+				icons.campaign_report = "icons:assignment";
+				icons.retailers = "icons:shopping-cart";
+				icons.vendors = "icons:shopping-cart";
+				icons.players = "av:play-circle-filled";
+				icons.digital_signage = "notification:live-tv";
+				icons.advertising_efficiency ="icons:compare-arrows";
+				icons.external_campaigns = "icons:all-out";
+				icons.site_consulting = "icons:assignment-turned-in";
+				return icons[name];
+			}
+			
+			_localize(text) {
+				return localizer.get(text);;
+			}
+	        
+			_active(url) {
+				return "/"+window.location.pathname.split("/")[1] == url ? "active" : "";
+			}
+	    }
+	    
+	    customElements.define(Sidebar.is, Sidebar);
+	    
+    </script> </dom-module>

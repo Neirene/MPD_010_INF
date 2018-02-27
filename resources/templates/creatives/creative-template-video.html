@@ -1,0 +1,88 @@
+
+<div class="row grey-top hidden" id="eventTracker">
+	<div class="col-sm-5">
+		<infinia-select class="thirdEventTracker"></infinia-select>
+	</div>
+	<div class="col-sm-6">
+		<input class="form-control trackerUrl"/>
+	</div>
+	<div class="col-sm-1 pt7">
+		<iron-icon icon="icons:close" onclick="removeTracker(this)"></iron-icon>
+	</div>
+</div>
+
+<div class="container-fluid pb20">
+	<form id="creative-form">
+	
+		<input type="hidden" class="form-control" name="mediamathId"/>
+		<input type="hidden" class="form-control" name="mediamathConceptId"/>
+		<input type="hidden" class="form-control" name="idOrderLines"/>
+		
+		<div class="row mt20">
+			<div class="form-group col-sm-3">
+				<label data-text="-advertiser"></label>
+				<infinia-select name="idAdvertiser" class="required"></infinia-select>
+			</div>
+		</div>
+		
+		<div class="row ">
+			<div class="form-group col-sm-6">
+				<label data-text="-name"></label>
+				<input class="form-control required" name="name"/>
+			</div>
+		</div>
+		<div class="row">
+			<div class="form-group col-sm-6">
+				<label>Clickthrough URL</label>
+				<input name="clickThroughUrl" class="form-control required" placeholder="Clickthrough URL"/>
+			</div>
+		</div>
+		
+		<div class="row mt10">
+			<div class="form-group col-sm-3">
+				<label for="videoAsset" class="mr10"><input type="radio" name="asset" id="videoAsset" value="video" checked="true"/> Video asset</label>
+				<label for="vastAsset" class="mr10"><input type="radio" name="asset" id="vastAsset" value="vast" /> VAST</label>
+			</div>
+		</div>
+		
+		<div class="row">
+			<div id="videoAssetContainer" class="form-group col-sm-6">
+				<div class="row">
+					<div class="col-sm-12">
+						<file-loader name="files" class="required" accept="video"></file-loader>
+					</div>
+				</div>
+			</div>
+			<div id="vastAssetContainer" class="form-group col-sm-4" >
+				<textarea class="form-control" name="vast" placeholder="Vast Url"></textarea>
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-sm-12">
+				3rd party event trackers
+			</div>
+			
+			<div class="col-sm-8 pt10" id="trackers-container">
+				
+			</div>
+			<div class="col-sm-8 text-center mt10">
+					<iron-icon id="add-tracker" icon="icons:add-circle-outline"></iron-icon>
+			</div>
+		</div>
+		
+		<div class="row mt20">
+			<div class="col-sm-6 text-center">
+				<button class="btn btn-primary" type="button" id="save" data-text="-save"></button>
+			</div>
+		</div>
+	</form>
+</div>
+
+
+
+<script th:inline="javascript">
+	var id_creative = [[${id_creative}]];
+	var creativeType="video";
+</script>
+<script src="/js/creatives/creative.js"></script>

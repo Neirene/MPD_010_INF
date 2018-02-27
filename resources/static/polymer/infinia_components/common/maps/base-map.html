@@ -1,0 +1,371 @@
+
+
+
+
+<dom-module id="base-map">
+	<template>
+		<style include="common-styles"></style>
+		<style>
+		
+		* {
+			box-sizing:border-box;
+			font-family: 'Lato', sans-serif;
+		
+		}
+		
+		.search-container {
+			width:0;
+		}
+		
+		.search {
+			margin :10px;padding:5px;
+			width:40%;
+		}
+		</style>
+		<div class$="search-container {{_searcherClass()}}">
+			<input id="searchInput" class="search" placeholder$="{{_localize('search')}}..."/>
+		</div>
+		
+		
+		<div class="content">
+			<div id="map-container" class="shadow" style$="height:{{height}}; width:{{width}};"></div>
+		</div>
+		
+		<carto-management id="cartoManagement"></carto-management>
+	</template> 
+	
+	<script>
+
+		class BaseMap extends Polymer.Element {
+	       
+	        static get is() { return  'base-map' }
+	
+	        static get properties() {
+	          return {
+	            zoom:{type:Number, value:5},
+	            draw:{type:Boolean, value:false},
+	            circles:{type:Object, value:function() {return []}},
+	            pois:{type:Object, value:function() {return []}},
+	            selectablePois:{type:Boolean, value:false},
+	            selectedPois:{type:Object, value:function() {return []}},
+	            height:{type:String,value:"450px"},
+	            width:{type:String,value:"100%"},
+	            onStart:{type:Boolean, value:false},
+	            showSearcher:{type:Boolean, value:false},
+	          }
+	        }
+	
+	        constructor() {
+	          super();
+	        }
+	
+	        ready() {
+	          	super.ready();
+	          	if(typeof map_center == "undefined" || !map_center)
+	          		map_center = {lat: 40.4378698,lng: -3.819623};
+	          	this.mapCenter = map_center;
+	          	
+	          	if(this.onStart)
+	          		this.init();
+	        }
+	
+	        init() {
+	        	
+	        	//Create map if not has been initialized yet
+	        	if(!this.map) {
+	        	
+					var _this = this;
+		          	
+		          	var map = new google.maps.Map(this.$["map-container"], {
+			            center: _this.mapCenter,
+			            scrollwheel: false,
+			            zoom:  this.zoom,
+			            streetViewControl: false,
+			            mapTypeId: google.maps.MapTypeId.ROADMAP,
+			            mapTypeControl:false,
+			            fullscreenControl:false,
+			            styles: [{"featureType":"administrative","elementType":"labels.text.fill","stylers":[{"color":"#444444"}]},{"featureType":"administrative.locality","elementType":"labels","stylers":[{"visibility":"on"}]},{"featureType":"landscape","elementType":"all","stylers":[{"color":"#f2f2f2"},{"visibility":"simplified"}]},{"featureType":"poi","elementType":"all","stylers":[{"visibility":"on"}]},{"featureType":"poi","elementType":"geometry","stylers":[{"visibility":"simplified"},{"saturation":"-65"},{"lightness":"45"},{"gamma":"1.78"}]},{"featureType":"poi","elementType":"labels","stylers":[{"visibility":"off"}]},{"featureType":"poi","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"road","elementType":"all","stylers":[{"saturation":-100},{"lightness":45}]},{"featureType":"road","elementType":"labels","stylers":[{"visibility":"on"}]},{"featureType":"road","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"road.highway","elementType":"all","stylers":[{"visibility":"simplified"}]},{"featureType":"road.highway","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"road.arterial","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"transit.line","elementType":"geometry","stylers":[{"saturation":"-33"},{"lightness":"22"},{"gamma":"2.08"}]},{"featureType":"transit.station.airport","elementType":"geometry","stylers":[{"gamma":"2.08"},{"hue":"#ffa200"}]},{"featureType":"transit.station.airport","elementType":"labels","stylers":[{"visibility":"off"}]},{"featureType":"transit.station.rail","elementType":"labels.text","stylers":[{"visibility":"off"}]},{"featureType":"transit.station.rail","elementType":"labels.icon","stylers":[{"visibility":"simplified"},{"saturation":"-55"},{"lightness":"-2"},{"gamma":"1.88"},{"hue":"#ffab00"}]},{"featureType":"water","elementType":"all","stylers":[{"color":"#bbd9e5"},{"visibility":"simplified"}]}]
+		          	});
+		          	this.map = map;
+		          	
+		          	map.addListener('zoom_changed', function() {
+		          		let e = new CustomEvent('zoom_changed', {detail:map.zoom})
+		          		_this.dispatchEvent(e);
+		          	})
+	        	
+
+		        	this.$.cartoManagement.init(this.map);
+		        	
+		        	if(this.draw) {
+		          		this.initDrawingManager();
+		          	}
+		        	
+		        	if(this.showSearcher) {
+		        		this.initSearcher();
+		        	}
+	        	}
+	        }
+	        
+	        //Init google maps drawing component
+	        initDrawingManager() {
+	        	let _this = this;
+          		var drawingManager = new google.maps.drawing.DrawingManager({
+          			drawingControl: true,
+          			drawingControlOptions: {
+          				position: google.maps.ControlPosition.TOP_CENTER,
+          				drawingModes: [
+          					google.maps.drawing.OverlayType.CIRCLE,
+          					]
+          			},
+          			circleOptions: {
+          				strokeColor: '#785123',
+          				strokeWeight: 0.5,
+          				fillOpacity: 0.1,
+          				clickable: true,
+          				editable: true,
+          				zIndex: 1
+          			},
+          		});
+          		drawingManager.setMap(this.map);
+          		google.maps.event.addListener(drawingManager, 'circlecomplete', function(e){
+          			_this._drawCircle(e, 'circles');				
+          		});
+	        }
+	        
+	        //Add google maps searcher
+	        initSearcher() {
+	        	let _this = this;
+	        	 var input = this.$.searchInput;
+	             var searchBox = new google.maps.places.SearchBox(input);
+	             this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+	        	
+	             
+	            _this.markers = [];
+	        	searchBox.addListener('places_changed', function() {
+	        		 var places = searchBox.getPlaces();
+
+	                 if (places.length == 0) {
+	                   return;
+	                 }
+	                 var bounds = new google.maps.LatLngBounds();
+	                 places.forEach(function(place) {
+	                   if (!place.geometry) {
+	                     console.log("Returned place contains no geometry");
+	                     return;
+	                   }
+	                   var icon = {
+	                     url: place.icon,
+	                     size: new google.maps.Size(71, 71),
+	                     origin: new google.maps.Point(0, 0),
+	                     anchor: new google.maps.Point(17, 34),
+	                     scaledSize: new google.maps.Size(25, 25)
+	                   };
+
+	                   let marker = new google.maps.Marker({
+	                     map: _this.map,
+	                     icon: icon,
+	                     title: place.name,
+	                     position: place.geometry.location
+	                   })
+	                  
+	                   _this.markers.push(marker);
+	                  
+	                   
+	                   google.maps.event.addListener(marker, 'click', function (e) {
+	         				
+	                	   utils.removeFromArray(_this.markers, marker);
+	                	   
+	         		        marker.setMap(null);
+	         		      	let event = new CustomEvent('markerRemoved', {'detail':marker});
+	     	        		_this.dispatchEvent(event);
+	         		    });
+	                 });
+	                 _this.markers.forEach((marker) => {
+	                	 bounds.extend(marker.position);
+	                 })
+	                 _this.map.fitBounds(bounds);
+	                 if(_this.markers.length == 1)
+	                	_this.map.setZoom(12);
+	        	})
+	        }
+	        
+			//Circles management
+	        addCircle(latitude, longitude, radius) {
+	        	var _this = this;
+	        	var circle = new google.maps.Circle({
+	        		strokeColor: '#785123',
+      				strokeWeight: 0.5,
+      				fillOpacity: 0.1,
+      				clickable: true,
+      				editable: true,
+      				zIndex: 1,
+	        		map: _this.map,
+	        		center: {lat: latitude, lng: longitude},
+	        		radius: radius
+	        	});
+	        	this._drawCircle(circle, 'circles');
+	        }
+			     
+	        addPoi(latitude, longitude, rad, category, search) {
+	        	this.addPoiElement(latitude, longitude, rad, category, search);
+	        }
+	        
+	        addSelectedPoi(latitude, longitude, rad, category, search) {
+	        	this.addPoiElement(latitude, longitude, rad, category, search, true);
+	        }
+	        
+	        addPoiElement(latitude, longitude, rad, category, search, selected) {
+	        	if(isNaN(latitude) || isNaN(longitude) || isNaN(rad) || latitude == 0 || longitude == 0)
+	        		return false;
+	        	
+	        	var _this = this;
+	        	
+	        	let map = null; 
+	        	if(this.pois.length < 1000) {
+	        		map = this.map;
+	        	}
+	        	
+	        	let color = selected ? "red" :  '#0550af';
+	        	
+		        var poi = new google.maps.Circle({
+	        		strokeColor: color,
+	        		strokeOpacity: 1,
+	        		strokeWeight: 3,
+	        		fillColor: color,
+	        		fillOpacity: 1,
+	        		map: map,
+	        		center: {lat: latitude, lng: longitude},
+	        		radius: rad
+	        	});
+	        	
+		        if(selected) {
+		        	this.selectedPois.push(poi);
+		        	poi.clickCount = 1;
+		        }
+	        	
+	        	poi.search = search ? search : this.poiTextSearch;
+	        	poi.category = category ? category : $(this.$['poi_categories']).val();	
+	        	this._drawCircle(poi, 'pois');
+	        	return true;
+	        }
+	        
+	        addPoiMaps(circle) {
+	        	this._drawCircle(circle, 'pois');
+	        }
+	        
+			_drawCircle(circle, type) {
+				this[type].push(circle);
+				this.setCircleEvent(circle, type);
+				if(circle.map!= null) {
+					let event = new CustomEvent('circleAdded', {'detail':{circle:circle, type:type}});
+	        		this.dispatchEvent(event);
+				}
+			}
+			
+			setCircleEvent(circle, type) {
+				let _this = this;
+				google.maps.event.addListener(circle, 'click', function (e) {
+					
+					if(_this.selectablePois && type=="pois") {
+						if(circle.clickCount)
+							circle.clickCount++;
+						else circle.clickCount = 1;
+						
+						if(circle.clickCount == 1) {
+							circle.setOptions({strokeColor:"red", fillColor: 'red'});
+							_this.selectedPois.push(circle);
+							let event = new CustomEvent('circleSelected', {'detail':{circle:circle, type:type}});
+				        	_this.dispatchEvent(event);
+						}
+						else if(circle.clickCount == 2) {
+							//_this.removeCircle(circle, type);
+							circle.clickCount = 0;
+							circle.setOptions({strokeColor:"#0550af", fillColor: '#0550af'});
+							_this.selectedPois.splice(_this.selectedPois.indexOf(circle), 1);
+							let event = new CustomEvent('circleUnselected', {'detail':{circle:circle, type:type}});
+				        	_this.dispatchEvent(event);
+						}
+					}
+					else {
+						_this.removeCircle(circle, type);	
+					}
+      		    });
+	        	return circle;
+			}
+			
+			removeCircle(circle, type) {
+				let _this = this;
+				_this[type].splice(_this[type].indexOf(circle), 1);
+  		        circle.setMap(null);
+  		      	let event = new CustomEvent('circleRemoved', {'detail':{circle:circle, type:type}});
+	        	_this.dispatchEvent(event);
+			}
+			
+	        //CSV load
+	        initCSVLoad() {
+	        	this.$.csv_manager.map = this;
+	        }
+	        
+	        redraw() {
+		        google.maps.event.trigger(this.map,'resize');
+	        } 
+	        
+	        _searcherClass() {
+	        	return this.showSearcher ? "" : "hidden";
+	        }
+	        
+	        _poisClass() {
+	        	return this.poiSearch ? "" : "hidden";
+	        }
+	        
+	        _cartoClass() {
+	        	return this.cartoManagement ? "" : "hidden";
+	        }
+	        
+	        _csvClass() {
+	        	return this.loadCsv ? "" : "hidden";
+	        }
+	        
+	        _localize(text) {
+	        	return localizer.get(text);
+	        }
+	        
+	        _hideSideContainer() {
+	        	$(this.root).find('.side-container').addClass('hidden');
+	        }
+	        
+	        _showPoisManager() {
+	        	$(this.$['pois_container']).removeClass('hidden');
+	        }
+	        
+	        
+	        
+	        _showCSVLoader() {
+	        	$(this.$['csv_manager_container']).removeClass('hidden');
+	        }
+	        
+	        _showClusterVisualization() {
+	        	$(this.$['cluster_visualization']).removeClass('hidden');
+	        	if(this.$.cluster_selector.$.clusters_list.list.length == 0)
+	        		this.$.cluster_selector.doSearch(this.$.cluster_selector.$.clusters_list, "");
+	        }
+	        
+	        sendCircleAddedEvent() {
+	        	let event = new CustomEvent('circleAdded');
+	    		this.dispatchEvent(event);
+	        }
+	       
+	       	setCartoLayer(id, sql, css) {
+	       		this.$.cartoManagement.setLayer(id, sql, css);
+	       	}
+
+	        overlapCartoLayer(id, sql, css) {
+	        	this.$.cartoManagement.overlapLayer(id, sql, css);
+	        }
+	        
+ 	    }
+	    
+	    customElements.define(BaseMap.is, BaseMap);
+	    
+    </script> 
+</dom-module>

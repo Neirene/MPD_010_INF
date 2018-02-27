@@ -1,0 +1,312 @@
+
+<dom-module id="accept-block">
+	<template>
+		<style include="common-styles"></style>
+		
+		<style>
+		
+			.imports {
+				justify-content:flex-end;
+				margin-bottom:5px;
+			}
+			.container {
+				display:flex;
+				margin-top:20px;
+				justify-content:flex-end;
+			}
+			
+			.container > div {
+				width:50%;
+				min-width:200px;
+				margin:0 10px;
+			}
+			
+			header {
+				padding:10px;
+				background-color:var(--lighter-background);
+			}
+			
+			ul {
+				border: 1px solid var(--lighter-background);
+				height:200px;
+				overflow-y:auto;
+			}
+			
+			li {
+				border-top:1px solid var(--lighter-background);
+				padding:10px;
+				display:flex;
+				justify-content:space-between;
+			}
+			
+			@media(min-width:700px) {
+				.container {
+					margin-top:0;
+				}
+			}
+			
+			a, li {
+				cursor:pointer;
+			}
+			
+			.mr10 {
+				margin-right:10px;
+			}
+			
+			.mr20 {
+				margin-right:20px;
+			}
+			
+			header {
+				display:flex;
+				justify-content:space-between;
+			}
+		</style>
+		
+		<div class="container imports">
+			<a class="mr20" on-click="exportcsv"><iron-icon icon="icons:file-upload"></iron-icon> Exportar CSV</a>
+			<label for="import-csv" class="mr10"><a><iron-icon icon="icons:file-download"></iron-icon> Importar CSV</a></label>
+			<input type="file" class="hidden" id="import-csv" on-change="importcsv">
+		</div>
+		
+		<div class="container">
+
+		
+			<div>
+				<header>
+					<div><iron-icon icon="icons:check"></iron-icon> Aceptados</div>
+					<div><iron-icon icon="icons:delete" on-click="_removeAllAccepted"></iron-icon></div>
+				</header>
+				<ul id="accepted">
+					<template is="dom-repeat" id="accepted-dom-rep" items="{{accepted}}" sort="_sort">
+						<li on-click="remove" item-id="{{item.id}}">
+							<span>{{item.value}}</span>
+							<iron-icon icon="icons:close" ></iron-icon>
+						</li>
+					</template>
+					
+				</ul>
+			</div>
+			
+			<div id="block-container">
+				<header>
+					<div><iron-icon icon="icons:block"></iron-icon> Bloqueados</div>
+					<div><iron-icon icon="icons:delete" on-click="_removeAllBlocked"></iron-icon></div>
+				</header>
+				<ul id="blocked">
+					<template is="dom-repeat"  id="blocked-dom-rep"  items="{{blocked}}"  sort="_sort">
+						<li on-click="remove" item-id="{{item.id}}">
+							<span>{{item.value}}</span>
+							<iron-icon icon="icons:close"></iron-icon>
+						</li>
+					</template>
+				</ul>
+			</div>
+			
+		</div>
+			
+			
+	</template> 
+	
+	<script>
+
+		class AcceptBlock extends Polymer.Element {
+
+	        static get is() { return  'accept-block' }
+	
+	        static get properties() {
+	          return {
+	           	accepted:{type:Object, value:function(){return []}, notify:true},
+	           	blocked:{type:Object, value:function(){return []}, notify:true},
+	           	exportFile: String,
+	           	hideBlock:{type:String, value:false}
+	          }
+	        }
+	
+	        constructor() {
+	          super();
+	        }
+	
+	        ready() {
+	          	super.ready();
+	          	var _this = this;
+	          	
+	          	this.$['accepted-dom-rep'].addEventListener("dom-change", function(event){
+	 	        	var event = new CustomEvent('acceptedUpdated', {'detail':this.accepted});
+	 	        	this.dispatchEvent(event);
+	             });
+	          	if(!this.hideBlock) {
+		          	this.$['blocked-dom-rep'].addEventListener("dom-change", function(event){
+		          		var event = new CustomEvent('blockedUpdated', {'detail':this.blocked});
+		 	        	this.dispatchEvent(event);
+		             });
+	          	}
+	          	else {
+	          		$(this.$['block-container']).remove();
+	          	}
+	        }
+
+	        remove(e) {
+	        	var clickedLi;
+	        	if(typeof e.target.nodeName == 'LI')
+	        		clickedLi = e.target;
+	        	else
+	        		clickedLi = $(e.target).closest('li');
+	        	
+	        	let id = $(clickedLi).prop('itemId')
+	        	
+	        	var list = $(e.target).parents('ul');
+	        	
+	        	let eventData = {};
+	        	
+	        	if($(list).attr('id') == "blocked"){
+	        		this.removeBlocked(id);
+		        	eventData.type="blocked";
+	        	}
+	        	else {
+	        		this.removeAccepted(id);
+		        	eventData.type="accepted";
+	        	}
+	        	eventData.id = id;
+	        	var event = new CustomEvent('elemRemoved', {'detail':eventData});
+	        	this.dispatchEvent(event);
+	        }
+	        
+	        getData(){
+	        	return {"accepted":this.accepted, "blocked": this.blocked};
+	        }
+	        
+	        setData(data) {
+	        	this.accepted = data.accepted;
+	        	this.blocked = data.blocked;
+	        }
+	        
+	        accept(item) {
+	        	
+	        	if(!item.id || !item.value) return;
+	        	
+	        	var exists=false;
+	        	this.accepted.forEach((elem) => {
+	        		if(item.id == elem.id)
+	        			exists = true;
+	        	})
+	        	
+	        	this.removeBlocked(item.id);
+	        	
+	        	if(!exists) {
+	        		this.push('accepted',item);
+	        		return true;
+	        	}
+	        	return false;
+	        }
+	        
+	        block(item) {
+	        	
+	        	if(!item.id || !item.value) return;
+	        	
+	        	var exists=false;
+	        	this.blocked.forEach((elem) => {
+	        		if(item.id == elem.id)
+	        			exists = true;
+	        	})
+	        	
+	        	this.removeAccepted(item.id);
+	        	
+	        	if(!exists) {
+		        	this.push('blocked', item);
+		        	return true;
+	        	}
+	        	return false;
+	        }
+	        
+	        removeBlocked(id) {
+	        	var i;
+	        	for (i = 0; i<this.blocked.length; i++) {
+	        		if(this.blocked[i].id == id)
+	        			break;
+	        	}
+	        	this.splice('blocked', i,1);
+	        	this.blocked = this.blocked.slice();
+	        }
+
+	        removeAccepted(id) {
+	        	var i;
+	        	for (i = 0; i<this.accepted.length; i++) {
+	        		if(this.accepted[i].id == id)
+	        			break;
+	        	}
+	        	this.splice('accepted',i,1);
+	        }	
+	        
+	        exportcsv() {
+	        	var rows = [];
+	        	$(this.accepted).each(function(index, elem) {
+	        		rows.push([elem.id, elem.value, "accepted"]);
+	        	})
+	        	
+	        	$(this.blocked).each(function(index, elem) {
+	        		rows.push([elem.id, elem.value, "blocked"]);
+	        	})
+	        	
+	        	var file = this.exportFile || "export";
+	        	if(rows.length > 0)
+	        		utils.generateCSV(file, rows);
+	        }
+	        
+	        importcsv() {
+	        	var file = $(this.$["import-csv"])[0].files[0];
+	        	var _this = this;
+	        	
+	        	utils.importCSV(file, function(data) {
+	        		data.forEach(function(elem) {
+	    				if(elem){
+	    					var split = elem.split(";");
+	    					if(split.length == 3){
+	    						if(split[2].startsWith("accepted")) {
+	    							_this.accept({id:split[0], value:split[1]});
+	    						}
+	    						else if(split[2].startsWith("blocked")) {
+	    							_this.block({id:split[0], value:split[1]});
+	    						}
+	    					}
+	    				}
+	    			})
+	        	})
+	        }
+	        
+	        _removeAllAccepted() {
+	        	let _this = this;
+	        	this.accepted.forEach(function(elem) {
+	        		let eventData = {};
+	        		eventData.id = elem.id;
+	        		eventData.type="accepted";
+		        	var event = new CustomEvent('elemRemoved', {'detail':eventData});
+		        	_this.dispatchEvent(event);
+	        	})
+	        	
+				this.accepted = [];
+			}
+			
+			_removeAllBlocked() {
+				let _this = this;
+				this.blocked.forEach(function(elem) {
+	        		let eventData = {};
+	        		eventData.id = elem.id;
+	        		eventData.type="blocked";
+		        	var event = new CustomEvent('elemRemoved', {'detail':eventData});
+		        	_this.dispatchEvent(event);
+	        	})
+				this.blocked = [];
+			}
+
+			_sort(a, b) {
+	        	return utils.sortAsc(a, b);
+	        }
+			
+	    }
+		
+	    
+	    customElements.define(AcceptBlock.is, AcceptBlock);
+	    
+    </script> 
+</dom-module>

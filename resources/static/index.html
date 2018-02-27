@@ -1,0 +1,59 @@
+
+<html>
+	<head>
+		<meta charset="utf-8">
+		<script>
+			/*Polymer color styles conf*/
+			document.write('<link rel="import" href="/polymer/infinia_components/styles/polymer-styles-conf-infinia.html"></link>');
+			/*CSS color conf*/
+			document.write('<link href="/styles/css/styles-conf-infinia.css" rel="stylesheet"/>')
+		</script>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css"/>
+		<link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		
+		<style>
+		
+			* {
+				font-family: 'Open Sans', sans-serif;
+			}
+			
+		</style>
+	
+	</head>
+
+	<body>
+		<div class="home">
+			
+			<form id="login-form"  class="login-form" action="/login" method="post">
+				<img src="/img/logo.png">
+				
+				<div class="login-fields">
+					<div class="form-group">
+						<label data-text="-user"></label>
+						<input class="form-control required"  name="username"/>
+					</div>
+					<div class="form-group">
+						<label data-text="-password"></label>
+						<input type="password" class="form-control required"  name="password"/>
+					</div>
+					
+					<div style="text-align:center;margin-top:20px">
+						<button class="btn btn-primary"  data-text="-login.text"></button>
+					</div>
+				</div>
+			</form>
+		</div>
+		
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+		<script src="/js/login/login.js"></script>
+		<script src="/js/common/utils.js"></script>
+		<script src="/js/libraries/localization/texts.js"></script>
+		<script src="/js/libraries/localization/localizer.js"></script>
+	</body>
+</html>
+
+
+
+
+

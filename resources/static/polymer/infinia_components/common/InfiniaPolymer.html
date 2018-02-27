@@ -1,0 +1,13 @@
+
+<script>
+class InfiniaPolymer extends Polymer.Element {
+
+	  _localize(text) {
+	       return localizer.get(text);
+	  }
+	  
+	  _getUserCountry() {
+		  return utils.getUserCountry();
+	  }
+}
+</script>

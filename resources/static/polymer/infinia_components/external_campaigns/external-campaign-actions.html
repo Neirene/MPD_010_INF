@@ -1,0 +1,60 @@
+
+<dom-module id="external-campaign-actions">
+	<template>
+		<style include="common-styles"></style>
+		
+			<infinia-context id="context">
+					<ul slot="context-slot" class="context-ul">
+						
+						<li on-click="editCampaign"> <iron-icon icon="image:edit"></iron-icon> Editar</li>
+						<li on-click="profile"> <iron-icon icon="icons:menu"></iron-icon> Perfilado</li>
+						
+					</ul>
+				</infinia-context>
+	</template> 
+	
+	<script>
+
+		class ExternalCampaignActions extends Polymer.Element {
+
+	        static get is() { return  'external-campaign-actions' }
+	
+	        static get properties() {
+	          return {
+	          	elemId:Number
+	          }
+	        }
+	
+	        constructor() {
+	          super();
+	        }
+	
+	        ready() {
+	          	super.ready();
+	        }
+
+	        show() {
+	        	this.$.dropdown.open();
+			}
+	        
+	        hide() {
+	        	this.$.dropdown.close();
+			}
+	        
+	       
+	        
+	        editCampaign() {
+	        	window.location.href = "/external_campaigns/"+this.elemId;
+	        }
+	        
+	        profile() {
+	        	window.location.href = "/external_campaigns/"+this.elemId+"/profile";
+	        }
+	        
+	        
+	    }
+	    
+	    customElements.define(ExternalCampaignActions.is, ExternalCampaignActions);
+	    
+    </script> 
+</dom-module>

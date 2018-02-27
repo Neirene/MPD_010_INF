@@ -1,0 +1,169 @@
+
+<dom-module id="time-table-selector">
+	<template>
+		<style include="common-styles"></style>
+		
+		<style>
+	
+			.container {
+				display:flex;
+				flex-wrap:wrap;
+			}
+			
+			.right {
+				justify-content:flex-end;
+				padding-right:10px;
+				margin-bottom:5px;
+			}
+			
+			.square {
+				height:30px;
+				width:4.15%;
+				border:1px solid var(--input-border);
+				display:flex;
+				justify-content:center;
+				align-items:center;
+				cursor:pointer;
+			}
+			
+			.ui-selected {
+				background-color:var(--primary-color);
+			}
+			.ui-selecting {
+				background-color:var(--lighter-background);
+			}
+			
+			.labels {
+				width:10%;
+				display:flex;
+				flex-direction:column;
+			}
+			.table {
+				width:90%;
+				margin-bottom:0;
+			}
+			
+			.label {
+				height:30px;
+				border:1px solid var(--input-border);
+				display:flex;
+				padding-left:10px;
+				align-items:center;
+				background-color:var(--lighter-background);
+			}
+			
+			a {
+				cursor:pointer;
+			}
+		</style>
+		
+		<div class="container right">
+			<a on-click="clean">Borrar</a>
+		</div>
+				<div class="container">
+					<div class="labels"></div>
+					<ul class="container table">
+					<template is="dom-repeat" items="{{hours}}" as="hour">
+						<li class="square label">{{hour}}</li>
+					</template>
+					</ul>
+				</div>
+				
+				<div class="container">
+					<div class="labels">
+						<template is="dom-repeat" items="{{dayNames}}">
+						<div class="label">
+							{{item}}
+						</div>
+						</template>
+					</div>
+					
+					<ul class="container table">
+					<template is="dom-repeat" items="{{days}}" as="day">
+						
+						<template is="dom-repeat" items="{{hours}}" as="hour">
+							<li data-date="{{day}}-{{hour}}" class="square"></li>
+						</template>
+					</template>
+					</ul>
+				
+				</div>
+				
+			
+			
+	</template> 
+	
+	<script>
+
+		class TimeTableSelector extends Polymer.Element {
+
+	        static get is() { return  'time-table-selector' }
+	
+	        static get properties() {
+	          return {
+	          	hours:{type:Object, value:function(){return []}},
+	          	days:{type:Object, value:function(){return []}},
+	          	dayNames:{type:Object, value: function() {return [localizer.get('weekDays.monday'), localizer.get('weekDays.tuesday'),localizer.get('weekDays.wednesday'),localizer.get('weekDays.thursday'),
+	          		localizer.get('weekDays.friday'),localizer.get('weekDays.saturday'),localizer.get('weekDays.sunday')];}}
+	          }
+	        }
+	
+	        constructor() {
+	          super();
+	        }
+	
+	        ready() {
+	          	super.ready();
+	          	var _this = this;
+	          	
+	          	for(var i=0; i<24;i++){
+	          		this.push('hours', i);
+	          	}
+	          	
+	          	for(i=1; i<8; i++) {
+	          		this.push('days', i);
+	          	}
+	          	
+	          	setTimeout(function() {
+	          		$(_this.root).find('.table').selectable();
+	          	}, 300);
+	        }
+	        
+	        getData() {
+	        	var timetable={};
+	        	$(this.root).find('.ui-selected').each(function(index, elem) {
+	        		if(elem.nodeName == "LI") {
+	        			var dat = $(elem).prop('dataDate').split('-');
+		        		
+		        		if(typeof timetable[dat[0]] == "undefined")
+		        			timetable[dat[0]] = [];
+		        		timetable[dat[0]].push(dat[1]);	
+	        		}
+	        		
+	        	})
+	        	return timetable;
+	        }
+	        
+	        setData(data) {
+	        	if (data){
+		        	Object.keys(data).forEach((day) => {
+		        		data[day].forEach((hour) => {
+		        			$(this.root).find('.square').each((index, elem) => {
+		        				if($(elem).prop('dataDate') == day+"-"+hour)
+		        					$(elem).addClass('ui-selected');
+		        			});
+		        		});
+		        	});
+	        	}
+	        }
+	        
+	        
+	        clean() {
+	        	$(this.root).find('.ui-selected').removeClass('ui-selected');
+	        }
+	    }
+	    
+	    customElements.define(TimeTableSelector.is, TimeTableSelector);
+	    
+    </script> 
+</dom-module>

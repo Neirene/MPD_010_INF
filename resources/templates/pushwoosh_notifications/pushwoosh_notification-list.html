@@ -1,0 +1,12 @@
+<div class="new_button">
+	<a class="btn btn-primary" th:href="@{/pushwoosh_notifications/new(idPushwooshCampaign=${idPushwooshCampaign})}">Nueva notificación</a>
+</div>
+
+<div th:include="pushwoosh_campaigns/pushwoosh_campaign-breadcrumb"></div>
+
+<div class="table-container">
+</div>
+<script th:inline="javascript">
+	var idPushwooshCampaign = [[${idPushwooshCampaign}]];
+</script>
+<script src="/js/pushwoosh_notifications/pushwoosh_notifications.js"></script>

@@ -1,0 +1,144 @@
+<div>
+	<ul class="section-breadcrumb mt20">
+		<li th:unless="${id_tracker}" class="active"><a>Nuevo Tracker</a></li>
+		<li th:if="${id_tracker}" th:classappend="active"><a th:href="@{/trackers/{id_tracker}(id_tracker=${id_tracker},id_location=${id_location},id_retailer=${id_retailer})}" class="campaign_name" id="tracker-name-breadcrumb"></a></li>
+	</ul>
+</div>
+
+<div class="container-fluid pb20">
+	<form class="mt20" id="tracker-form">
+	
+		<input type="hidden" class="form-control" name="idLocation"/>
+		
+		<div class="form-section-title" data-text="-trackerData"></div>
+		<div class="row mt20">
+			<div class="form-group col-sm-4">
+				<label data-text="-name"></label>
+				<input class="form-control required" name="name" />
+			</div>
+			<div class="form-group col-sm-4">
+				<label data-text="-status"></label>
+				<infinia-select class="required" name="status"></infinia-select>
+			</div>
+		</div>
+		<div class="row mt20">
+			<div id="agencyManagement" class="form-group col-sm-4">
+				<label data-text="-agency"></label>
+				<infinia-select name="idAgency"></infinia-select>
+			</div>
+			<div class="form-group col-sm-4">
+				<label>Section</label>
+				<infinia-select class="required" name="idSection"></infinia-select>
+			</div>
+		</div>
+		<div class="row mt20">
+			<div class="form-group col-sm-4">
+				<label>MAC</label>
+				<input class="form-control" name="macAddress" />
+			</div>
+			<div class="form-group col-sm-4">
+				<label>RSSI mínimo (0 - 100)</label>
+				<input class="form-control required" type="number" min="0" max="100" name="uncMin" />
+			</div>
+			<div class="form-group col-sm-4">
+				<label>Permanencia en área (Minutos)</label>
+				<input class="form-control required" type="number" min="0" name="visitOccurrences" />
+			</div>
+		</div>
+		
+		<collapsible-content title="Hardware" style-class="gold">
+			<div class="row mt20">
+				<div class="form-group col-sm-3">
+					<label>Model Name</label>
+					<input class="form-control" name="modelName" />
+				</div>
+				<div class="form-group col-sm-3">
+					<label>Installation Type</label>
+					<input class="form-control" name="installationType" />
+				</div>
+				<div class="form-group col-sm-3">
+					<label>Serial Number</label>
+					<input class="form-control" name="serialNumber" />
+				</div>
+				
+				<div class="form-group col-sm-3">
+					<label>Technical Contact</label>
+					<input class="form-control" name="technicalContact" />
+				</div>
+			</div>
+		</collapsible-content>
+
+		<collapsible-content title="SIM" style-class="gold">
+			<div class="row">
+				<div class="form-group col-sm-4">
+					<label>Provider</label>
+					<input class="form-control" name="simProvider" />
+				</div>
+				<div class="form-group col-sm-4">
+					<label>Phone Number</label>
+					<input class="form-control" name="simId" />
+		    	</div>
+		    	<div class="form-group col-sm-4">
+		    		<label>Id</label>
+					<input class="form-control" name="simPhoneNumber" />
+				</div>
+			</div>
+			<div class="row">
+				<div class="form-group col-sm-4">
+					<label>PIN</label>
+					<input class="form-control" name="simPin" />
+				</div>
+				<div class="form-group col-sm-4">
+					<label>PUK</label>
+					<input class="form-control" name="simPuk" />
+		    	</div>
+			</div>
+		</collapsible-content>
+		
+		<collapsible-content title="Router" style-class="gold">
+			<div class="row">
+				<div class="form-group col-sm-4">
+					<label>Model</label>
+					<input class="form-control" name="routerModel" />
+				</div>
+				<div class="form-group col-sm-4">
+					<label>Serial Number</label>
+					<input class="form-control" name="routerSerial" />
+		    	</div>
+		    	<div class="form-group col-sm-4">
+		    		<label>IMEI</label>
+					<input class="form-control" name="routerImei" />
+				</div>
+			</div>
+		</collapsible-content>
+		
+		<collapsible-content title="Localización" style-class="gold">
+			<div class="row">
+				<div class="form-group col-sm-4">
+					<label data-text="-lat"></label>
+					<input class="form-control" type="number" min="-90" max="90" name="lat" />
+				</div>
+				<div class="form-group col-sm-4">
+					<label data-text="-lon"></label>
+					<input class="form-control" type="number" min="0" max="180" name="lon" />
+		    	</div>
+		    	<div class="form-group col-sm-4">
+					<label data-text="-address"></label>
+					<input class="form-control" name="address" />
+				</div>
+			</div>
+		</collapsible-content>
+		
+		<div class="row mt20">
+			<div class="col-sm-12 text-center">
+				<button type="button" class="btn btn-primary" id="save-tracker" data-text="-save"></button>
+			</div>
+		</div>
+	</form>
+</div>
+<script src="/js/indoor_analytics/tracker.js"></script>
+<script th:inline="javascript">
+	var id_retailer = [[${id_retailer}]];
+	var id_location = [[${id_location}]];
+	var id_tracker = [[${id_tracker}]];
+</script>

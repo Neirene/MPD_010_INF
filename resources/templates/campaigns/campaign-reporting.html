@@ -1,0 +1,68 @@
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+<div th:include="campaigns/campaign-breadcrumb"></div>
+
+<div class="container-fluid">
+	
+	
+	<div class="row">
+		<div class="space-between reporting-header">
+			<div>
+				<div id="impressionsTotal"></div>
+				<p data-text="-impressions"></p> 
+			</div>
+			<div>
+				<div id="clicksTotal"></div>
+				<p>Clicks</p> 
+			</div>
+		
+			<div>
+				<div id="ctrTotal"></div>
+				<p>CTR</p>
+			</div>
+			<div>
+				<div id="viewability"></div>
+				<p>Viewability</p> 
+			</div>
+		
+			<div>
+				<div id="vtr"></div>
+				<p>VTR</p> 
+			</div>
+		
+		</div>
+	</div>
+	
+	<div class="row mt10">
+		<div class="space-between col-sm-4">
+			<date-picker id="startDate" input-class="gold"></date-picker>
+			<date-picker id="endDate" input-class="gold"></date-picker>
+		</div>
+	</div>
+ 	
+	<div id="charts-container">
+		<div class="row">
+			<div id="performance-charts" class="col-sm-12">
+			</div>
+		</div>
+		
+	</div>
+
+	<div id="tables-container">
+		<div class="row">
+			<div class="col-sm-12">
+				<p><b>Performance</b></p>
+			</div>
+			<div class="table-container-performance"></div>
+			<div class="col-sm-12 text-center" id="savePerformanceReportingContainer">
+				<button type="button" class="btn btn-primary" id="save-performance-reporting">Guardar Reporting</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<script th:inline="javascript">
+	var id_campaign = [[${id_campaign}]];
+</script>
+<script src="/js/campaigns/campaign_reporting.js"></script>

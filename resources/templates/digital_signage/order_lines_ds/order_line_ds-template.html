@@ -1,0 +1,32 @@
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDW_hi5jQm2Ffb4GIa98vJdszgrma-qlJM&amp;libraries=places,drawing"></script>
+<script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js"></script>
+<script src="/js/libraries/maps/CartoUtils.js"></script>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+<div class="container-fluid pb20 ol-bxslider ">
+	<infinia-tabs id="ol-tabs"
+				data-text="orderLine.configuration,targeting,location,contents"
+				icons="icons:supervisor-account,hardware:phone-android,social:public,editor:attach-file">
+				
+		<div slot="0" th:include="digital_signage/order_lines_ds/order_line_ds-data"></div>
+		<div slot="1" th:include="clusters/cluster/cluster-target"></div>
+		<div slot="2" th:include="digital_signage/order_lines_ds/order_line_ds-location"></div>
+		<div slot="3" th:include="digital_signage/order_lines_ds/order_line_ds-contents"></div>
+		
+	</infinia-tabs>
+	
+	<div class="row mt60">
+		<div class="col-sm-12 text-center">
+			<button type="button" class="btn btn-primary" id="save-order-line">Guardar línea de pedido</button>
+		</div>
+	</div>
+	
+</div>
+
+<script th:inline="javascript">
+	var id_campaign_ds = [[${id_campaign_ds}]];
+	var id_order_line_ds = [[${id_order_line_ds}]];
+</script>
+
+<script src="/js/digital_signage/contents/content-create.js"></script>
+<script src="/js/digital_signage/order_lines_ds/order_line_ds.js"></script>

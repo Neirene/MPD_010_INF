@@ -1,0 +1,155 @@
+	<form class="mt20" id="data-form">
+
+		<input type="hidden" class="form-control" name="mediamathId"/>
+		<input type="hidden" class="form-control" name="reportTotalSpend"/>
+		<input type="hidden" class="form-control" name="reportImpressions"/>
+		<input type="hidden" class="form-control" name="reportClicks"/>
+		<input type="hidden" class="form-control" name="reportCtr"/>
+		<input type="hidden" class="form-control" name="reportingSync" value = "1"/>
+		
+
+		<div class="form-section-title">Datos de la línea de pedido</div>
+
+		<div class="row mt20">
+			<div class="form-group col-sm-6">
+				<label>Nombre línea de pedido</label> <input class="form-control required" name="name"/>
+			</div>
+		</div>
+		
+		<div class="row mt10">
+		
+			<div class="col-sm-2 col-xs-6 form-group">
+				<label>Fecha inicio</label>
+				<date-picker text="Fecha inicio" show-time="true"  name="startDate" class="required"></date-picker>
+			</div>
+			<div class="col-sm-2 col-xs-6 form-group">
+				<label>Fecha fin</label>
+				<date-picker text="Fecha fin" show-time="true"  name="endDate"  class="required"></date-picker>
+			</div>
+			<div class="col-sm-2 form-group">
+				<label>Tipo</label>
+				<infinia-select name="type" class="required"></infinia-select>
+			</div>
+		</div>
+
+		<div class="form-section-title pt10 mt20">Configuración de la linea de pedido</div>
+		<div class="row mt20">
+			<div class="col-sm-12">
+				<p>Objetivo</p>
+			</div>
+			<div class="col-sm-2 form-group">
+				<label>Tipo</label>
+				<infinia-select name="goalType" class="required"></infinia-select>
+			</div>
+			<div id="goalValueContainer" class="col-sm-2 form-group">
+				<label>Valor</label>
+				<input type="number" class="form-control decimalOnly" name="goalValue" min='0.01' step='0.01'/>
+			</div>
+		</div>
+		<div class="row">
+			<div class="form-group col-sm-3" id="bidPriceContainer">
+				<label>Bid Price (Sólo para campañas Open)</label>
+				<input class="form-control decimalOnly" name="bidPrice" type="number" min='0.01' step='0.01'/>
+			</div>
+		</div>
+		
+		<div class="row mt20">
+			<div class="col-sm-12">
+				<p>Máximo disponible</p>
+			</div>
+			<div class="col-sm-2 form-group" id="budgetContainer">
+				<label>Presupuesto</label>
+				<input type="number" class="form-control numbersOnly" name="budget" min='1' step='10'/>
+			</div>
+			<div class="col-sm-2  form-group" id = "impressionsContainer">
+				<label>Impresiones</label>
+				<input type="number" class="form-control numbersOnly" name="impressions" min='1' step='100'/>
+			</div>
+			
+		</div>
+		
+<!-- 		<div class="row" id="costsContainer"> -->
+<!-- 			<div class="form-group col-sm-2"> -->
+<!-- 				<label>Delivery Cost</label> <input type="number" min="0" class="form-control decimalOnly" name="deliveryCost"/> -->
+<!-- 			</div> -->
+<!-- 			<div class="form-group col-sm-2"> -->
+<!-- 				<label>Data Cost</label> <input type="number" min="0" class="form-control decimalOnly" name="dataCost"/> -->
+<!-- 			</div> -->
+<!-- 			<div class="form-group col-sm-2"> -->
+<!-- 				<label>Other Cost</label> <input type="number" min="0" class="form-control decimalOnly" name="otherCost"/> -->
+<!-- 			</div> -->
+<!-- 		</div> -->
+
+		<div class="row">
+			<div class="form-group col-sm-2">
+				<label>Media type</label>
+				<infinia-select name="format"></infinia-select>
+			</div>
+		</div>
+		
+		<div class="form-section-title pt10 mt20">
+			Frequency Cap
+		</div>
+		<div class="row mt20">
+			<div class="col-sm-2 form-group">
+				<label>Tipo</label>
+				<infinia-select name="frequencyType"></infinia-select>
+			</div>
+			<div id="frequencyContainer" class="col-sm-8 form-group">
+				<div class="col-sm-4 form-group">
+					<label>Impactos</label>
+					<input type="number" class="form-control numbersOnly" name="frequencyAmount"/>
+				</div>
+				<div class="col-sm-4 form-group">
+					<label>Unidad tiempo</label>
+					<infinia-select class="input unit-time" name="frequencyInterval"></infinia-select>
+				</div>
+			</div>
+		</div>
+		
+		<div class="form-section-title pt10 mt20">
+			Daily Pacing (Budget)
+		</div>
+		<div class="row mt20">
+			<div class="col-sm-2 form-group">
+				<label>Tipo</label>
+				<infinia-select name="budgetCappingType"></infinia-select>
+			</div>
+			<div id="budgetCappingContainer" class="col-sm-6 form-group">
+				<div class="col-sm-4 form-group">
+					<label>Spend</label>
+					<input type="number" class="form-control decimalOnly" name="budgetCappingAmount"/>
+				</div>
+				<div class="col-sm-4 form-group pt22">
+					<infinia-select class="input unit-daily" name="budgetCappingTimeInterval"></infinia-select>
+				</div>
+			</div>
+		</div>
+		
+		<div class="form-section-title pt10 mt20">
+			Daily Pacing (Impressions)
+		</div>
+		<div class="row mt20">
+			<div class="col-sm-2 form-group">
+				<label>Tipo</label>
+				<infinia-select name="impressionsCappingType"></infinia-select>
+			</div>
+			<div id="impressionsCappingContainer" class="col-sm-6 form-group">
+				<div class="col-sm-4 form-group">
+					<label>Spend</label>
+					<input type="number" class="form-control numbersOnly" name="impressionsCappingAmount"/>
+				</div>
+				<div class="col-sm-4 form-group pt22">
+					<infinia-select class="input unit-daily" name="impressionsCappingTimeInterval"></infinia-select>
+				</div>
+			</div>
+		</div>
+	</form>
+
+
+<script th:inline="javascript">
+	var id_campaign = [[${id_campaign}]];
+	var id_order_line = [[${id_order_line}]];
+</script>
+
+

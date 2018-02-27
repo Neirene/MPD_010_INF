@@ -1,0 +1,258 @@
+
+<dom-module id="carto-management">
+	<template>
+	</template> 
+	
+	<script>
+
+		class CartoManagement extends Polymer.Element {
+
+	        static get is() { return  'carto-management' }
+	
+	        static get properties() {
+	          return {
+	        	  mainLayer:{type:String,value:""},
+	        	  cartoCss:{type:String,value:""}
+	          }
+	        }
+	
+	        constructor() {
+	          super();
+	        }
+	
+	        ready() {
+	        	super.ready();
+	        	
+	        }
+	        
+	        
+	        init(map) {
+	        	this.map = map;
+	        	let cartoAccount = CartoUtils.getAccountData();
+	        	this.initPromise = new Promise((resolve, reject) => {
+	        		cartodb.createLayer(
+	          				this.map, 
+	          				{
+	          					user_name: cartoAccount.account_name,
+		                		type: 'cartodb',
+		                		sublayers:[],
+		                		extra_params: {
+		                		   map_key: cartoAccount.api_key
+		                		}
+		                	},
+		                	{ 
+		          				cartodb_logo:false, 
+		          				https:true, 
+		          				legends:false
+		          			})
+		          	.addTo(this.map).on('done', (layer) => {
+		              	this.cartoLayer = layer;
+		              	this.subLayers = {};
+		              	resolve();
+		          	})	
+	        	})
+	        }
+	        
+	        setLayer(id, sql, css) {
+	        	if(id){
+	        		if(this.subLayers[id]) {
+	        			this.removeCartoLayer(id);
+	        		}
+		        	this.addSubLayer(id, sql, css);
+	        	}
+	        }
+	        
+	        overlapLayer(id, sql, css) {
+	        	if(!this.subLayers[id]) {
+	        		this.addSubLayer(id, sql, css);	
+	        	}
+	        }
+	        
+	        addSubLayer(id, sql, cartocss) {
+	        	this.initPromise.then(() => {
+	        		cartocss = cartocss || this.cartoCss;
+					this.subLayers[id] = this.cartoLayer.createSubLayer({
+		        		sql:sql,
+		        		cartocss:cartocss
+		        	})	        		
+				})
+	        }
+	        
+	      //Carto
+	        clearCarto() {
+	        	if(this.subLayers){
+	        		Object.keys(this.subLayers).forEach((key) => {
+		        		this.subLayers[key].remove();
+		        		delete this.subLayers[key];
+		        	})
+	        	}
+	        }
+	        
+	        _localize(text) {
+	        	return localizer.get(text);
+	        }
+
+	        addCartoLayer(name, sql, css) {
+	        	
+	        	css = css || this.cartoCss;
+	        	this.activeLayer = name;
+				if(this.subLayers && this.subLayers[name]) {
+					this.subLayers[name].show();
+					return;
+				}
+				
+				let _this = this;
+				
+				if(name=="main") {
+					this.mainLayer = {sql:sql, css:_this.cartoCss};
+					if(typeof this.mainSql == "undefined")
+						this.mainSql = this.mainLayer.sql;
+				}
+				
+				if(!sql) return false;
+				
+				if(typeof this.subLayers == "undefined" || typeof this.subLayers[name] == "undefined"){
+					
+					let promise = new Promise((resolve, reject) => {
+						if(typeof this.cartoLayer == 'undefined') {
+							cartodb.createLayer(
+			          				this.map, 
+			          				{
+			          					user_name: 'infinia-tester-admin',
+				                		type: 'cartodb',
+				                		sublayers:[],
+				                	},
+				                	{ 
+				          				cartodb_logo:false, 
+				          				https:true, 
+				          				legends:false
+				          			})
+				          	.addTo(this.map).on('done', (layer) => {
+				              	_this.cartoLayer = layer;
+				              	_this.subLayers = {};
+				              	resolve();
+				          	})
+						}
+						else resolve();
+					})
+					
+					promise.then(() => {
+			        	_this.addSubLayer(name, sql, css)
+					})
+				}
+				else {
+					_this.addSubLayer(name, sql, css)
+				}
+				
+				
+			}
+			
+	       
+	        
+	        removeCartoLayer(name) {
+	        	if(this.subLayers && this.subLayers[name]){
+			        this.subLayers[name].remove();
+			        delete this.subLayers[name];
+	        	}
+	        }
+
+	        _showClusters() {
+	        	$(this.$.clusters_container).toggleClass('hidden');
+	        }
+	        
+	        getOptionsSelected() {
+	        	let options = [];
+	        	$(this.root).find('.section').find('li.active').each((index, elem) => {
+	        		options.push($(elem).data('query'));
+	        	})
+	        	return options;
+	        }
+	        
+	        
+	        getCartoImage() {
+	        	
+	        	
+	        	var mapconfig = {
+       				"version": "1.3.1",
+       				"layers": [
+       			  	{
+       			      "type": "http",
+       			      "options": {
+       			        "urlTemplate": "http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+       			      }
+       			    },
+       			  	{
+       			    	"type": "cartodb",
+       			    	"options": {
+       			      		"cartocss_version": "2.1.1",
+       			      		"cartocss": this.subLayers[this.activeLayer].getCartoCSS(),
+       			      		"sql": this.subLayers[this.activeLayer].getSQL()
+       			    	}
+       				},
+       				]
+       			}
+
+	        	utils.lockScreen();
+	        	var newWindow = window.open();
+	        	
+	        	$.ajax({
+       			  crossOrigin: true,
+       			  type: 'POST',
+       			  dataType: 'json',
+       			  contentType: 'application/json',
+       			  url: 'https://infiniamaps.carto.com/api/v1/map',
+       			  data: JSON.stringify(mapconfig),
+       			  success: (data) => {
+       				utils.unlockScreen();
+       			    var url = 
+       			    'https://infiniamaps.carto.com/api/v1/map/static/center/' + data.layergroupid + '/'+this.map.getZoom()
+       			    +'/'+this.map.getCenter().lat()+'/'+this.map.getCenter().lng()+'/1000/600.png';
+       			 	newWindow.location = url;
+       			  }
+       			})
+	        }
+	            
+	        setLayerSql(id, sql, css) {
+	        	if(this.subLayers[id]) {
+	        		this.subLayers[id].setSQL(sql);
+	        		if(css)
+	        			this.subLayers[id].setCartoCSS(css);
+	        	}
+	        }
+	        
+
+	        //carto sql from point radius
+	        //SELECT *
+	       // FROM infiniamaps.dp_zgz
+	        //WHERE ST_Distance_Sphere(the_geom, ST_MakePoint(-3.8196239,40.4378698)) <= 30 * 1609.34
+
+	        //Ojo, el orden es longitud, latitud
+	        
+	        /*
+	        ///////////////INSERTAR PUNTOS PLAYERS
+
+	        	INSERT INTO players(the_geom, name, description) values (geometry(ST_Buffer(ST_MakePoint(2.0086817,41.3947051)::geography, 1000)), 'Media Markt BCN', 'BCN')
+
+	        //////////////Conteo de los puntos del cluster en el rango del player
+	        
+				SELECT players.name, count(*) AS count
+				FROM players LEFT JOIN cluster_homeplace 
+				ON st_contains(players.the_geom,cluster_homeplace.the_geom) 
+				where cluster_homeplace.id_cluster = '5a69993e46e0fb000524dbab'
+				GROUP BY players.name
+				
+			//////////// Selección de los puntos en el rango del player
+			
+				SELECT cluster_homeplace.the_geom, cluster_homeplace.the_geom_webmercator, cluster_homeplace.cartodb_id, players.name  AS count
+				FROM players LEFT JOIN cluster_homeplace 
+				ON st_contains(players.the_geom,cluster_homeplace.the_geom) 
+				where cluster_homeplace.id_cluster = '5a69993e46e0fb000524dbab'
+
+
+	        */
+	    }
+	    
+	    customElements.define(CartoManagement.is, CartoManagement);
+	    
+    </script> 
+</dom-module>

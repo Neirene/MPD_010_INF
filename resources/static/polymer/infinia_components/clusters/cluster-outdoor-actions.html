@@ -1,0 +1,137 @@
+
+
+<dom-module id="cluster-outdoor-actions">
+	<template>
+		<style include="common-styles"></style>
+		<infinia-context id="context">
+					<ul slot="context-slot">
+						<li id="edit_cluster">
+							<a href="/outdoor_analytics/{{elemId}}?outdoor=true"> <iron-icon icon="image:edit"></iron-icon> Editar</a>
+						</li>
+						<li on-click="profileCluster"> <iron-icon icon="image:remove-red-eye"></iron-icon> Perfil del cluster</li>
+						<li on-click="calculateCluster"> <iron-icon icon="av:play-arrow"></iron-icon> Calcular</li>
+						<li on-click="linkCluster"> <iron-icon icon="icons:assessment"></iron-icon> Asociar Agencia</li>
+						<li on-click="duplicate"><iron-icon icon="icons:content-copy"></iron-icon>Duplicar</li-->
+						<li on-click=""><a href$="/api/clusters/profile/csv/{{elemId}}" target="blank"><iron-icon icon="icons:file-download"></iron-icon>CSV Perfilado</a></li>
+						<li on-click=""><a href$="/api/clusters/outdoor/csv/{{elemId}}" target="blank"><iron-icon icon="icons:file-download"></iron-icon>CSV coordenadas</a></li>
+					</ul>
+				</infinia-context>
+	</template> 
+	
+	<script>
+
+		class ClusterOutdoorActions extends Polymer.Element {
+
+	        static get is() { return  'cluster-outdoor-actions' }
+	
+	        static get properties() {
+	          return {
+	          	elemId:String
+	          }
+	        }
+	
+	        constructor() {
+	          super();
+	        }
+	
+	        ready() {
+	          	super.ready();
+	          	if(localStorage.accountData) {
+		          	let accountData = JSON.parse(localStorage.accountData);
+		          	if(accountData.userHeader.roleEntity.role.role == "ROLE_RESELLER") {
+		          		$(this.$.edit_cluster).remove();
+		          	}
+	          	}
+	        }
+
+	        show(e) {
+	        	$(utils.getClickedElement(e)).next()[0].open();
+			}
+	        
+	        
+	        
+	        profileCluster() {
+	        	window.location.href= "/outdoor_analytics/profile/" + this.elemId+"?outdoor=true";
+	        }
+	        
+	        calculateCluster() {
+	        	utils.lockScreen();
+				utils.apiGet('/cluster/' + this.elemId + '/_calculate', {}, 
+				(response) => {
+					utils.floatingSuccess('El cluster se ha lanzado correctamente');
+					utils.unlockScreen();
+				}, 
+				(error) => {
+					utils.unlockScreen();
+					utils.floatingError(localizer.get('cluster.launchError'));
+					console.log('Error calculating cluster', this.elemId, error);
+				});
+	        }
+	        
+	        duplicate() {
+				utils.lockScreen();
+				utils.get('/api/clusters/' + this.elemId + '/duplicate', {}, 
+				(response) => {
+					utils.unlockScreen();
+					window.location.href = "/clusters";
+				}, 
+				(error) => {
+					utils.unlockScreen();
+					console.log('Error duplicating cluster', this.elemId, error);
+				});
+	        }
+	        
+	        linkCluster() {
+	        	var clusterId = this.elemId;
+	        	utils.get('/clusters/agency_link/template',{}, function(response) {
+	        		utils.modal('Asociar cluster a agencia', response);
+	        		utils.post("/api/components/selects", JSON.stringify({
+						"fields":[
+							{
+								"id" : "0",
+								"field" : "agencies"
+							}
+						]
+					}), function(agencies) {
+	        			$('#agency')[0].setList(agencies[0].options);
+	        		});
+	        		
+	        		utils.get('/api/clusters/' + clusterId + '/agencies', {}, 
+       				(agencies) => {
+       					$.map(agencies, (agency) => {
+							document.querySelector('#agency').accept({id: agency.id, value: agency.name});
+						});
+       				},
+       				(error) => {
+       					console.log('Error getting cluster agencies', clusterId, error);
+       				});
+	        		
+	        		$('#save').on('click', function() {
+		        		var agencies = $('#agency')[0].getData();
+		        		agencies = $.map(agencies, (elem) => {
+							return elem.id;
+						});
+		        		
+		        		if (agencies.length > 0){
+		        			utils.lockScreen();
+		        			
+	 		        		utils.apiGet('/cluster/' + clusterId + '/_segment?agency_id=' + agencies.join(), {}, 
+	 	       				(response) => {
+	 	       					utils.unlockScreen();
+	 	       					$('.closePopup').trigger('click')
+	 	       				},
+	 	       				(error) => {
+		       					utils.unlockScreen();
+	 	       					console.log('Error linking cluster', clusterId, error);
+	 	       					$('.closePopup').trigger('click')
+	 	       				});
+		        		}
+		        	});
+	        	});
+	        }
+	    }
+	    
+	    customElements.define(ClusterOutdoorActions.is, ClusterOutdoorActions);
+	    
+    </script> 
+</dom-module>

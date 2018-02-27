@@ -1,0 +1,56 @@
+<div class="new_button">
+	<a class="btn btn-primary save-campaign" >Guardar Campaña</a>&nbsp;&nbsp;
+</div>
+<div th:include="campaigns/external-campaign-breadcrumb"></div>
+<div class="container-fluid pb20">
+	<form class="mt20" id="campaign-form">
+		<div class="form-section-title">
+			Datos de la campaña
+		</div>
+		<div class="row mt20">
+			<div class="form-group col-sm-6">
+				<label>Nombre campaña</label>
+				<input class="form-control  required" name="name" maxlength="150"/>
+			</div>
+			<div class="form-group col-sm-6">
+				<label>Identificador externo</label>
+				<input class="form-control  required" name="externId" maxlength="150"/>
+			</div>
+			<div class="form-group col-sm-6">
+				<label>Dsp</label>
+				<infinia-select class="required" name="idDspType" />
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-sm-2 col-xs-6 form-group">
+				<label>Fecha inicio</label>
+				<date-picker text="Fecha inicio" show-time="true" name="startDate" class="required" hour="00" min="00"></date-picker>
+			</div>
+			<div class="col-sm-2 col-xs-6 form-group">
+				<label>Fecha fin</label>
+				<date-picker text="Fecha fin" show-time="true"  name="endDate" class="required" hour="23" min="59"></date-picker>
+			</div>
+		</div>
+		<div class="row">
+			<div class="form-group col-sm-4">
+				<label>Agencia</label>
+				<infinia-select name="idAgency" class="required"></infinia-select>
+			</div>
+			<div class="form-group col-sm-4">
+				<label>Advertiser</label>
+				<infinia-select class="required" name="idAdvertiser" />
+			</div>
+		</div>
+		
+		<div class="row mt10">
+			<div class="col-sm-12 text-center">
+				<btn class="btn save-campaign btn-primary" data-text="-save"></btn>
+			</div>
+		</div>
+		</form>
+</div>
+<script th:inline="javascript">
+	var id_campaign = [[${id_campaign}]];
+</script>
+<script src="/js/campaigns/external_campaign.js"></script>
+<script src="/js/postBehaviour.js"></script>

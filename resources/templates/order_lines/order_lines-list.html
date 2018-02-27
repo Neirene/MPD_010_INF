@@ -1,0 +1,15 @@
+
+
+<div class="new_button">
+	<a class="btn btn-primary" th:href="@{/order_lines/new(id_campaign=${id_campaign})}">Nueva línea de pedido</a>
+</div>
+
+<div th:include="campaigns/campaign-breadcrumb"></div>
+
+<div class="table-container">
+</div>
+
+<script th:inline="javascript">
+	var id_campaign = [[${id_campaign}]];
+</script>
+<script src="/js/order_lines/order_lines.js"></script>

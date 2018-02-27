@@ -1,0 +1,199 @@
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDW_hi5jQm2Ffb4GIa98vJdszgrma-qlJM&amp;libraries=places,drawing"></script>
+<script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js"></script>
+
+<div th:include="indoor_analytics/indoor_analytics-breadcrumb"></div>
+
+<div class="container-fluid pb20">
+	<collapsible-content title="search" style-class="gold">
+		<div class="row">
+			<div class="col-sm-12">
+				<div class="row">
+					<div class="col-sm-3 form-group">
+						<label>Vista por</label>
+						<infinia-select name="viewBy"></infinia-select>
+					</div>
+					
+					<div id="field_month" class="col-sm-3 form-group hidden">
+						<label>Mes</label>
+						<infinia-select name="month" disable-sort="true"></infinia-select>
+					</div>
+					
+					<div id="field_year" class="col-sm-3 form-group hidden">
+						<label>Year</label>
+						<infinia-select name="year" disable-sort="true" id="selectedYear"></infinia-select>
+					</div>
+					
+					<div id="field_initDate" class="col-sm-3 form-group">
+						<label>Fecha inicio</label>
+						<date-picker text="Fecha inicio" name="initDate" id="dateFrom"></date-picker>
+					</div>
+					
+					<div id="field_endDate" class="col-sm-3 form-group hidden">
+						<label>Fecha fin</label>
+						<date-picker text="Fecha fin" name="endDate" id="dateTo"></date-picker>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-sm-4 form-group">
+						<label>Retailer</label>
+						<infinia-select name="retailers"></infinia-select>
+					</div>
+					
+					<div class="col-sm-4 form-group">
+						<label>Punto de venta</label>
+						<infinia-select name="locations"></infinia-select>
+					</div>
+					
+					<div class="col-sm-4 form-group">
+						<label>Infinia tracker</label>
+						<infinia-select name="trackers"></infinia-select>
+					</div>		
+				</div>
+			</div>
+		
+		
+			<div class="col-sm-12 text-center">
+				<button type="button" class="btn btn-primary center-block" id="indoor-analytics-search">Buscar</button>
+			</div>
+		</div>
+	</collapsible-content>
+	
+<div class="hidden data-container">	
+	<div class="form-section-title">
+		Analítica cuantitativa
+	</div>
+	
+	<div class="flex space-between mt20 mb20">
+		<div >
+			<quantitative-analytical title="Permanencia en área" sub-title="Visitantes que permanecen más de 5 min" 
+			logo="social:person" content-subtitle="Visitantes"
+			name="stayInArea"></quantitative-analytical>
+		</div>
+		<div>
+			<quantitative-analytical title="Tiempo medio" sub-title="Tiempo medio de visitantes en área" 
+			logo="device:access-alarms" content-subtitle="Minutos" 
+			name="halfTime"></quantitative-analytical>
+		</div>
+		<div >
+			<quantitative-analytical title="Retorno de visitantes" sub-title="Visitantes que vuelven en 90 días"
+			logo="maps:transfer-within-a-station" content-subtitle="Visitantes" name="returnVisitors"></quantitative-analytical>
+		</div>
+		<div >
+			<quantitative-analytical title="Tiempo medio de retorno" sub-title="Tiempo que tardan los visitantes en volver" 
+			logo="icons:alarm-on" content-subtitle="Días" name="averageReturnTime"></quantitative-analytical>
+		</div>
+		<div>
+			<quantitative-analytical title="Individuos totales" sub-title="Smartphone totales detectados" logo="icons:accessibility"
+			content-subtitle="Individuos" name="totalIndividuals"></quantitative-analytical>
+		</div>
+	</div>
+	
+	
+		
+	
+	<div class="row mt60">
+		<div class="col-sm-4">
+			<span data-text="sample_representativeness"></span>: <strong id="representativity_analytics"></strong>
+		</div>
+		<div class="col-sm-offset-2 col-sm-6">
+				<form id="create-cluster-form">
+					
+					<div class="col-sm-6">
+						<input class="form-control required" name="name" placeholder="Nombre Cluster"/>	
+					</div>
+					<div class="col-sm-3">
+						<button type="button" class="btn btn-primary center-block " id="create-cluster">Crear Cluster</button>
+					</div>
+					<div class="col-sm-3">
+						<button type="button" class="btn btn-primary center-block" id="download-indoor-csv">Descargar CSV</button>
+					</div>
+					
+				</form>
+		</div>
+	</div>
+	
+	<div class="mt60">
+	<infinia-tabs 
+				data-text="cluster.demographic,cluster.psychographic,cluster.behavioral,summary, Itinerario en tienda"
+				icons="icons:supervisor-account,hardware:phone-android,social:public,image:compare,icons:turned-in">
+				
+				<div slot="0">
+					
+					<!-- Perfil sociodemográfico -->
+					<div id="demographic_dashboard-container">
+						
+						<div class="row mt20" id="main-pies-analytics">
+							<div class="col-sm-3">
+								<infinia-card id="genderCard" title="gender" title-icon="notification:wc"></infinia-card>
+							</div>
+							
+							<div class="col-sm-3">
+								<infinia-card id="ageCard" title="age" title-icon="icons:face"></infinia-card>
+							</div>
+							
+							<div class="col-sm-3">
+								<infinia-card id="income_levelCard" title="income.level" title-icon="editor:attach-money"></infinia-card>
+							</div>
+							
+							<div class="col-sm-3">
+								<infinia-card id="countryCard" title="nationality" title-icon="icons:flag"></infinia-card>
+							</div>
+						</div>
+					</div>
+	
+				</div>
+				<div slot="1" th:include="common/psychographic" id="psychographic_dashboard-container">
+				</div>
+				<div slot="2">
+					<!-- Perfil comportamental -->
+					<div id="behavioral_dashboard-container" >
+						<div class="row mt20">
+							<div class="col-sm-12">
+								<h3 data-text="-vitalZone"></h3>
+								<infinia-map name="vitalZoneAnalytics" id="vitalZoneAnalytics-map" draw="true" class="homeworkAnalytics" show-searcher="true" ></infinia-map>
+							</div>
+						</div>
+						
+						<div class="row mt20">
+							<div class="col-sm-12">
+								<h3 data-text="-home"></h3>
+								<infinia-map name="homeAnalytics" id="homeAnalytics-map" draw="true" class="homeworkAnalytics" show-searcher="true" ></infinia-map>
+							</div>
+						</div>
+						
+						<div class="row mt20">
+							<div class="col-sm-12">
+								<h3 data-text="-work"></h3>
+								<infinia-map name="workAnalytics" id="work-map" draw="true" class="homeworkAnalytics" show-searcher="true" ></infinia-map>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div slot="3"><summary-data id="summary-data"></summary-data></div>
+				<div slot="4">
+					<img src="/img/indoor_img_plano.jpg" style="max-width:100%;"/>
+				</div>
+			</infinia-tabs>
+
+	
+	</div>
+	
+	
+	
+
+	
+	
+	
+	
+
+	
+		
+	<div class="row mt20 hidden">
+		<div class="col-sm-12" align="right">
+			<button type="button" class="btn btn-primary" id="indoor-analytics-cluster-create">Crear cluster</button>	
+		</div>
+	</div>
+</div>
+</div>
+<script src="/js/indoor_analytics/indoor_analytics.js"></script>

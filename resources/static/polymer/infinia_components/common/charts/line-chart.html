@@ -1,0 +1,73 @@
+
+<dom-module id="line-chart">
+	<template>
+		<style include="common-styles"></style>
+		
+		<style>
+			#chart {
+				height:300px;
+			}
+		</style>
+		<div id="chart">
+			
+		</div>	
+	</template> 
+	
+	
+	<script>
+
+	
+	
+	class LineChart extends Polymer.Element {
+
+        static get is() { return  'line-chart' }
+
+        static get properties() {
+          	return {
+        	  	title:String,
+          		data:{type:Object, value:function(){return [];}}
+          	}
+        }
+
+        constructor() {
+          super();
+        }
+
+        ready() {
+          	super.ready();
+          	
+        }
+        
+        drawChart() {
+        	let _this = this;
+        	google.charts.load('current', {'packages':['corechart']});
+            google.charts.setOnLoadCallback(function() {
+            	
+	            var options = {
+	              title: _this.title,
+	              legend: { position: 'right' },
+	              chartArea: {'left':'5%','width': '80%', 'height': '60%'},
+	              lineWidth: 1,
+	            };
+	
+	            var chart = new google.visualization.LineChart(_this.$.chart);
+	            let data =  google.visualization.arrayToDataTable(_this.data);
+	            chart.draw(data, options);
+        	})
+        
+		}
+        
+        setData(dat) {
+        	this.data = dat;
+        }
+        
+        setTitle(tit) {
+        	this.title = localizer.get(tit);
+        }
+	
+	}
+	    
+	customElements.define(LineChart.is, LineChart);
+	    
+    </script> 
+</dom-module>

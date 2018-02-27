@@ -1,0 +1,201 @@
+
+<dom-module id="account-menu">
+	<template>
+		<style include="common-styles"></style>
+		<style>
+			
+			.account-menu {
+				position:relative;
+				color:#fff;
+			}
+			
+			.user-icon {
+				background-color:var(--dark-background);
+				color:var(--primary-color);
+				height:40px;
+				width:40px;
+				z-index:20;
+				padding:5px;
+				border-radius:50%;
+				--iron-icon-height:30px;
+				--iron-icon-width:30px;
+			}
+			
+			.menu {
+				position:absolute;
+				right:0px;
+				top:0px;
+				height:auto;
+				width:auto;
+				background-color:var(--dark-background);
+				z-index:10;
+				 -webkit-transition: width 0.5s, height 0.5s; /* Safari */
+    			transition: width 0.5s, height 0.5s;
+    			display:none;
+    			flex-direction:column;
+				overflow:hidden;
+				text-align:left;
+				white-space:nowrap;
+				
+			}
+			
+			.menu li, .menu a {
+				color:#fff;
+				text-align:left;
+				padding:5px;
+			}
+			
+			.menu li:hover {
+				background-color:var(--light-background);
+				cursor:pointer;
+			}
+			
+			.user-icon:hover {
+				border-radius:0;
+			}
+			.user-icon:hover+.menu, .menu:hover {
+				display:flex;
+				padding:10px 40px 10px 15px;
+				
+			}
+			
+			.small-icon {
+				font-size:10px;
+				margin-right:5px;
+			}
+		
+			.user-name {
+				font-size:16px;
+				margin-bottom:5px;
+				border-bottom:1px solid #FFF;
+				padding:5px 0;
+			}
+			
+			.pt3 {
+				padding-top:3px;
+			}
+			
+			
+			.roles {
+				margin-bottom:5px;
+			}
+			.roles li {
+				display:flex;
+			}
+			
+			.close-session {
+				cursor:pointer;
+				border-top:1px solid white;
+				padding-top:5px;
+			}
+			
+			.flex {
+				display:flex!important;
+				padding:20px;
+			}
+			
+			.active {
+				color:var(--primary-color)!important;
+			}
+			
+			p {
+				margin:3px;
+			}
+		</style>
+		<div class="account-menu">
+			<iron-icon class="user-icon"  icon="social:person"></iron-icon>
+			<div class="menu">
+				<p class="user-name"> <b >[[name]]</b></p>
+				<ul class="roles">
+					<template is="dom-repeat" items="{{roles}}" sort="_sort">
+						<li class$="[[_getActive(item)]]" data-role$="{{item.idEntity}}##{{item.role.role}}" on-click="_changeAccount">  [[_localizeRole(item.role.role)]]  [[item.nameEntity]]</li>
+					</template>
+					
+				</ul>
+				<p class="view-profile">
+					<iron-icon class="small-icon" icon="social:person-outline"></iron-icon> 
+					<a href="/users/profile" class="pt3"> Ver perfil</span></a> 
+				</p>			
+				<p class="close-session">
+					<iron-icon class="small-icon" icon="icons:power-settings-new"></iron-icon> 
+					<a href="/logout" class="pt3"> Cerrar sesión</span></a>
+				</p>
+			</div>
+		</div>
+	</template> 
+	
+	<script>
+
+		class AccountMenu extends Polymer.Element {
+
+	        static get is() { return  'account-menu' }
+	
+	        static get properties() {
+	          return {
+	           	name:String,
+	           	roles:{type:Object, value:function(){return [];}}
+	          }
+	        }
+	
+	        constructor() {
+	          super();
+	        }
+	
+	        ready() {
+	          	super.ready();
+	          	var _this = this;
+	          	
+	          	var header = localStorage.getItem('accountData')
+	          	if(header) {
+	          		header = JSON.parse(header);
+	          		this.name = header.userHeader.username;
+	          		this.roles = header.userHeader.rolesEntities;
+	          	}
+	          	else {
+	          		utils.get('/api/users/header', {}, (response) => {
+	          			
+	          			this.name = response.username;
+		          		this.roles = response.rolesEntities;
+		          		
+		          		localStorage.setItem("accountData", JSON.stringify(response));
+	          		})
+	          	}
+	          	
+	        }
+
+	        _localizeRole(role) {
+	        	return localizer.get('roles.'+role);
+	        }
+	        
+	        _getActive(role) {
+	        	
+	        	var header = JSON.parse(localStorage.getItem('accountData'));
+	          	
+	        	if(role.idEntity == header.userHeader.roleEntity.idEntity && role.role.role == header.userHeader.roleEntity.role.role) {
+	        		return "active";
+	        	}
+	        }
+	        
+	        _changeAccount(e){
+	        	let elem = utils.getClickedElement(e);
+	        	if(!$(elem).hasClass('active')) {
+	        		var header = JSON.parse(localStorage.getItem('accountData'));
+	        		header.userHeader.rolesEntities.forEach(function(role) {
+	        			var split = $(elem).data('role').split('##');
+	        			if(role.idEntity == split[0] && role.role.role == split[1] ) {
+	        				login.selectProfile(role);
+	        			}	
+	        		})
+	        		
+	        	}
+	        } 
+	        
+	        _sort(a, b) {
+	        	return a.role.role.toLowerCase().localeCompare(b.role.role.toLowerCase());
+	        }			
+	    }
+	    
+	    customElements.define(AccountMenu.is, AccountMenu);
+	    
+    </script> 
+</dom-module>

@@ -1,0 +1,239 @@
+
+<dom-module id="infinia-tabs">
+	<template>
+		<style include="common-styles"></style>
+		
+		<style>
+			.section-breadcrumb {
+				display:flex;
+				margin:10px 0;
+				padding:0;
+				border-bottom:3px solid var(--primary-color);
+				padding-left:5px;
+				flex-wrap:wrap;
+			}
+			
+			.section-breadcrumb a {
+				list-style:none;
+				padding:7px 12px;
+				cursor:pointer;
+				background-color:var(--lighter-background);
+				color:var(--dark-background);
+				margin-right:5px;
+				margin-top:3px;
+				font-size:12pt;
+				text-decoration:none!important;
+			}
+			
+			.section-breadcrumb	a.active {
+				background-color:var(--primary-color);
+				text-decoration:none!important;
+				color:black;
+				font-weight:bold;
+			}
+		
+			.disabled{
+				position:relative;
+				background-color: #a5a5a540!important;
+    			color: white!important;
+			}
+			.disabled:before {
+				content: "";
+			    position: absolute;
+			    height: 100%;
+			    width: 100%;
+			    cursor: default;
+			    top: 0px;
+			    left: 0px;
+			    z-index: 1000;
+			    opacity: 0.8;
+			    background-image: -webkit-repeating-radial-gradient(center center, rgba(0,0,0,0.2), rgba(0,0,0,0.2) 1px, transparent 1px, transparent 100%);
+			    background-image: -moz-repeating-radial-gradient(center center, rgba(0,0,0,0.2), rgba(0,0,0,0.2) 1px, transparent 1px, transparent 100%);
+			    background-image: -ms-repeating-radial-gradient(center center, rgba(0,0,0,0.2), rgba(0,0,0,0.2) 1px, transparent 1px, transparent 100%);
+			    background-image: repeating-radial-gradient(center center, rgba(0,0,0,0.2), rgba(0,0,0,0.2) 1px, transparent 1px, transparent 100%);
+			    -webkit-background-size: 3px 3px;
+			    -moz-background-size: 3px 3px;
+			    background-size: 3px 3px;
+			}				
+		
+		</style>
+		
+	<div class="section-breadcrumb mt20" id="tabs">
+		<template id="template" is="dom-repeat" items="{{labels}}">
+				<a href$="{{item.href}}" on-click='_tabClick'>
+					<template is="dom-if" if="{{item.icon}}">
+						<iron-icon icon$="{{item.icon}}"></iron-icon>
+					</template>	
+					 {{_localize(item.text)}}</a>
+			
+		</template>
+	</div>
+	
+	<div id="slots">
+		<template is="dom-repeat" id="slots_template" items="{{slots}}">
+			<div><slot name="{{item}}"></slot></div>
+		</template>
+	</div>
+			
+			
+			
+	</template> 
+	
+	<script>
+
+		class InfiniaTabs extends InfiniaPolymer {
+
+	        static get is() { return  'infinia-tabs' }
+	
+	        static get properties() {
+	          return {
+	           	dataText:String,
+	           	kk:{type:String,value:"ho"},
+	           	icons:String,
+	           	hrefs:String,
+	           	labels:{type:Array, value(){return []}},
+	            slots:{type:Array, value(){return []}},
+	            active:{type:Number, value:0, observer:'_activeChanged'}
+	          }
+	        }
+	
+	        constructor() {
+	          super();
+	        }
+	
+	        ready() {
+	          	super.ready();
+	          	this.drawTabs();
+	          	
+	          	this.$.slots_template.addEventListener("dom-change", (event) => {
+	          		$(this.$.slots).find('div').hide();
+	          		$(this.$.slots).find('div').first().show();
+	          		this._activeChanged();
+	          	})
+	        }
+	        
+	        drawTabs() {
+	        	this.labels = [];
+	        	let dataSplit = this.dataText.split(',');
+	          	let iconsSplit = this.icons ? this.icons.split(",") : null;
+	          	let hrefSplit = this.hrefs ? this.hrefs.split(",") : null;
+	          	dataSplit.forEach((elem, i) => {
+	          		let icon = iconsSplit && iconsSplit[i] ? iconsSplit[i] : "";
+	          		let href = hrefSplit && hrefSplit[i] ? hrefSplit[i] : "#";
+	          		this.push('labels',{text:elem.trim(), icon:icon, href:href});
+	          	})
+	          	
+	          	setTimeout(() => {
+		          	$(this.$.tabs).find('a').removeClass('active');
+		          	$($(this.$.tabs).find('a').get(this.active)).addClass('active');
+	          	}, 100)
+
+	          	this.slots = [];
+	          	for (let i=0; i< dataSplit.length; i++){
+	          		this.push('slots', i);
+	          	}
+	        }
+	        
+	        _tabClick(e) {
+	        	
+	        	let elem = utils.getClickedElement(e);
+	        	if(elem.nodeName != 'A') elem = elem.closest('a');
+	        	
+	        	//If tab clicked is disabled, do nothing
+	        	if($(elem).hasClass('disabled')) {
+	        		e.preventDefault();
+	        		return;
+	        	}
+	        	
+	        	if(elem.href.endsWith('#'))
+	        		e.preventDefault();
+	        	
+	        	
+	        	
+	        	//Get tab index and call to select tab
+	        	let index = 0;
+	        	$(this.$.tabs).children().each(function(i, aelem) {
+	        		if(aelem == elem) {
+	        			index = i;	 
+	      			}
+	        	})
+	        	
+	        	this.active = index;
+	        }
+	        
+	        _activeChanged() {
+	        	$(this.$.tabs).find('a').removeClass('active');
+	        	$($(this.$.tabs).children().get(this.active)).addClass('active');
+	        	$(this.$.slots).children().each((index, elem) => {
+	        		$(elem).hide();
+	        		if(index == this.active) {
+	        			$(elem).show();
+	        		}
+	        	})
+	        	
+	        	let event = new CustomEvent('tabSelected', {detail:this.active});
+	        	this.dispatchEvent(event);
+	        }
+	        
+	      	addTab(index, text, icon, href) {
+	      		icon = icon || "";
+	      		href = href || "";
+	      		
+	      		let split = this.dataText.split(",");
+	      		split.splice(index, 0,text);
+	      		this.dataText = split.join(",");
+	      		
+	      		if(this.icons){
+	      			let iconsSplit = this.icons.split(",");
+	      			iconsSplit.splice(index, 0, icon);
+	      			this.icons = iconsSplit.join(",");
+	      		}
+	      		if(this.hrefs){
+	      			let refSplit = this.hrefs.split(",");
+	      			refSplit.splice(index, 0, href);
+	      			this.hrefs = refSplit.join(",");
+	      		}
+	      		this.drawTabs();
+	      	}
+	      	
+	      	disableTab(index) {
+	      		$($(this.$.tabs).find('a').get(index)).addClass('disabled');
+	      	}
+	      	
+	      	enableTab(index) {
+	      		$($(this.$.tabs).find('a').get(index)).removeClass('disabled');
+	      	}
+	      	
+	      	removeTab(index) {
+	      		let split = this.dataText.split(',');
+	      		split.splice(index, 1);
+	      		this.dataText = split.join(',')
+	      		$($(this.$.slots).children().get(index)).remove();
+	      		this.drawTabs();
+	      	}
+	      	
+	      	setActive(index) {
+	      		this.active = index;
+	      	}
+	      	
+	      	numTabs() {
+	      		return this.dataText.split(',').length;
+	      	}
+	      	
+	      	next() {
+	      		if(this.active < this.numTabs() - 1) {
+	      			this.active ++;
+	      		}
+	      	}
+	      	
+	      	prev() {
+	      		if(this.active > 0) {
+	      			this.active --;
+	      		}
+	      	}
+	    }
+	    
+	    customElements.define(InfiniaTabs.is, InfiniaTabs);
+	    
+    </script> 
+</dom-module>

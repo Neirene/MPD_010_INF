@@ -1,0 +1,55 @@
+
+
+
+<div class="container-fluid pb20">
+	<form id="creative-form">
+	
+		<input type="hidden" class="form-control" name="mediamathId"/>
+		<input type="hidden" class="form-control" name="mediamathConceptId"/>
+		<input type="hidden" class="form-control" name="idOrderLines"/>
+		<div class="row mt20">
+			<div class="form-group col-sm-3">
+				<label data-text="-advertiser"></label>
+				<infinia-select name="idAdvertiser" class="required"></infinia-select>
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-sm-4 form-group">
+				<label data-text="-name"></label>
+				<input name="name" class="form-control required"/>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-sm-4 form-group">
+				<label>Click through URL</label>
+				<input name="clickThroughUrl" class="form-control required"/>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-sm-4 form-group">
+				<label>Third Party Pixel</label>
+				<textarea class="form-control" name="creativeThirdPartyUrl"></textarea>
+			</div>
+		</div>		
+		<input type="hidden" name="filesVal" id="filesVal"> </input>
+		<div class="row">
+			<div class="col-sm-3 form-group">
+				<file-loader name="files" class="required"></file-loader>
+			</div>
+		</div>
+		
+		
+		<div class="row mt20">
+			<div class="col-sm-6 text-center">
+				<button class="btn btn-primary" type="button" id="save" data-text="-save"></button>
+			</div>
+		</div>
+	</form>
+</div>
+
+<script th:inline="javascript">
+	var id_creative = [[${id_creative}]];
+	var creativeType="assets";
+</script>
+<script src="/js/creatives/creative-assets.js"></script>

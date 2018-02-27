@@ -1,0 +1,12 @@
+
+
+<infinia-tabs th:unless="${idPushwooshCampaign}"
+		data-text="Nueva campaña pushwoosh"
+		hrefs='#'>
+</infinia-tabs>
+
+<infinia-tabs th:if="${idPushwooshCampaign}" 
+		data-text="Notificaciones,reporting,profiling"
+		th:attr="hrefs='/pushwoosh_campaigns/'+${idPushwooshCampaign}+'/pushwoosh_notifications,
+				/pushwoosh_campaigns/'+${idPushwooshCampaign}+'/reporting,/pushwoosh_campaigns/'+${idPushwooshCampaign}+'/profile'">
+</infinia-tabs>

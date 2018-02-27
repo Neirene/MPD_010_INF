@@ -1,0 +1,135 @@
+
+<dom-module id="csv-manager">
+	<template>
+		<style include="common-styles"></style>
+		
+		<style>
+		
+			.container {
+				padding:10px;
+			}
+			#radius {
+				max-width:30%;
+			}
+			
+			.reader-container {
+				margin-top:10px;
+				padding-top:1px;
+			}
+			
+		</style>
+		
+
+			
+
+		<div class="container">
+			<div>
+				<a  class="cursor-pointer" on-click="clearPoints">Borrar puntos</a>
+			</div>
+			<div class="mt10"><span class="mt10">{{_localize('radius')}} (Si no está incluido en CSV)</span></div>
+			<div class="flex center-vertical mt10">
+				<input type="number" id="radius" min="100" class="form-control"> 
+				<span class="ml10">m</span>
+			</div>
+			<div class="reader-container">
+				<csv-reader id="csv_reader"></csv-reader>
+				<div id="spinner" class="hidden">
+				<paper-spinner active="active" ></paper-spinner>
+				</div>
+			</div>
+			
+			<div>
+				<p>Ejecutar cada</p>
+				<infinia-select disable-sort="true" id="frequency_repeat"></infinia-select>
+			</div>
+		</div>
+		
+</template> 
+	
+	<script>
+	
+		class CSVManager extends Polymer.Element {
+
+	        static get is() { return  'csv-manager' }
+	
+	        static get properties() {
+	          return {}
+	        }
+	
+	        constructor() {
+	          super();
+	        }
+	
+	        ready() {
+	        	super.ready();
+	        	let _this = this;
+	        	$(this.$.csv_reader).on('fileLoaded', (e) =>  {
+	        		let rad = Number($(this.$.radius).val()) || 100;
+	        		$(this.$.spinner).removeClass('hidden');
+	        		setTimeout(() => {
+	        			let first = true;
+	        			e.detail.every((line) => {
+		        			
+	        				
+		    				let split = line.split(',');
+		    				if(split.length == 1)
+		    					split = line.split(';');
+		    				
+		    				if(split.length == 3) {
+		    					if(!this.map.addPoi(Number(split[0]), Number(split[1]), Number(split[2])*1000, 'csv-coords') && !first ) {
+		    						csvError();
+		    						return false;
+		    					}
+		    				}
+		    				else if(split.length == 2) {
+		    					if(!this.map.addPoi(Number(split[0]), Number(split[1]), rad, 'csv-coords', "") && !first) {
+		    						csvError();
+		    						return false;
+		    					}
+		    				}
+		    				
+		    				function csvError() {
+		    					utils.modal("Error", "El formato del CSV no es válido");
+		    					_this.clearPoints();
+		    				}
+		    				if(first) {
+		    					first = false;
+		    				}
+		    				
+		    				
+		    				
+		    				return true;
+		    				
+		    				
+		    			})
+		        		this.map.sendCircleAddedEvent();
+		        		$(this.$.spinner).addClass('hidden');
+	        		}, 100)
+	        		
+	        	})
+	        	
+	        	var timing = [ {id:"week", value:localizer.get('week')}, {id:"month", value:localizer.get('month')},{id:"quarter", value:localizer.get('quarter')}];
+	        	this.$.frequency_repeat.options = timing;
+	        	
+	        }
+	        
+	        clearPoints() {
+	        	this.map.clearPois('csv-coords');
+	        	this.$.csv_reader.reset();
+	        }
+	        
+	        
+	        _localize(text) {
+	        	return localizer.get(text);
+	        }
+	        
+	        getFileName() {
+	        	return this.$.csv_reader.getFileName();
+	        }
+	        
+	    }
+	    
+	    customElements.define(CSVManager.is, CSVManager);
+	    
+    </script> 
+</dom-module>

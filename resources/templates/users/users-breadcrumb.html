@@ -1,0 +1,6 @@
+<ul class="section-breadcrumb mt20">
+	<li th:unless="${id_user}" class="active"><a>Nuevo usuario</a></li>
+	<li th:if="${id_user}" th:classappend="${users_breadcrumb} ? active : ''">
+		<a th:href="@{/users/{id_user}(id_user=${id_user})}" class="user_name" id="user-name-breadcrumb"></a>
+	</li>	
+</ul>

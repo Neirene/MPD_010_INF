@@ -1,0 +1,26 @@
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDW_hi5jQm2Ffb4GIa98vJdszgrma-qlJM&amp;libraries=places,drawing"></script>
+<script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js"></script>
+<script src="/js/libraries/maps/CartoUtils.js"></script>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+<div class="container-fluid">
+
+
+	<infinia-tabs
+				data-text="campaign_report,cluster.psychographic, cluster.behavioral"
+				icons="icons:supervisor-account,hardware:phone-android,social:public">
+				
+				<div slot="0" th:include="common/performance"></div>
+				<div slot="1" th:include="common/psychographic"></div>
+				<div slot="2" th:include="common/behavioral"></div>
+			</infinia-tabs>
+
+	
+
+</div>
+
+
+<script th:inline="javascript">
+	var id_campaign = [[${id_campaign}]];
+</script>
+<script src="/js/digital_signage/campaigns_ds/campaign_ds_reporting.js"></script>

@@ -1,0 +1,69 @@
+
+
+<div class="container pb20">
+	<form  id="location-form">
+	
+		<input type="hidden" class="form-control" name="idTrackers"/>
+		<input type="hidden" class="form-control" name="idBeacons"/>
+		<input type="hidden" class="form-control" name="idRetailer"/>
+		<input type="hidden" class="form-control" name="idPlayers"/>
+	
+		<div class="row">
+			<div class="col-sm-12">
+				<paper-input class="required" label="name" name="name"></paper-input>
+			</div>
+			<div class="col-sm-12">
+				<paper-input class="required" label="address" name="address"></paper-input>
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-sm-6">
+				<paper-input class="required" label="lat" name="lat" type="number"></paper-input>
+			</div>
+			<div class="col-sm-6">
+				<paper-input class="required" label="lon" name="lon" type="number"></paper-input>
+			</div>
+			
+		</div>
+
+		<div id = "permissionManagement" class="row">
+			<div class="form-group col-sm-6">
+				<paper-input label="technicalContact" name="technicalContact"></paper-input>
+			</div>
+			<div class="form-group col-sm-6">
+				<label data-text="-status"></label>
+				<infinia-select class="required" name="status"></infinia-select>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-sm-6 mt10">
+				<p>Circuitos</p>
+				<selectable-list id="circuits" hide-block="true" hide-accept="true"></selectable-list>
+			</div>
+		
+			<div class="form-group col-sm-6 mt10">
+				<label>Ubicación con permisos de administración de trackers</label>
+				<div class="radio">
+	    			<label><input type="radio" name="trackerAdminPermission" value="1"/>Activo</label>
+	    		</div>
+	    		<div class="radio">
+	    			<label><input type="radio" name="trackerAdminPermission" value="0" checked="checked"/>Inactivo</label>
+	    		</div>
+	    	</div>
+		</div>
+		<div class="row mt20">
+			<div class="col-sm-12 text-center">
+				<button type="button" class="btn btn-primary" id="save-location" data-text="-save"></button>
+			</div>
+		</div>
+		
+	</form>
+</div>
+<script src="/js/indoor_analytics/location.js"></script>
+<script th:inline="javascript">
+	var id_retailer = id_retailer || [[${id_retailer}]];
+	var id_location = [[${id_location}]];
+	
+	localizer.translate();
+</script>

@@ -1,0 +1,79 @@
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDW_hi5jQm2Ffb4GIa98vJdszgrma-qlJM&amp;libraries=places,drawing"></script>
+<script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js"></script>
+
+<div th:include="indoor_analytics/indoor_analytics-breadcrumb"></div>
+
+<div class="container-fluid pb20">
+	<div class="row">
+		<div class="col-sm-3 form-group">
+			<label>Retailer origen</label>
+			<infinia-select name="originRetailer"></infinia-select>
+		</div>
+		<div class="col-sm-3 form-group">
+			<!-- TODO -->
+		</div>
+		<div class="col-sm-3 form-group">
+			<label>Retailer destino</label>
+			<infinia-select name="destinyRetailer"></infinia-select>
+		</div>
+		<div class="col-sm-3"></div>
+	</div>
+	
+	<div class="row">
+		<div class="col-sm-3 form-group">
+			<label>Punto de venta origen</label>
+			<infinia-select name="pointOfSaleOrigin"></infinia-select>
+		</div>
+		<div class="col-sm-3 form-group">
+			<label>Tracker origen</label>
+			<infinia-select name="originTracker"></infinia-select>
+		</div>
+		<div class="col-sm-3 form-group">
+			<label>Punto de venta destino</label>
+			<infinia-select name="pointOfSaleDestiny"></infinia-select>
+		</div>
+		<div class="col-sm-3 form-group">
+			<label>Tracker destino</label>
+			<infinia-select name="destinyTracker"></infinia-select>
+		</div>
+	</div>
+	
+	<div class="row">
+		<div class="col-sm-3">
+			<h5>Fecha inicial</h5>
+		</div>
+		<div class="col-sm-3">&nbsp;</div>
+		<div class="col-sm-3">
+			<h5>Fecha comparativa</h5>
+		</div>
+		<div class="col-sm-3">&nbsp;</div>
+	</div>
+	
+	<div class="row">
+		<div class="col-sm-3 form-group">
+			<label>Desde</label>
+			<date-picker text="Desde" name="fromDateInitial"></date-picker>
+		</div>
+		<div class="col-sm-3 form-group">
+			<label>Hasta</label>
+			<date-picker text="Hasta" name="toDateInitial"></date-picker>
+		</div>
+		<div class="col-sm-3 form-group">
+			<label>Desde</label>
+			<date-picker text="Desde" name="fromDateComparative"></date-picker>
+		</div>
+		<div class="col-sm-3 form-group">
+			<label>Hasta</label>
+			<date-picker text="Hasta" name="toDateComparative"></date-picker>
+		</div>
+	</div>
+	
+	<div class="row mt20">
+		<div class="col-sm-12 text-center">
+			<button type="button" class="btn btn-primary center-block" id="itineraries-search">Buscar</button>	
+		</div>
+	</div>
+</div>
+
+<script src="/js/indoor_analytics/indoor_analytics-itineraries_retailer.js"></script>

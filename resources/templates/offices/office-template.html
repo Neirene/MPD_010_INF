@@ -1,0 +1,56 @@
+
+<div class="container-fluid pb20">
+	<form class="mt20" id="office-form">
+		<div class="form-section-title">Datos de la oficina</div>
+
+		<div class="row mt20">
+			<div class="form-group col-sm-6">
+				<label>Nombre</label> 
+				<input class="form-control required" name="name" />
+			</div>
+			<div class="form-group col-sm-4">
+				<label data-text="-agency"></label>
+				<infinia-select id="idAgency" name="idAgency" class="required"></infinia-select>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="form-group col-sm-6">
+				<label>País</label>
+				<infinia-select class="required" name="country"></infinia-select>
+			</div>
+			<div class="form-group col-sm-6">
+				<label>Ciudad</label> <input class="form-control required" name="city" />
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="form-group col-sm-6">
+				<label>Dirección</label> <input class="form-control required" name="address" />
+			</div>
+			<div class="form-group col-sm-6">
+				<label>Codigo postal</label> <input class="form-control required" name="postalCode" />
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="form-group col-sm-6">
+				<label>Email</label> <input class="form-control" name="email" />
+			</div>
+			<div class="form-group col-sm-6">
+				<label>Teléfono</label> <input class="form-control" name="phone" />
+			</div>
+		</div>
+
+		<div class="row mt20">
+			<div class="col-sm-12 text-center">
+				<button type="button" class="btn btn-primary" id="save-office">Guardar oficina</button>
+			</div>
+		</div>
+	</form>
+</div>
+
+<script src="/js/offices/office.js"></script>
+<script th:inline="javascript">
+	var officeId = [[${id_office}]];
+</script>

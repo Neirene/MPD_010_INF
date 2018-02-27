@@ -1,0 +1,25 @@
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+<div th:include="pushwoosh_campaigns/pushwoosh_campaign-breadcrumb"></div>
+
+<div class="container-fluid">
+	<div id="representation-selector">
+		<ul class="section-breadcrumb">			
+			<li class="active showSelector" data-section="charts"><a>Gráficos</a></li>
+			<li class="showSelector" data-section="tables"><a>Tabla</a></li>			
+		</ul>
+	</div>
+	
+	<div id="tables-container" class="hidden">
+		<div class="table-container">
+		</div>
+	</div>
+	<div id="charts-container">
+		<paper-spinner active="active"></paper-spinner>
+	</div>
+</div>
+
+<script th:inline="javascript">
+	var idPushwooshCampaign = [[${idPushwooshCampaign}]];
+</script>
+<script src="/js/pushwoosh_campaigns/pushwoosh_campaign_reporting.js"></script>

@@ -1,0 +1,203 @@
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+<div class="container-fluid pb20">
+	<collapsible-content id="collapsible">
+	<div class="row">
+	
+		<div class="col-sm-12">
+			<div class="form-section-title-big"><iron-icon icon="icons:card-travel"></iron-icon>Datos</div>
+		</div>
+	<div class="col-sm-12 gold mt20">
+		<form id="reporting-form">
+			
+			<div class="row">
+				<div class="col-sm-8 form-group space-between">
+					<div style="flex:2"><label data-text="-campaign"></label>
+						<infinia-select id="campaign-selector" class="gold required" ajax="/api/campaigns" ajax-column="0" name="idCampaign"></infinia-select>
+					</div>
+					<div class="ml10">
+						<label>Fecha inicio</label>
+						<date-picker text="Fecha inicio" class="required" input-class="gold"  name="startDate" ></date-picker>
+					</div>
+					<div class="ml10">
+						<label>Fecha fin</label>
+						<date-picker text="Fecha fin" class="required" input-class="gold"  name="endDate"></date-picker>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-5 form-group">
+					<label>Nombre report</label>
+					<input class="required" name="name" maxlength="150"/>
+				</div>
+				<div class="col-sm-2 form-group">
+					<label>Tipo Report</label>
+					<infinia-select name="type" class="gold required"></infinia-select>
+				</div>
+			</div>
+			
+			<div class="form-section-title-big">
+				<iron-icon icon="icons:trending-up"></iron-icon> Dimensiones</div>
+			<div class="row mt20">
+				<div class="form-group col-sm-8">
+					<list-accept-block hide-block="true" id="dimensions"></list-accept-block>
+				</div> 
+			</div>
+			
+			<div class="form-section-title-big">
+				<iron-icon icon="icons:trending-up"></iron-icon> Métricas
+			</div>
+			<div class="row mt20">
+				<div class="form-group col-sm-8">
+					<list-accept-block hide-block="true" id="metrics"></list-accept-block>
+				</div> 
+			</div>
+			
+			<div class="form-section-title-big">
+				<iron-icon icon="icons:mail"></iron-icon> Envío
+			</div>
+			<div class="row mt20">
+				<div class="col-sm-8 form-group space-between">
+					<div class="ml10">
+						<label>Para:</label>
+						<input class="required" name="mailTo" maxlength="150"/>	
+					</div>
+				</div>
+				<div class="col-sm-6 form-group space-between">
+					<div class="ml10">
+						<label>Asunto:</label>
+						<input class="required" name="mailSubject" maxlength="150"/>	
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-2 form-group ml10">
+					<label>Frecuencia</label>
+					<infinia-select name="sendFrequency" class="gold required"></infinia-select>
+				</div>
+				<div class="col-sm-2 form-group ml10" id="sendDayContainer" style="display:none">
+					<label>Dia</label>
+					<infinia-select name="sendDay" class="gold"></infinia-select>
+				</div>
+				<div class="col-sm-2 form-group ml10" id="sendDateContainer" style="display:none">
+					<label>Fecha</label>
+					<date-picker text="Fecha" name="sendDate" class="required">
+					</date-picker>
+				</div>
+				<div class="col-sm-2 form-group ml10" id="sendHourContainer" style="display:none">
+					<label>Hora</label>
+					<infinia-select name="sendHour" class="gold required"></infinia-select>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-4 form-group ml10" >
+					<label>Body:</label>
+					<textarea class="form-control gold" name="mailBody" rows="5" cols="10"></textarea>
+				</div>
+			</div>
+			
+			<div class="row mt20">
+				<div class="col-sm-2 text-center">
+					<button type="button" class="btn btn-primary" id="send-report">Enviar Report</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	</div>
+	<div class="col-sm-12">
+		<hr/>
+	</div>
+	</collapsible-content>
+	
+	
+	<div id="representation-selector" class="hidden">
+		<div class="mt20">
+			<button type="button" class="btn btn-primary ml10" id="save-performance-reporting">Guardar Reporting performance</button>
+			<button type="button" class="btn btn-primary ml10" id="save-geo-reporting">Guardar Reporting geo</button>
+			<button type="button" class="btn btn-primary ml10" id="save-app-reporting">Guardar Reporting app </button>
+		</div>
+		
+		
+		<ul class="section-breadcrumb">
+			<li class="active showSelector" data-section="charts"><a>Gráficos</a></li>
+			<li class="showSelector" data-section="tables"><a>Tabla</a></li>
+		</ul>
+	</div>
+
+
+	<div id="charts-container" class="hidden">
+		<div class="row">
+			<div class="col-sm-12 mt20">
+				<p><b>Performance por creatividad</b></p>
+			</div>
+			<div id="performance-charts" class="col-sm-12">
+				<paper-spinner active="active"></paper-spinner>
+			</div>
+		</div>
+		<hr class="mt20"/>
+		<div class="row mt20">
+			<div class="col-sm-12 mt20">
+				<p><b>GEO (por region / campaña)</b></p>
+			</div>
+			<div id="geo-charts" class="col-sm-12">
+				<paper-spinner active="active"></paper-spinner>
+			</div>
+		</div>
+		<hr class="mt20"/>
+		<div class="row mt20">
+			<div class="col-sm-12 mt20">
+				<p><b>APP (app / campaña)</b></p>
+			</div>
+			<div id="app-charts" class="col-sm-12">
+				<paper-spinner active="active"></paper-spinner>
+			</div>
+		</div>
+		<hr class="mt20"/>
+		<div class="row mt20">
+			<div class="col-sm-12 mt20">
+				<p><b>Video (app / campaña)</b></p>
+			</div>
+			<div id="video-charts" class="col-sm-12">
+				<paper-spinner active="active"></paper-spinner>
+			</div>
+		</div>
+		<hr class="mt20"/>
+	</div>
+
+
+	<div id="tables-container" class="hidden">
+		<div class="row">
+			<div class="col-sm-12">
+				<p><b>Performance</b></p>
+			</div>
+			<div class="table-container-performance"></div>
+			
+		</div>
+		<div class="row mt20">
+			<div class="col-sm-12">
+				<p><b>GEO</b></p>
+			</div>
+			<div class="mt20 table-container-geo"></div>
+		</div>
+		<div class="row mt20">
+			<div class="col-sm-12">
+				<p><b>APP</b></p>
+			</div>
+			<div class="mt20 table-container-app"></div>
+			
+		</div>
+		<div class="row mt20">
+			<div class="col-sm-12">
+				<p><b>Video</b></p>
+			</div>
+			<div class="mt20 table-container-video"></div>
+			<div class="col-sm-12 text-center" id="saveVideoReportingContainer">
+				<button type="button" class="btn btn-primary" id="save-video-reporting">Guardar Reporting</button>
+			</div>
+		</div>
+	</div>
+</div>
+<script th:inline="javascript">
+	var id_campaign = [[${id_campaign}]];
+</script>
+<script src="/js/campaigns/campaign_report.js"></script>

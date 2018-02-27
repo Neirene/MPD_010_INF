@@ -1,0 +1,67 @@
+<div>
+	<ul class="section-breadcrumb mt20">
+		<li th:unless="${id_campaign_ds}" class="active"><a>Nueva Campaña</a></li>
+		<li th:if="${id_campaign_ds}" th:classappend="${campaign_ds_breadcrumb} ? active : ''"><a th:href="@{/campaigns_ds/{id_campaign_ds}(id_campaign_ds=${id_campaign_ds})}" class="campaign_name" id="campaign_ds-name-breadcrumb"></a></li>
+		<li th:if="${id_campaign_ds}" th:classappend="${order_lines_breadcrumb} ? active : ''"><a th:href="@{/campaigns_ds/{id_campaign_ds}/order_lines_ds(id_campaign_ds=${id_campaign_ds})}">Lineas de Pedido</a></li>
+	</ul>
+</div>
+
+<div class="container-fluid pb20">
+
+	<form class="mt20" id="campaign_ds-form">
+		<input type="hidden" class="form-control" name="admiraId"/>
+	
+		<div class="form-section-title">
+			Datos de la campaña
+		</div>
+		
+		<div class="row mt20">
+			<div class="form-group col-sm-6">
+				<label>Nombre campaña</label>
+				<input class="form-control required" name="name" maxlength="150"/>
+			</div>
+			<div class="col-sm-6 form-group">
+				<label data-text="-description"></label>
+				<input name="description" class="form-control" />
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="form-group col-sm-4">
+				<label>Reseller</label>
+				<infinia-select class="required" name="idReseller"></infinia-select>
+			</div>
+			<div class="form-group col-sm-4">
+				<label>Advertiser</label>
+				<infinia-select class="required" name="idAdvertiser" />
+			</div>
+			<div class="form-group col-sm-4">
+				<label>Categoría</label>
+				<infinia-select class="required" name="idCategory" />
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-sm-2 col-xs-6 form-group">
+				<label>Fecha inicio</label>
+				<date-picker text="Fecha inicio" show-time="true" name="startDate" class="required" hour="00" min="00"></date-picker>
+			</div>
+			<div class="col-sm-2 col-xs-6 form-group">
+				<label>Fecha fin</label>
+				<date-picker text="Fecha fin" show-time="true"  name="endDate" class="required" hour="23" min="59"></date-picker>
+			</div>
+		</div>
+		<div class="row mt20">
+			<div class="col-sm-12 text-center">
+				<button type="button" class="btn btn-primary" id="save-campaign">Guardar campaña</button>
+			</div>
+		</div>
+	
+	</form>
+	
+</div>
+<script th:inline="javascript">
+	var id_campaign_ds = [[${id_campaign_ds}]];
+</script>
+<script src="/js/digital_signage/campaigns_ds/campaign_ds.js"></script>
+

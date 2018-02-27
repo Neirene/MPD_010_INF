@@ -1,0 +1,44 @@
+
+
+<html>
+
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/fingerprintjs2/1.5.1/fingerprint2.min.js"></script>
+
+	</head>
+	<body>
+
+		<div id="fingerprint">Inicio</div>
+		<script>
+			var div = document.getElementById("fingerprint");
+			div.innerHTML = 'Obteniendo fingerprint...';
+			new Fingerprint2().get((result, components) => {
+			  div.innerHTML = div.innerHTML + '<br> Fingerprint: '+result;
+			 
+			});
+		</script>
+
+
+		<script>
+			
+
+
+			
+	        var script = document.createElement("script");
+	        script.id = "augur.js";
+	        script.async = true;
+	        script.setAttribute("data-callback", "printAugur");
+	        //script.setAttribute("data-cb", "infiniasdk.externalFingerprintCallback2");
+	        script.src = "//cdn.augur.io/augur.min.js";
+	        script.setAttribute("data-warpspeed", "2^UuTc0");
+
+	        document.head.appendChild(script);
+
+	        function printAugur() {
+	        	div.innerHTML = div.innerHTML + '<br><br>Augur: '+augur.device.ID;
+	        }
+		</script>
+	</body>
+
+</html>

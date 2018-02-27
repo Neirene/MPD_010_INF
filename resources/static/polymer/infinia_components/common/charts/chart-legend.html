@@ -1,0 +1,106 @@
+
+<dom-module id="chart-legend">
+	<template>
+		<style include="common-styles"></style>
+		
+		<style>
+			#legend {
+				display:flex;
+				justify-content:space-between;
+				flex-wrap:wrap;
+			}
+
+			#legend > li {
+				font-weight:bold;
+				font-size:15px;
+				padding-bottom:3px;
+			}
+			
+			
+        </style>
+        
+    <ul id="legend"></ul>
+    </template> 
+
+	<script>
+	
+	class ChartLegend extends Polymer.Element {
+
+        static get is() { return  'chart-legend' }
+		
+        static get properties() {
+          	return {
+				legendValues: {type:Object, value:function(){return [];}, notify: true},
+				graphName: {type:String, notify: true},
+				colorSelected:{type:String, value:"primary"}
+          	}
+        }
+
+        constructor() {
+          super();
+        }
+
+        ready() {
+			  super.ready();
+			  
+			 
+        }
+        
+        showLegend() {
+			let legendArray = this.legendValues;
+			let colors = {primary: ['#132f37','#c6a278'],blue: ['#012c40', '#5da6ca'], red:['#DA324F', '#7a1b2b']};
+			colors = colors[this.colorSelected];
+			let sortedData = [];
+			let finalValues = [];
+			let finalStrings = [];
+			let finalTrimmedStrings;
+			let finalColors = [];
+			let highestValue;
+			let parent = this.$.legend;
+			let iconsAge = ["icons:accessibility","icons:accessibility","icons:accessibility","icons:accessibility","icons:accessibility","icons:accessibility"];
+			let iconsIncome = ["icons:account-balance","icons:account-balance","icons:account-balance","icons:account-balance","icons:account-balance","icons:account-balance"];
+			let iconsGender = ["notification:wc","notification:wc"];
+			let iconsNationality = ["social:public","social:public","social:public","social:public","social:public","social:public","social:public"];
+			let iconsContainer = [];
+			
+
+			// Calculate the Highest Value by evaluating the highest integer on the pie chart graph parameter and updating colors accordingly.
+
+			for (var i = 1; i < legendArray.length; i++) {
+				finalValues.push(legendArray[i][1]);
+				finalStrings.push(legendArray[i][0]);
+				finalColors.push(colors[1]);
+			}
+
+			highestValue = finalValues.indexOf(Math.max(...finalValues)) ;
+			finalColors[highestValue] = colors[0];
+
+
+			//received table names.......
+			switch (this.graphName){
+				case "gender": 
+					iconsContainer = iconsGender;
+					break;
+				case "age": 
+					iconsContainer = iconsAge;
+					break;
+				case "income_level":
+					iconsContainer = iconsIncome;
+					break;
+				case "country":
+					iconsContainer = iconsNationality;
+				default: 
+					iconsContainer.push("menu");
+			}
+
+			//prints the table
+			for (var i = 0; i < finalStrings.length; i++) {
+				$(parent).append( "<li style='color:"+finalColors[i]+"'><iron-icon icon='"+iconsContainer[i]+"'></iron-icon>"+finalStrings[i]+"</li>" );
+			}
+		}
+	}
+	    
+	customElements.define(ChartLegend.is, ChartLegend);
+	    
+    </script> 
+</dom-module>

@@ -1,0 +1,226 @@
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDW_hi5jQm2Ffb4GIa98vJdszgrma-qlJM&amp;libraries=places,drawing"></script>
+<script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js"></script>
+
+<div th:include="indoor_analytics/indoor_analytics-breadcrumb"></div>
+
+<div class="container-fluid pb20">
+	<collapsible-content title="search" style-class="gold">
+		<div class="row">
+			<div class="col-sm-12">
+				<div class="row">
+					<div class="col-sm-3 form-group">
+						<label>Vista por</label>
+						<infinia-select name="viewBy"></infinia-select>
+					</div>
+					
+					<div id="field_month_init" class="col-sm-2 form-group">
+						<label>Mes inicio</label>
+						<infinia-select name="initMonth" disable-sort="true"></infinia-select>
+					</div>
+					
+					<div id="field_month_end" class="col-sm-2 form-group">
+						<label>Mes fin</label>
+						<infinia-select name="endMonth" disable-sort="true"></infinia-select>
+					</div>
+					
+					<div id="field_initDate" class="col-sm-2 form-group hidden">
+						<label>Fecha inicio</label>
+						<date-picker text="Fecha inicio" id="initDate" name="initDate"></date-picker>
+					</div>
+					
+					<div id="field_endDate" class="col-sm-2 form-group hidden">
+						<label>Fecha fin</label>
+						<date-picker text="Fecha fin" id="endDate"  name="endDate"></date-picker>
+					</div>
+					
+					<div id="field_viewType" class="col-sm-2 form-group">
+						<label>Tipo de vista</label>
+						<infinia-select name="viewType" disable-sort="true"></infinia-select>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-sm-4 form-group">
+				<label>Retailer</label>
+				<infinia-select name="retailers"></infinia-select>
+			</div>
+			
+			<div class="col-sm-4 form-group">
+				<label>Punto de venta</label>
+				<infinia-select name="locations"></infinia-select>
+			</div>
+			
+			<div class="col-sm-4 form-group">
+				<label>Infinia tracker</label>
+				<infinia-select name="trackers"></infinia-select>
+			</div>
+		</div>		
+		<div class="row">
+			<div class="col-sm-12 text-center mt20">
+				<button type="button" class="btn btn-primary center-block" id="statistics-search">Buscar</button>	
+			</div>
+		</div>
+	</collapsible-content>
+	
+	<div class="data-container hidden mt10">	
+		
+		<div class="row mt10">
+			<div class="text-right col-sm-12"><button type="button" class="btn btn-primary" id="download-indoor-stats-csv">Descargar CSV</button></div>
+		</div>
+		
+		
+		<div class="form-section-title">
+			Analítica cuantitativa
+		</div>
+		
+		<div class="row mt10" style="padding-left: 15px;">
+			<div id="charts-container-cuantitative">
+				<div class="row">
+					<div class="col-sm-12 mt20">
+						<p><b>Permanencia en área</b></p>
+					</div>
+					<div id="uniquePerm-lineChart" class="col-sm-12">
+						<paper-spinner active="active"></paper-spinner>
+					</div>
+				</div>
+				
+				<div class="row">
+					<div class="col-sm-6 mt20">
+						<p><b>Tiempo medio</b></p>
+					</div>
+					<div id="totalTime-lineChart" class="col-sm-12">
+						<paper-spinner active="active"></paper-spinner>
+					</div>
+					<div class="col-sm-6 mt20">
+						<p><b>Retorno de visitantes</b></p>
+					</div>
+					<div id="visitorReturn-lineChart" class="col-sm-12">
+						<paper-spinner active="active"></paper-spinner>
+					</div>
+				</div>
+				
+				<div class="row">
+					<div class="col-sm-6 mt20">
+						<p><b>Tiempo medio de retorno a tienda</b></p>
+					</div>
+					<div id="totalReturnDays-lineChart" class="col-sm-12">
+						<paper-spinner active="active"></paper-spinner>
+					</div>
+					<div class="col-sm-6 mt20">
+						<p><b>Individuos totales</b></p>
+					</div>
+					<div id="uniqueVisitors-lineChart" class="col-sm-12">
+						<paper-spinner active="active"></paper-spinner>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<div id="representation-selector" class="mt60">
+			<ul class="section-breadcrumb">						
+				<li class="showSelector active" data-section="demographic">
+					<a>
+						<iron-icon icon="icons:supervisor-account"></iron-icon> Perfil sociodemográfico	
+					</a>
+				</li>
+				<li class="showSelector" data-section="behavioral">
+					<a>
+						<iron-icon icon="social:public"></iron-icon> Perfil comportamental
+					</a>
+				</li>
+				<li class="showSelector" data-section="psychographic">
+					<a>
+						<iron-icon icon="hardware:phone-android"></iron-icon> Perfil psicográfico
+					</a>
+				</li>
+			</ul>
+		</div>
+		<div class="mt20">			
+			<!-- Perfil sociodemográfico -->
+			<div id="demographic-container">
+				<div class="row">
+					<div class="col-sm-12">
+						<span>Representatividad de la muestra: <strong id="representativity_statistics">0%</strong></span>
+					</div>
+				</div>
+				
+				<div class="row" style="padding-left: 15px;">
+					<div id="charts-container-cualitative">
+						<div class="row">
+							<div class="col-sm-12 mt20">
+								<p><b>Sexo</b></p>
+							</div>
+							<div id="gender-lineChart" class="col-sm-12">
+								<paper-spinner active="active"></paper-spinner>
+							</div>
+						</div>
+						
+						<div class="row">
+							<div class="col-sm-12 mt20">
+								<p><b>Edad</b></p>
+							</div>
+							<div id="age-lineChart" class="col-sm-12">
+								<paper-spinner active="active"></paper-spinner>
+							</div>	
+						</div>
+						
+						<div class="row">
+							<div class="col-sm-12 mt20">
+								<p><b>Nivel socioeconómico</b></p>
+							</div>
+							<div id="income_level-lineChart" class="col-sm-12">
+								<paper-spinner active="active"></paper-spinner>
+							</div>	
+						</div>
+						
+						<div class="row">
+							<div class="col-sm-12 mt20">
+								<p><b>Nacionalidad</b></p>
+							</div>
+							<div id="country-lineChart" class="col-sm-12">
+								<paper-spinner active="active"></paper-spinner>
+							</div>	
+						</div>
+					</div>	
+				</div>
+			</div>	
+			
+			<!-- Perfil comportamental -->
+			<div id="behavioral-container" class="hidden">
+				<div class="row mt20">
+					<div class="col-sm-12">
+						<h3 data-text="-vitalZone"></h3>
+						<infinia-map name="vitalZoneStatistics" id="vitalZoneStatistics-map" draw="true" class="homeworkStatistics" show-searcher="true" ></infinia-map>
+					</div>
+				</div>
+				
+				<div class="row mt20">
+					<div class="col-sm-12">
+						<h3 data-text="-home"></h3>
+						<infinia-map name="homeStatistics" id="homeStatistics-map" draw="true" class="homeworkStatistics" show-searcher="true" ></infinia-map>
+					</div>
+				</div>
+				
+				<div class="row mt20">
+					<div class="col-sm-12">
+						<h3 data-text="-work"></h3>
+						<infinia-map name="workStatistics" id="workStatistics-map" draw="true" class="homeworkStatistics" show-searcher="true" ></infinia-map>
+					</div>
+				</div>
+			</div>
+			
+			<!-- Perfil psicográfico -->
+			<div id="psychographic-container" class="hidden">		
+			</div>
+			
+			<div class="row mt20 hidden">
+				<div class="col-sm-12" align="right">
+					<button type="button" class="btn btn-primary" id="statistics-retailers-cluster-create">Crear cluster</button>	
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script src="/js/indoor_analytics/indoor_analytics-statistics_retailer.js"></script>

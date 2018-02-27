@@ -1,0 +1,82 @@
+
+<dom-module id="cluster-selector">
+	<template>
+		<style include="common-styles"></style>
+		
+		<style>
+				
+		
+		</style>
+		
+		
+		<div>
+			<selectable-list id="clusters_list" hide-accept="true" hide-block="true" select-one="true"></selectable-list>
+		</div>
+	</template> 
+	
+	<script>
+
+		class ClusterSelector extends Polymer.Element {
+
+	        static get is() { return  'cluster-selector' }
+	
+	        static get properties() {
+	          return {
+	          	
+	          }
+	        }
+	
+	        constructor() {
+	          super();
+	        }
+	
+	        ready() {
+	          	super.ready();
+	          	let _this = this;
+	          	
+	          //Load clusters
+	        	//this.doSearch(this.$.clusters_list, "");
+	        	
+	        	$(this.$.clusters_list).on('filterList', function(e) {
+	        		_this.doSearch(this, e.detail);
+	        	})
+	        	
+	          	$(this.$.clusters_list).on('itemAccepted', function(e) {
+	        		
+	          		var event = new CustomEvent('clusterSelected', {'detail':e.detail.id});
+	        		_this.dispatchEvent(event);
+	        		
+	        	})
+	        	
+	        	$(this.$.clusters_list).on('acceptedRemoved', function(e) {
+	        		var event = new CustomEvent('clusterRemoved', {'detail':e.detail.id});
+	        		_this.dispatchEvent(event);
+	        	})
+	        }			
+	        
+	        doSearch(selList, filter) {
+	        	if(!selList) {
+	        		selList = this.$.clusters_list;
+	        	}
+	        	if(!filter) {
+	        		filter = "";
+	        	}
+	        	utils.get('/api/clusters?filters=cluster_status|completed&filters=name|'+filter+'&numRecords=100',{}, function(response){
+	        		let list = [];
+	        		response.tableRows.forEach((row) => {
+	        			let elem = {id:row.id, value:row.cells[0].value};
+	        			list.push(elem);
+	        		})
+	        		selList.setList(list);
+	        	})
+	        }
+	        
+	        getData() {
+	        	return this.$.clusters_list.getData();
+	        }
+	    }
+	    
+	    customElements.define(ClusterSelector.is, ClusterSelector);
+	    
+    </script> 
+</dom-module>

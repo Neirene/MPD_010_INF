@@ -1,0 +1,58 @@
+
+<dom-module id="publisher-actions">
+	<template>
+		<style include="common-styles"></style>
+
+		<infinia-context id="context">
+					<ul slot="context-slot">
+						<li on-click="editPublisher"> <iron-icon icon="image:edit"></iron-icon>
+							Editar
+						</li>
+					</ul>
+				</infinia-context>
+	</template> 
+	<script>
+
+		class PublisherActions extends Polymer.Element {
+
+	        static get is() { return  'publisher-actions' }
+	
+	        static get properties() {
+	          return {
+	          	elemId:Number
+	          }
+	        }
+	
+	        constructor() {
+	          super();
+	        }
+	
+	        ready() {
+	          	super.ready();
+	        }
+
+	        show(e) {
+	        	var path = utils.getPath(e.target);
+				$(path[0]).next()[0].open();
+			}
+
+	        viewDeals() {
+	        	window.location.href = "/publishers/" + this.elemId + "/deals";
+	        }
+	        
+	        viewSites() {
+	        	window.location.href = "/publishers/" + this.elemId + "/sites";
+	        }
+	        
+	        editPublisher() {
+	        	window.location.href = "/publishers/" + this.elemId;
+	        }
+	        
+	    }
+	    
+	    customElements.define(PublisherActions.is, PublisherActions);
+	    
+
+    </script> 
+
+</dom-module>

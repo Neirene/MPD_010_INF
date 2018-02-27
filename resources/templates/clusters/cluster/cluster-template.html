@@ -1,0 +1,52 @@
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDW_hi5jQm2Ffb4GIa98vJdszgrma-qlJM&amp;libraries=places,drawing"></script>
+<script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js"></script>
+
+
+<div class="new_button">
+	<a class="btn btn-primary validate-cluster" >Validar</a>&nbsp;&nbsp;
+</div>
+
+
+<form id="clusterForm">
+<div class="container-fluid mb20">
+	<div class="row mt20">
+		<div class="col-sm-4">
+			<label data-text="-name"></label>
+			<input class="form-control required" name="name"/>		
+		</div>
+	</div>
+
+	<p class="mt20">
+		<label data-text="-cluster.configuration"></label>
+	</p>
+	
+	<div class="row mb20">
+		<div class="col-sm-9">
+			<infinia-tabs
+				data-text="cluster.demographic,cluster.psychographic,vitalZone,location"
+				icons="device:gps-fixed,hardware:phone-android,icons:home,communication:location-on">
+				
+				<div slot="0" th:include="clusters/cluster/cluster-target"></div>
+				<div slot="1" th:include="clusters/cluster/cluster-technological-segmentation"></div>
+				<div slot="2" th:include="clusters/cluster/cluster-homework"></div>
+				<div slot="3" th:include="clusters/cluster/cluster-location"></div>
+			</infinia-tabs>
+		</div>
+
+		<div class="col-sm-3 mt10" >
+			<label data-text="-cluster.configuration"></label>
+			<ul id="cluster-configuration" style="max-height:300px; padding:0!important;overflow-y:auto;"></ul>
+		</div>
+	</div>
+
+	<div class="row mt20 mb20 center-content" >
+		<button type="button" class="btn btn-primary" id="save-cluster" data-text="-save"></button>
+	</div>
+</div>
+</form>
+
+<script src="/js/clusters/cluster.js"></script>
+<script th:inline="javascript">
+	var id_cluster = [[${id_cluster}]];
+</script>

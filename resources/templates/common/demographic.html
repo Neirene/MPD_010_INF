@@ -1,0 +1,51 @@
+
+<collapsible-content class="demographic-filter" title="Seleccionar" collapsed="true">
+	<div class="row mt10 pb20">
+		
+		<div class="selector col-sm-12">
+			<div class="column">
+				<div class="title" data-text="-gender"></div>
+				<div class="options">
+					<div data-endpoint="gender=male" data-text="-male"></div>
+					<div data-endpoint="gender=female" data-text="-female"></div>
+				</div>
+			</div>
+			
+			<div class="column">
+				<div class="title" data-text="-age"></div>
+				<div class="options">
+					<div data-endpoint="age=&lt;12"> -12</div>
+					<div data-endpoint="age=12-17">12-17</div>
+					<div data-endpoint="age=18-25">18-25</div>
+					<div data-endpoint="age=26-40">26-40</div>
+					<div data-endpoint="age=41-55">41-55</div>
+					<div data-endpoint="age=&gt;55"> +55</div>
+				</div>
+			</div>
+			
+			<div class="column">
+				<div class="title" data-text="-income.level"></div>
+				<div class="options">
+					<div data-endpoint="income_level=income_E" data-text="-income.income_E"> </div>
+					<div data-endpoint="income_level=income_D" data-text="-income.income_D"></div>
+					<div data-endpoint="income_level=income_C" data-text="-income.income_C"></div>
+					<div data-endpoint="income_level=income_B" data-text="-income.income_B"></div>
+					<div data-endpoint="income_level=income_A" data-text="-income.income_A"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+</collapsible-content>
+<div class="mt20 " id="main-pies-container">
+	<div class="col-sm-4 mb20">
+		<infinia-card id="genderCard" title="gender" title-icon="notification:wc"></infinia-card>
+	</div>
+	
+	<div class="col-sm-4 mb20">
+		<infinia-card id="ageCard" title="age" title-icon="icons:face"></infinia-card>
+	</div>
+	
+	<div class="col-sm-4 mb20">
+		<infinia-card id="income_levelCard" title="income.level" title-icon="editor:attach-money"></infinia-card>
+	</div>
+</div>

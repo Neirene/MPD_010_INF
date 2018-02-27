@@ -1,0 +1,39 @@
+
+
+<form class="mt20" id="publisher-form">
+	
+		<div class="form-section-title">
+			Datos del publisher
+		</div>
+	
+		<div class="row mt20">
+			<div class="col-sm-4 form-group">
+				<label>Nombre del publisher</label>
+				<input class="form-control required" name="name"/>
+			</div>
+			<div class="col-sm-4 form-group">
+				<label>Estado</label>
+				<infinia-select class="required" name="status"></infinia-select>
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-sm-4 form-group">
+				<label>País</label>
+				<infinia-select name="country" class="required"></infinia-select>
+			</div>
+		</div>
+		
+		<div class="row mt10">
+			<div class="col-sm-12">
+				<file-loader text="Logo del publisher" id="file-loader" name="logo" accept="image" ></file-loader>
+			</div>
+		</div>
+		
+		
+		<div class="row mt20">
+			<div class="col-sm-12 text-center">
+				<button type="button" class="btn btn-primary" id="save-publisher">Guardar publisher</button>
+			</div>
+		</div>
+	</form>

@@ -1,0 +1,88 @@
+
+
+<dom-module id="beacon-actions">
+	<template>
+		<style include="common-styles"></style>
+		<style>
+		
+		.settings {
+				color:var(--primary-color);
+				cursor:pointer;
+		}
+		
+		.drop-down {
+			background-color:var(--lighter-background);
+			position:relative;
+			padding:5px 2px;
+			border:1px solid var(--dark-background);
+			border-radius:5px;
+			top:-30px;
+		}
+		
+		.drop-down li {
+			padding:5px 20px;
+			cursor:pointer;
+			display:flex;
+			min-width:200px;
+		}
+		
+		.drop-down li:hover {
+			background-color:var(--light-background);
+		}
+		
+		iron-icon {
+			margin-right:5px;
+		}
+		
+		li a {
+			width:100%;
+			height:100%;
+		}
+			
+		</style>
+		
+		<td>
+			<iron-icon on-click="show" icon="icons:settings" class="settings"></iron-icon>
+			<iron-dropdown horizontal-align="right" vertical-align="top">
+				<div class="drop-down" slot="dropdown-content">
+					<ul>
+						<li on-click="edit"><iron-icon icon="image:edit"></iron-icon> Editar </a>
+					</ul>
+				</div>
+			</iron-dropdown>
+		</td>
+	</template> 
+	
+	<script>
+
+		class BeaconActions extends Polymer.Element {
+
+	        static get is() { return  'beacon-actions' }
+	
+	        static get properties() {
+	          return {
+	          	elemId:String
+	          }
+	        }
+	
+	        constructor() {
+	          super();
+	        }
+	
+	        ready() {
+	          	super.ready();
+	        }
+
+	        show(e) {
+	        	$(utils.getClickedElement(e)).next()[0].open();
+			}
+	        
+	        edit() {
+	        	window.location.href = '/beacons/' + this.elemId + '?id_location=' + id_location + '&id_retailer=' + id_retailer;
+	        }
+	    }
+	    
+	    customElements.define(BeaconActions.is, BeaconActions);
+	    
+    </script> 
+</dom-module>

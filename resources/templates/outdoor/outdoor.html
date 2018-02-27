@@ -1,0 +1,50 @@
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDW_hi5jQm2Ffb4GIa98vJdszgrma-qlJM&amp;libraries=places,drawing"></script>
+<script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js"></script>
+<script src="/js/libraries/maps/CartoUtils.js"></script>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+
+
+<div class="container-fluid">
+	<collapsible-content title="search" style-class="gold">
+		<div class="row">
+			<div class="col-sm-12">
+				<div class="row">
+					<div class="col-sm-3 ">
+						<paper-typeahead disable-sort="true" label="month" name="month"></paper-typeahead>
+					</div>
+				</div>
+				
+				<div class="row">
+					<div class="col-sm-4">
+						<paper-typeahead label="retailer" name="retailers"></paper-typeahead>
+					</div>
+					
+					<div class="col-sm-4">
+						<paper-typeahead label="Circuito" name="circuit"></paper-typeahead>
+					</div>
+				</div>
+			</div>
+		
+		
+			<div class="col-sm-12 text-center mt20">
+				<button type="button" class="btn btn-primary center-block" id="outdoor-search">Buscar</button>
+			</div>
+		</div>
+	</collapsible-content>
+
+	<div class="row mt60 hidden" id="data-container">
+		<div class="col-sm-12">
+			<infinia-tabs
+				data-text="cluster.demographic,cluster.psychographic,cluster.behavioral"
+				icons="icons:supervisor-account,hardware:phone-android,social:public">
+				
+				<div slot="0" th:include="clusters/cluster-profile/cluster-profile-demographic"></div>
+				<div slot="1" th:include="common/psychographic"></div>
+				<div slot="2" th:include="common/behavioral"></div>
+			</infinia-tabs>
+		</div>
+	</div>
+</div>
+
+<script src="/js/outdoor/outdoor.js"></script>

@@ -1,0 +1,62 @@
+
+<dom-module id="creative-selector">
+	<template>
+		<style include="common-styles"></style>
+		
+		<style>
+			.drop-down {
+				top:35px;
+				left:-10px;
+				width:200px;
+			}
+			
+			.drop-down li {
+				min-width:auto;
+				color:black;
+			}
+		</style>
+		
+		<iron-dropdown id="dropdown" horizontal-align="left" vertical-align="top">
+			<div class="drop-down" slot="dropdown-content">
+				<ul>
+					<li><a href="/creatives/new/tag"> <iron-icon icon="image:brush"></iron-icon> <span>Ad script</span></a></li>
+					<!-- li><a href="creatives/new/bulk"> <iron-icon icon="icons:menu"></iron-icon> <span>Bulk</span></a></li-->
+					<li><a href="/creatives/new/video"> <iron-icon icon="av:videocam"></iron-icon> <span>Video</span></a></li>
+					<li><a href="/creatives/new/assets"> <iron-icon icon="image:crop-original"></iron-icon> Assets</a></li>
+					<li><a href="/creatives/new/zip"> <iron-icon icon="editor:attach-file"></iron-icon> ZIP</a></li>
+				</ul>
+			</div>
+		</iron-dropdown>
+	</template> 
+	
+	<script>
+
+		class CreativeSelector extends Polymer.Element {
+
+	        static get is() { return  'creative-selector' }
+	
+	        static get properties() {
+	          return {
+	          	elemId:Number
+	          }
+	        }
+	
+	        constructor() {
+	          super();
+	        }
+	
+	        ready() {
+	          	super.ready();
+	        }
+
+	       open() {
+	    	   this.$.dropdown.open();
+	       }
+	        
+	    }
+	    
+	    customElements.define(CreativeSelector.is, CreativeSelector);
+	    
+    </script> 
+</dom-module>
+

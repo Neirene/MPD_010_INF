@@ -1,0 +1,19 @@
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDW_hi5jQm2Ffb4GIa98vJdszgrma-qlJM&amp;libraries=places,drawing"></script>
+<script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js"></script>
+<script src="/js/libraries/maps/CartoUtils.js"></script>
+
+<div class="container-fluid pb20">
+	<div class="row ">
+		<div class="col-sm-12 text-right">
+			<button class="btn btn-primary" id="generate-cluster">Generar cluster</button>
+		</div>
+	</div>
+	<div class="row mt20">
+		<div class="col-sm-12">
+			<infinia-map id="outdoor-map" on-start="true" poi-search="true" draw="true" load-csv="true" carto-management="true"></infinia-map>
+		</div>	
+	</div>
+</div>
+
+
+

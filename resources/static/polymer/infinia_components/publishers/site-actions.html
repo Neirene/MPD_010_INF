@@ -1,0 +1,49 @@
+
+<dom-module id="site-actions">
+	<template>
+		<style include="common-styles"></style>
+		<infinia-context id="context">
+					<ul slot="context-slot">
+						<li on-click="editSite"> <iron-icon icon="image:edit"></iron-icon>
+							Edit
+						</li>
+					</ul>
+		</infinia-context>
+	</template> 
+	<script>
+
+		class SiteActions extends Polymer.Element {
+
+	        static get is() { return  'site-actions' }
+	
+	        static get properties() {
+	          return {
+	          	elemId:Number
+	          }
+	        }
+	
+	        constructor() {
+	          super();
+	        }
+	
+	        ready() {
+	          	super.ready();
+	        }
+
+	        show(e) {
+	        	var path = utils.getPath(e.target);
+				$(path[0]).next()[0].open();
+			}
+
+	        editSite() {
+	        	publisherFunctions.editSite(this.elemId);
+	        }
+	        
+	    }
+	    
+	    customElements.define(SiteActions.is, SiteActions);
+	    
+
+    </script> 
+
+</dom-module>

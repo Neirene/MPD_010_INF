@@ -1,0 +1,22 @@
+<div class="new_button">
+	<a class="btn btn-primary" th:href="@{/sections/new(id_location=${id_location}, id_retailer=${id_retailer})}">Nueva Sección</a>
+</div>
+
+<div>
+	<ul class="section-breadcrumb mt20">
+		<li th:unless="${id_location}" class="active"><a>Nueva Ubicación</a></li>
+		<li th:if="${id_location}" th:classappend="${location_breadcrumb} ? active : ''"><a th:href="@{/locations/{id_location}(id_location=${id_location},id_retailer=${id_retailer})}" class="campaign_name" id="location-name-breadcrumb"></a></li>
+		<li th:if="${id_location}" th:classappend="${trackers_breadcrumb} ? active : ''"><a th:href="@{/locations/{id_location}/trackers(id_location=${id_location},id_retailer=${id_retailer})}">Trackers</a></li>
+		<li th:if="${id_location}" th:classappend="${beacons_breadcrumb} ? active : ''"><a th:href="@{/locations/{id_location}/beacons(id_location=${id_location},id_retailer=${id_retailer})}">Beacons</a></li>
+		<li th:if="${id_location}" th:classappend="${sections_breadcrumb} ? active : ''"><a th:href="@{/locations/{id_location}/beacons(id_location=${id_location},id_retailer=${id_retailer})}">Sections</a></li>
+	</ul>
+</div>
+
+<div class="table-container">
+</div>
+
+<script th:inline="javascript">
+	var id_location = [[${id_location}]];
+	var id_retailer = [[${id_retailer}]];
+</script>
+<script src="/js/indoor_analytics/sections.js"></script>

@@ -1,0 +1,16 @@
+
+<div th:include="publishers/publisher-breadcrumb"></div>
+
+<div class="container-fluid pb20 ol-bxslider ">
+	
+	<div id="slider">
+		<div class="section" th:include="publishers/publisher-data"></div>
+		<div class="section" th:include="publishers/publisher-deals"></div>
+		<div class="section" th:include="publishers/publisher-sites"></div>
+	</div>	
+</div>
+
+<script th:inline="javascript">
+	var id_publisher = [[${id_publisher}]];
+</script>
+<script src="/js/publishers/publisher.js"></script>

@@ -1,0 +1,52 @@
+
+
+
+<div class="col-sm-12 mb20 mt10" id="location-container">
+
+	
+
+
+
+
+	<collapsible-content id="frequency-configuration" title="Frecuencia" style-class="gold" >
+		<div class="row mt10">
+			<div class="col-sm-2 ">
+				<span data-text="-from"></span>
+				<date-picker name="locationDateFrom"></date-picker>
+			</div>
+			<div class="col-sm-2 ">
+				<span data-text="-to"></span>
+				<date-picker name="locationDateTo"></date-picker>
+	
+			</div>
+			<div class="col-sm-2">
+				<span data-text="-Desde la hora"></span>
+				<infinia-select name="locationTimeFrom" class="hour-selector"></infinia-select>
+			</div>
+			<div class="col-sm-2">
+				<span data-text="-to"></span>
+				<infinia-select name="locationTimeTo" class="hour-selector"></infinia-select>
+			</div>
+	
+			<div class="col-sm-2">
+				<span>Veces</span> <input class="form-control" name="locationRepeatTimes" />
+			</div>
+	
+			<div class="col-sm-2 ">
+				<span>Cada</span>
+				<infinia-select class="time-selector" disable-sort="true" name="locationRepeatInterval"></infinia-select>
+			</div>
+	
+		</div>
+	</collapsible-content>
+
+	<div class="row mt20">
+		<div class="col-sm-12 mt20">
+			<infinia-map name="location" id="location-map" draw="true" load-csv="true"
+				class="location" show-searcher="true" poi-search="true"></infinia-map>
+		</div>
+	</div>
+</div>
+
+
+

@@ -1,0 +1,127 @@
+
+<dom-module id="custom-input">
+	<template>
+		<style include="common-styles"></style>
+		<style>
+		
+		
+		
+		
+		.container{
+			position:relative;
+			padding-top:15px;
+		}
+
+		iron-input, input {
+			width:100%;
+			background-color:transparent;
+		}
+
+		input {
+			margin-top:3px;
+			border:1px solid var(--input-border);
+    		outline: none;
+    		font-size:14px;
+    		padding:6px 12px;
+		}
+		
+		
+		
+		input:focus {
+			border:1px solid var(--primary-color);
+		}
+
+		label {
+			position:absolute;
+			left:5px;
+			top:25px;
+			cursor:text;
+			color:var(--input-label);
+			font-size:14px;
+		}
+		
+
+		
+		
+		</style>
+		
+		<div class="container">
+			<label id="lab" for="input" >{{text}}</label>
+			<iron-input bind-value="{{value}}">
+				<input id="input" value="{{value::input}}" type="{{type}}">
+			</iron-input>
+		</div>
+	</template> 
+	
+	<script>
+
+		class CustomInput extends Polymer.Element {
+
+	        static get is() { return  'custom-input' }
+	
+	        static get properties() {
+	          return {
+	           	value:{type:String, reflectToAttribute:true},
+	           	type:String,
+	           	text:String
+	          }
+	        }
+	
+	        constructor() {
+	          super();
+	        }
+	
+	        ready() {
+	          	super.ready();
+	          	var _this = this;
+	          	
+	          	var top = 3;
+	          	var left = 5;
+
+	          	this.initialSize;
+	          	
+	          	if(!_this.initialSize)
+          			_this.initialSize = $(_this.$.lab).css('font-size');
+	          	var finalSize = (Number(_this.initialSize.replace("px", "")) - 4)+ "px";
+	          	
+	          	if(this.value) {
+	          		$(this.$.lab).css("top", top+"px");
+	          		$(this.$.lab).css("left", left+"px");
+	          		$(this.$.lab).css("font-size", finalSize);
+	          	}
+	          	
+	          	$(this.$.input).on('focus', function() {
+	          		
+		          	
+	          		$(_this.$.lab).animate({
+	          			top:top,
+	          			left:left,
+	          			"font-size":finalSize
+	          		}, 300)
+
+	          		.css("top", top+"px");
+	          		$(_this.$.lab).css("left", "0px");
+	          	})
+
+	          	$(this).on('focusout', function() {
+	          		if(!$(_this.$.input).val()){
+		          		$(_this.$.lab).animate({
+		          			top:"25px",
+		          			left: left+"px",
+		          			"font-size":_this.initialSize
+		          		}, 300)
+	          	}
+	          	})
+	        }
+
+	        setValue(val) {
+	        	$(this.$.input).focus();
+	        	this.value=val;
+	        }
+
+	    }
+	    
+	    customElements.define(CustomInput.is, CustomInput);
+	    
+    </script> 
+</dom-module>

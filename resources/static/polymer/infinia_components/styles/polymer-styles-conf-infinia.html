@@ -1,0 +1,41 @@
+
+<dom-module id="styles-conf">
+  <template>
+    <style>
+    
+    	:host {
+    		--primary-color:#C0A27D;
+			--dark-background: #182D35;
+			--light-background: #c2c3c4;
+			--lighter-background: #EDEEEF;
+			--input-border:#ccc;
+			--input-label:#676a6c;
+			--success: #60B660;
+			--error:#D25251;
+			--box-shadow:none;
+			--card-title-bg:#eceded;
+			--card-title-color:black;
+			--map-action-selection:#676a6c;
+			--hover-highlight-color: rgb(221, 201, 176);
+			--text-color:#C0A27D;
+    	}
+    	
+    	:host(.has-error) {
+			--input-border:#cc0000!important;
+			--input-label:#cc0000!important;
+			--primary-color:#cc0000;
+			--box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #ce8483 !important;
+			
+		}
+		
+		::placeholder {
+			color:var(--primary-color);
+		}
+		
+		::-ms-input-placeholder { /* Microsoft Edge */
+		  color:var(--primary-color);
+		}
+		
+    </style>
+  </template>
+</dom-module>

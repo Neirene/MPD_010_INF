@@ -1,0 +1,214 @@
+
+<dom-module id="date-day-picker">
+	<template>
+		<style include="common-styles"></style>
+		
+		<style>
+		
+			.content {
+				padding:20px;
+				background-color:#f8f8f8;
+				margin-bottom:5px;
+				position:relative;
+			}
+			.ml20 {
+				margin-left:20px;
+			}
+			
+			.weekdays {
+				padding-top:10px;
+			}
+			
+			.weekdays paper-checkbox {
+				margin-right:20px;
+			}
+ 			
+			.hours {
+				width:20%;
+			}
+			
+			.time-container {
+				margin-left:50px;
+			}
+			
+			.time-container > div {
+				margin-left:10px;
+			}
+			.hour-container infinia-select {
+				width:70px;
+				margin-right:5px;
+			}
+			
+			.delete-container {
+				position:absolute;
+				right:10px;
+				top:10px;
+			}
+			
+			.hidden {
+				display:none;
+			}
+		</style>
+		<div class="content">
+			<div class$="delete-container {{deleteHidden}}"><iron-icon icon="delete" class="cursor-pointer" on-click="_delete"></iron-icon></div>
+			<div class="flex">
+				<date-picker id="startDate" placeholder="Fecha inicio" input-class="gold"></date-picker>
+				<date-picker id="endDate" class="ml20" placeholder="Fecha fin" input-class="gold"></date-picker>
+			</div>
+			
+			<div class="flex between">
+				<div class="flex space-around weekdays mt20">
+					<paper-checkbox checked="true">{{_localize('weekDays.short.mo')}}</paper-checkbox>
+					<paper-checkbox checked="true">{{_localize('weekDays.short.tu')}}</paper-checkbox>
+					<paper-checkbox checked="true">{{_localize('weekDays.short.we')}}</paper-checkbox>
+					<paper-checkbox checked="true">{{_localize('weekDays.short.th')}}</paper-checkbox>
+					<paper-checkbox checked="true">{{_localize('weekDays.short.fr')}}</paper-checkbox>
+					<paper-checkbox checked="true">{{_localize('weekDays.short.sa')}}</paper-checkbox>
+					<paper-checkbox checked="true">{{_localize('weekDays.short.su')}}</paper-checkbox>
+					
+				</div>
+				<div class="flex space-around time-container">
+					<div>
+						Inicio
+						<div class="flex  hour-container">
+							<infinia-select id="initHour" class="hour" ></infinia-select>
+							<infinia-select id="initMin" class="min" ></infinia-select>
+						</div>
+					</div>
+					<div>Fin
+						<div class="flex  hour-container">
+							<infinia-select id="endHour" class="hour"></infinia-select>
+							<infinia-select id="endMin" class="min"></infinia-select>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+		</div>
+			
+		
+			
+	</template> 
+	
+	<script>
+
+		class DateDayPicker extends InfiniaPolymer {
+
+	        static get is() { return  'date-day-picker' }
+	
+	        static get properties() {
+	          return {
+	           	deleteHidden:String
+	          }
+	        }
+	
+	        constructor() {
+	          super();
+	        }
+	
+	        ready() {
+	          	super.ready();
+	          	
+	          	$(this.root).find('paper-checkbox').on('checked-changed', () => {
+	          		this.changeEvent();
+	          	})
+	          	
+	          	$(this.root).find('date-picker').on('dateSelected', () => {
+	          		this.changeEvent();
+	          	})
+	          	
+	          	$(this.root).find('infinia-select').on('change', () => {
+	          		this.changeEvent();
+	          	})
+	          	
+	          	
+	          	let hours=[];
+	          	for(let i=0;i<24;i++) {
+	          		hours.push({id:utils.formatToTwoDigits(i), value:utils.formatToTwoDigits(i)});
+	          	}
+	          	$(this.root).find('.hour').each((index, elem) => {
+	          		elem.setOptions(hours);
+	          	})
+	          	
+	          	let mins = [];
+	          	for(let i=0;i<60;i++) {
+	          		mins.push({id:utils.formatToTwoDigits(i), value:utils.formatToTwoDigits(i)});
+	          	}
+	          	$(this.root).find('.min').each((index, elem) => {
+	          		elem.setOptions(mins);
+	          	})
+	          	
+	          	setTimeout(() => {
+	          		$(this.root).find('.hour')[0].setValue("00");
+	          		$(this.root).find('.hour')[1].setValue("23");
+	          		$(this.root).find('.min')[0].setValue("00");
+	          		$(this.root).find('.min')[1].setValue("59");
+	          	}, 200)
+	          	
+	          	utils.datesDependingObj($(this.$.startDate), $(this.$.endDate));
+	        }
+	        
+	        _delete() {
+	        	$(this).remove();
+	        	let event = new CustomEvent('removed')
+	        	this.dispatchEvent(event);
+	        }
+	        
+	        setStartDate(date) {
+	        	this.$.startDate.setValue(date);
+	        }
+	        
+	        setMinStartDate(date) {
+	        	this.$.startDate.setMinDate(date);
+	        }
+	        
+	        setMaxStartDate(date) {
+	        	this.$.startDate.setMaxDate(date);
+	        }
+	        
+	        setEndDate(date) {
+	        	this.$.endDate.setValue(date);
+	        }
+	        
+	        setMinEndDate(date) {
+	        	this.$.endDate.setMinDate(date);
+	        }
+	        
+	        setMaxEndDate(date) {
+	        	this.$.endDate.setMaxDate(date);
+	        }
+	        
+	        getData() {
+	        	let days = [];
+	        	$(this.root).find('paper-checkbox').each((index, elem) => {
+	        		days.push(elem.checked);
+	        	})
+	        	
+	        	let data = {
+	       			startDate:this.$.startDate.getValue(),
+	       			endDate:this.$.endDate.getValue(),
+	       			days:days,
+	       			initHour: $(this.$.initHour).val()+":"+$(this.$.initMin).val(),
+	        		endHour: $(this.$.endHour).val()+":"+$(this.$.endMin).val()
+	        	}
+	        	return data;
+	        }
+	        
+	        setData(data) {
+	        	this.$.startDate.setValue(data.startDate);
+	        	this.$.endDate.setValue(data.endDate);
+	        	data.days.forEach((day, index) => {
+	        		$(this.root).find('paper-checkbox').get(index).checked = day;
+	        	})
+	        }
+	        
+	        changeEvent() {
+	        	let event = new CustomEvent('elem-changed');
+	        	this.dispatchEvent(event);
+	        }
+	    }
+	    
+	    customElements.define(DateDayPicker.is, DateDayPicker);
+	    
+    </script> 
+</dom-module>

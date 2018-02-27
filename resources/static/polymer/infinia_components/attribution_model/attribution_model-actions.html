@@ -1,0 +1,37 @@
+
+
+<dom-module id="attribution-model-actions">
+	<template>
+		<style include="common-styles"></style>
+	<infinia-context id="context">
+					<ul slot="context-slot">
+						<li on-click="profileCluster"><a> <iron-icon icon="image:remove-red-eye"></iron-icon> Visualizar</a></li>
+					</ul>
+				</div>
+			</infinia-context>
+	</template> 
+	
+	<script>
+
+		class AttributionModelActions extends Polymer.Element {
+
+	        static get is() { return  'attribution-model-actions' }
+	
+	        static get properties() {
+	          return {
+	          	elemId:String
+	          }
+	        }
+	
+	        constructor() {
+	          super();
+	        }
+	
+	        ready() {
+	        }
+	    }
+	    
+	    customElements.define(AttributionModelActions.is, AttributionModelActions);
+	    
+    </script> 
+</dom-module>

@@ -1,0 +1,186 @@
+
+<script>
+
+
+
+</script>
+<dom-module id="cluster-actions">
+	<template>
+		<style include="common-styles"></style>
+		
+		<infinia-context id="context">
+					<ul slot="context-slot">
+						<li id="edit_cluster">
+							<a href="/clusters/{{elemId}}"> <iron-icon icon="image:edit"></iron-icon> Editar</a>
+						</li>
+						<li on-click="validate" id="validate" class = ""> <iron-icon icon="image:edit"></iron-icon> Validar</li>
+						
+						<li on-click="editPermissions" id="edit_permissions"> <iron-icon icon="image:edit"></iron-icon> Editar Permisos</li>
+						<li on-click="profileCluster" id = "profile_cluster"> <iron-icon icon="image:remove-red-eye"></iron-icon> Perfil del cluster</li>
+						<li on-click="" id="downloadCSV"><a href$="/api/clusters/profile/csv/{{elemId}}" target="_blank"><iron-icon icon="icons:file-download"></iron-icon>CSV Perfilado</a></li>
+						<li on-click="calculateCluster" id="calculate_cluster"> <iron-icon icon="av:play-arrow"></iron-icon> Calcular</li>
+						<li on-click="linkCluster" id = "link_cluster"> <iron-icon icon="icons:assessment"></iron-icon> Asociar Agencia</li>
+						<li on-click="duplicate"><iron-icon icon="icons:content-copy"></iron-icon>Duplicar</li>
+						<li on-click="" style="text-align:left;"><iron-icon icon="icons:launch"></iron-icon>Lanzar campaña retargeting</li>
+						<li on-click="delete"><iron-icon icon="icons:delete"></iron-icon>Borrar</li>
+					</ul>
+			</infinia-context>
+	</template> 
+	
+	<script>
+
+		class ClusterActions extends Polymer.Element {
+
+	        static get is() { return  'cluster-actions' }
+	
+	        static get properties() {
+	          return {
+	          	elemId:String
+	          }
+	        }
+	
+	        constructor() {
+	          super();
+	        }
+	
+	        ready() {
+	          	super.ready();
+
+	          	
+	          	if(localStorage.accountData) {
+		          	let accountData = JSON.parse(localStorage.accountData);
+		          	if(accountData.userHeader.roleEntity.role.role == "ROLE_RESELLER") {
+		          		$(this.$.edit_cluster).remove();
+		          	}
+		          	if(accountData.userHeader.roleEntity.role.role !== "ROLE_ADMIN" && accountData.userHeader.roleEntity.role.role !== "ROLE_ADMIN_EDIT") {
+		          		$(this.$.edit_permissions).remove();
+		          	}
+		          	if(accountData.userHeader.roleEntity.role.role != "ROLE_VALIDATOR") {
+		          		$(this.$.validate).remove();
+		          	}
+	          	}
+	        }
+
+	        show(e) {
+	        	$(utils.getClickedElement(e)).next()[0].open();
+			}
+			
+			delete() {
+				utils.lockScreen();
+				utils.get('/api/clusters/' + this.elemId + '/delete', {}, 
+				(response) => {
+					utils.unlockScreen();
+					if (confirm("¿Estás seguro de que deseas borrar el Cluster?")){
+						utils.floatingSuccess("Cluster borrado correctamente");
+    		        	var event = new CustomEvent('rowDelete');
+						this.dispatchEvent(event);
+					}
+					
+				}, 
+				(error) => {
+					utils.unlockScreen();
+					console.log('Error deleting cluster', this.elemId, error);
+				});
+	        }
+	        
+	        profileCluster() {
+	        	window.location.href= "/clusters/profile/" + this.elemId;
+	        }
+	        
+	        validate() {
+	        	 utils.validateCluster(this.elemId);
+	        	
+	        }
+	        
+	        calculateCluster() {
+	        	utils.lockScreen();
+				utils.apiGet('/cluster/' + this.elemId + '/_calculate', {}, 
+				(response) => {
+					utils.floatingSuccess('El cluster se ha lanzado correctamente');
+					utils.unlockScreen();
+				}, 
+				(error) => {
+					utils.unlockScreen();
+					utils.floatingError(localizer.get('cluster.launchError'));
+					console.log('Error calculating cluster', this.elemId, error);
+				});
+	        }
+	        
+	        duplicate() {
+				utils.lockScreen();
+				utils.get('/api/clusters/' + this.elemId + '/duplicate', {}, 
+				(response) => {
+					utils.unlockScreen();
+					window.location.href = "/clusters";
+				}, 
+				(error) => {
+					utils.unlockScreen();
+					console.log('Error duplicating cluster', this.elemId, error);
+				});
+	        }
+	        
+			editPermissions() {
+				var clusterId = this.elemId;
+	        	utils.get('/clusters/permissions/template',{}, function(response) {
+	        		utils.modal('Editar permisos de cluster', response);
+		       		utils.post("/api/components/selects", JSON.stringify({
+		    			"fields":[
+		    				{
+		    					"id":"0",
+		    					"field":"resellers"
+		    				}
+		    			]
+		    		}), function(selects) {
+		       			var resellers = selects[0].options;
+		       			$('#reseller')[0].setList(resellers);
+		       			
+		       			utils.lockScreen();
+		       			utils.get('/api/clusters/' + clusterId, {}, 
+    		          	(cluster) => {
+    		          		$.map(cluster.owner, (owner) => {
+    		          			var ownerType = owner.split('-')[0];
+    		          			var ownerId = owner.split('-')[1];
+    		          			if (ownerType == 'ROLE_RESELLER'){
+    		          				$.map(resellers, (reseller) => {
+    		          					if (reseller.id === ownerId){
+    		          						document.querySelector('#reseller').accept({ id: reseller.id, value: reseller.value });
+    		          					}
+    		          				});
+    		          			}
+    		          		});
+    		          		utils.unlockScreen();
+    		          		$('#save').on('click', function() {
+    		          			utils.lockScreen();
+    			       			var resellers = $('#reseller')[0].getData();
+    			       			cluster.owner = $.map(resellers, (elem) => {
+    								return "ROLE_RESELLER-" + elem.id;
+    							});
+    			       			utils.post('/api/clusters', JSON.stringify(cluster), 
+   			       				(response) => {
+   		 	       					utils.unlockScreen();
+   		 	       					$('.closePopup').trigger('click')
+   		 	       				},
+   		 	       				(error) => {
+   			       					utils.unlockScreen();
+   		 	       					console.log('Error editing cluster permissions', clusterId, error);
+   		 	       					$('.closePopup').trigger('click');
+   		 	       				});
+    			       		});
+    		          	},
+    		          	(error) => {
+    		          		console.log('Error getting cluster information', clusterId, error);
+    		          	});
+		       		});
+	        	});
+	        }
+	        
+	        linkCluster() {
+				utils.agencyLinkType("cluster", this.elemId);
+	        		
+	        }
+	    }
+	    
+	    customElements.define(ClusterActions.is, ClusterActions);
+
+    </script> 
+</dom-module>

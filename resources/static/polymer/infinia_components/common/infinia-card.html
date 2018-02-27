@@ -1,0 +1,71 @@
+
+<dom-module id="infinia-card">
+	<template>
+		<style include="common-styles"></style>
+		
+		<style>
+			header {
+				background-color: var(--card-title-bg);
+				color: var(--card-title-color);
+			    padding: 10px;
+			    border-bottom: 1px solid var(--primary-color);
+			}
+			
+			header iron-icon {
+				margin-right:5px;
+			}
+			
+			section {
+				border:1px solid var(--lighter-background);
+				padding:10px 20px;
+			}
+			
+			
+		</style>
+		
+		<header>
+			<iron-icon icon$="{{titleIcon}}"></iron-icon><b>{{_localizeTitle()}}</b>
+		</header>
+		<section>
+			<slot id="slot"><div class="center-content"><paper-spinner active="active"></paper-spinner></div></slot>
+		</section>
+		</content>	
+	</template> 
+	
+	<script>
+
+		class InfiniaCard extends Polymer.Element {
+
+	        static get is() { return  'infinia-card' }
+	
+	        static get properties() {
+	          return {
+	           	title:String,
+	           	titleIcon:String
+	          }
+	        }
+	
+	        constructor() {
+	          super();
+	        }
+	
+	        ready() {
+	          	super.ready();
+	          	setTimeout(() => {
+	          		$(this.root).find('paper-spinner').remove();
+	          	}, 5000)
+	        }
+	        
+	        setLoader() {
+	        	$(this.$.slot).html('<div class="center-content"><paper-spinner active="active"></paper-spinner></div>');
+	        }
+	        
+	        _localizeTitle() {
+	        	return localizer.get(this.title);
+	        }
+	    }
+	    
+	    customElements.define(InfiniaCard.is, InfiniaCard);
+	    
+    </script> 
+</dom-module>

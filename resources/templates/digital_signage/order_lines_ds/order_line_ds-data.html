@@ -1,0 +1,38 @@
+
+<form class="mt20" id="order_line_ds-form">
+	<div class="form-section-title">
+		Datos de la línea de pedido
+	</div>
+
+	<div class="row mt20">
+		<div class="form-group col-sm-6">
+			<label>Nombre línea de pedido</label> <input class="form-control required" name="name" maxlength="150"/>
+		</div>
+			
+		<div class="col-sm-4 form-group">
+			<label data-text="-status"></label>
+			<infinia-select class="required" name="status"></infinia-select>
+		</div>
+		
+		<div class="col-sm-6 form-group">
+			<label data-text="-description"></label>
+			<input name="description" class="form-control" />
+		</div>
+	</div>
+	<div class="row" id="order-line-dates">
+		<div class="col-sm-2 col-xs-6 form-group" >
+			<label>Fecha inicio</label>
+			<date-picker text="Fecha inicio" show-time="true" name="startDate" class="required" hour="00" min="00"></date-picker>
+		</div>
+		<div class="col-sm-2 col-xs-6 form-group">
+			<label>Fecha fin</label>
+			<date-picker text="Fecha fin" show-time="true"  name="endDate" class="required" hour="23" min="59"></date-picker>
+		</div>
+	</div>
+</form>
+
+<script th:inline="javascript">
+	var id_campaign_ds = [[${id_campaign_ds}]];
+	var id_order_line_ds = [[${id_order_line_ds}]];
+</script>
+

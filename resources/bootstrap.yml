@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: front-server
+  cloud:
+    config:
+      failFast: false
+      username: configUser
+      password: configPassword
+      uri: http://config-service:8888
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone:  http://discUser:discPassword@discovery-service:8761/eureka/

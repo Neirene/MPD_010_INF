@@ -1,0 +1,36 @@
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+<div th:include="pushwoosh_campaigns/pushwoosh_campaign-breadcrumb"></div>
+
+
+
+
+
+<div class="container-fluid">
+
+	<ul class="section-breadcrumb mt20">
+
+		<li class="ol-menu-option active" data-label="0">
+			<a><iron-icon icon="icons:supervisor-account"></iron-icon> <span data-text="-cluster.demographic"></span></a>
+		</li>
+	
+		<li class="ol-menu-option" data-label="1">
+			<a><iron-icon icon="hardware:phone-android"></iron-icon> <span data-text="-cluster.psychographic"></span></a>
+		</li>
+		
+	</ul>
+
+	<div id="slider">
+
+		<div class="section demographic mt20 mb20" th:include="common/demographic"></div>
+		<div class="section" th:include="common/psychographic"></div>
+	</div>
+
+
+	
+</div>
+
+<script th:inline="javascript">
+	var idPushwooshCampaign = [[${idPushwooshCampaign}]];
+</script>
+<script src="/js/pushwoosh_campaigns/pushwoosh_campaign_profile.js"></script>

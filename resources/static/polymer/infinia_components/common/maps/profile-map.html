@@ -1,0 +1,253 @@
+
+<dom-module id="profile-map">
+	<template>
+		<style include="common-styles"></style>
+			
+		<style>
+			.list-group {
+				flex-wrap:wrap;
+				max-height:400px;
+				overflow:auto;
+			}
+			
+			.list-group li {
+				width:100%; 
+				padding:5px 0px;
+				border-bottom:1px solid #dddddd;
+			}
+			
+			.right {
+				width:25%;
+				padding-left:15px;
+			}
+			
+			p {
+				margin-top:0;
+				font-size:bolder;
+			}
+			
+			.container {
+				position:relative;
+			}
+			
+			.loader {
+				position:absolute;
+				width:100%;
+				height:100%;
+				z-index:10;
+				background-color:rgba(255,255,255, 0.5);
+			}
+			
+			.selectors-container {
+				position:absolute;
+				width:75%;
+				display:flex;
+				z-index:5;
+				background-color:#a8a8a8;
+				color:white;
+				justify-content:space-around;
+			}
+			
+			.selectors-container li {
+				padding:8px;
+				cursor:pointer;
+			}
+			
+			.selectors-container li:hover {
+				background-color:#b7b7b7;
+			}
+			
+			.selectors-container li.active {
+				background-color:#b7b7b7;
+				border-bottom:3px solid var(--primary-color);
+			}
+		</style>
+		<div class="flex container">
+			<div class="loader  center-content hidden" id="loader">
+				<paper-spinner style="width:20px; height:20px;" active></paper-spinner>
+			</div>
+			
+			<ul class="selectors-container">
+				<li class="gender"  data-query="gender:male">{{_localize('male')}}</lil>
+				<li class="gender"  data-query="gender:female">{{_localize('female')}}</li>
+				
+				<li class="age" data-query="age:<12">&lt;12</li>
+				<li class="age"  data-query="age:12-17">12-17</li>
+				<li class="age"  data-query="age:18-25">18-25</li>
+				<li class="age"  data-query="age:26-40">26-40</li>
+				<li class="age"  data-query="age:41-55">41-55</li>
+				<li class="age"  data-query="age:>55">&gt;55</li>
+				
+				<li class="income" data-query="income_level:income_E">$ {{_localize('income.income_E')}}</li>
+				<li class="income"  data-query="income_level:income_D">$ {{_localize('income.income_D')}}</li>
+				<li class="income"  data-query="income_level:income_C">$ {{_localize('income.income_C')}}</li>
+				<li class="income"  data-query="income_level:income_B">$ {{_localize('income.income_B')}}</li>
+				<li class="income"  data-query="income_level:income_A">$ {{_localize('income.income_A')}}</li>
+				
+			</ul>
+			
+			<div style="width:75%;">
+				<base-map id="map"></base-map>
+			</div>
+			<div  class="right" >
+				<p> Top 10 Usuarios por localización</p>
+				<ul class="list-group center-content " id="data">
+					
+				</ul>
+			</div>
+		</div>
+			
+	</template> 
+	
+	<script>
+
+		class ProfileMap extends InfiniaPolymer {
+
+	        static get is() { return  'profile-map' }
+	
+	        static get properties() {
+	          return {
+	           	mapType:String,
+	           	mapSection:String,
+	           	mapId:String,
+	           	country:{type:String, value:"es"},
+	           	whereQuery:{type:String, value:""}
+	          }
+	        }
+	
+	        constructor() {
+	          super();
+	        }
+	
+	        ready() {
+	          	super.ready();
+	          	let _this = this;
+	          	$(this.root).find('.gender').on('click', function(e) {
+	          		let active = $(this).hasClass('active');
+	          		$(_this.root).find('.gender').removeClass('active');
+	          		if(!active)
+	          			$(this).addClass('active');
+	          		
+	          		_this.updateMap();
+	          	})
+	          	
+	          	$(this.root).find('.income').on('click', function(e) {
+	          		let active = $(this).hasClass('active');
+	          		$(_this.root).find('.income').removeClass('active');
+	          		if(!active)
+	          			$(this).addClass('active');
+	          		
+	          		_this.updateMap();
+	          	})
+	          	
+	          	$(this.root).find('.age').on('click', function(e) {
+	          		let active = $(this).hasClass('active');
+	          		$(_this.root).find('.age').removeClass('active');
+	          		if(!active)
+	          			$(this).addClass('active');
+	          		
+	          		_this.updateMap();
+	          	})
+	          	
+	          	$(this.root).find('.selectors-container li').on('click', (e) => {
+	          		let event = new CustomEvent('filter_applied', {detail: this.generateWhereProfile()});
+	        		this.dispatchEvent(event);
+	          	})
+	        }
+	        
+	        
+	        
+	        init() {
+	        	this.$.map.init();
+	        	
+	        	//Wait for the map to be created to set carto layers
+	        	setTimeout(() => {
+	        		this.updateMap();
+		        	this.setZoomEvents();	
+	        	}, 200)
+	        	
+	        }
+	        
+	        setZoomEvents() {
+	        	$(this.$.map).on('zoom_changed', (e) => {
+	        		this.updateMap();
+	        		let event = new CustomEvent('zoom_changed', {detail:e.detail});
+	        		this.dispatchEvent(event);
+				})
+	        }
+	        
+	        updateMap() {
+	        	
+	        	let zoom = this.$.map.map.zoom;
+	        	let q;
+	        	let disableData = false;
+	        	if(this.mapId) {
+	        		let style = CartoUtils.getStyle('polygonStyle');
+		        	if(zoom > 11) {
+		        		q = CartoUtils.getProfileQueryDistricts(this.mapType, this.mapSection, this.mapId,  this.generateWhereProfile());
+						disableData = true;
+						style = CartoUtils.getStyle('points');
+		        	}
+		        	
+		        	else if(zoom > 9) {
+						q = CartoUtils.getProfileQueryDistricts(this.mapType, this.mapSection, this.mapId,  this.generateWhereProfile());
+						disableData = true;
+					}
+	        		else if(zoom > 6) {
+						q = CartoUtils.getProfileQueryMunicipalities(this.mapType, this.mapSection, this.mapId, this.generateWhereProfile());
+					}
+					
+					else {
+						q = CartoUtils.getProfileQueryProvinces(this.mapType, this.mapSection, this.mapId, this.generateWhereProfile());
+					}
+		        	
+		        	this.$.map.setCartoLayer('base', q, style);
+					this.updateData(q, disableData);	
+	        	}
+	        		
+	        }
+	        
+	        updateData(sql, disableDraw)  {
+	        	$(this.$.loader).removeClass('hidden');
+	        	let accountData = CartoUtils.getAccountData();
+	        	$.getJSON('https://'+accountData.account_name+'.carto.com/api/v2/sql/?api_key='+accountData.api_key+'&q='+sql + " LIMIT 10", (data) => {
+	        		if(!disableDraw){
+		        		$(this.$.data).empty();
+		        		let total = 0;
+		        		data.rows.forEach(row => {
+		        			total += row.coun;
+		        		})
+		        		
+		        		data.rows.forEach(row => {
+		        		  $(this.$.data).append('<li class="list-group-item">'+row.name+" ("+Number(row.coun * 100 / total).toFixed(2).toLocaleString()+"%)"+'</li>')
+		        	  	})
+	        		}
+	        		$(this.$.loader).addClass('hidden');
+	        	});
+	        }
+	        
+	        setDataLoader() {
+	        	$(this.$.data).html('<paper-spinner style="width:20px; height:20px;" active></paper-spinner>');
+	        }
+	        
+	        generateWhereProfile() {
+	        	let q = this.whereQuery;
+	        	$(this.root).find('.selectors-container li').each((index, li) => {
+	        		if($(li).hasClass('active')) {
+	        			let dataQuery = $(li).data('query').split(":");
+	        			if(!q) {
+	        				q = " WHERE "+dataQuery[0]+" = '"+dataQuery[1]+"'";
+	        			}
+	        			else {
+	        				q += " AND "+dataQuery[0]+" = '"+dataQuery[1]+"'";
+	        			}
+	        		}
+	        	})
+	        	return q;
+	        }
+	    }
+	    
+	    customElements.define(ProfileMap.is, ProfileMap);
+	    
+    </script> 
+</dom-module>

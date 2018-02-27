@@ -1,0 +1,100 @@
+
+<dom-module id="removable-content">
+	<template>
+		<style include="common-styles"></style>
+		
+		<style>
+		
+		header {
+			display:flex;
+			justify-content:space-between;
+			align-items:center;
+			padding:5px 10px 2px;
+			border-bottom:1px solid var(--light-background);
+		}
+		
+		.gold {
+			color:var(--primary-color);
+			border-bottom:1px solid var(--primary-color);
+		}
+		
+		#content {
+			padding:10px;
+		}
+		</style>
+		
+		
+		<header id="head" class$="{{styleClass}}">
+			<span><iron-icon id="icon_expand" icon="icons:expand-more"></iron-icon></span>
+			<span><iron-icon on-click="remove" icon="icons:close"></iron-icon></span>
+		</header>
+		<div id="content" class="hidden"><slot></slot></div>
+	</template> 
+	
+	
+	<script>
+
+	class RemovableContent extends Polymer.Element {
+
+        static get is() { return  'removable-content' }
+
+        static get properties() {
+          return {
+        	  title:String,
+        	  styleClass:String,
+        	  collapsed:{type:Boolean, value:false},
+        	  disableCollapse:{type:Boolean, value:false}
+          }
+        }
+
+        constructor() {
+          super();
+        }
+
+        ready() {
+          	super.ready();
+          	let _this = this;
+          	if(!this.disableCollapse) {
+          		$(this.$.head).on('click', function() {
+              		if($(_this.$.content).is(":visible")) 
+              			_this.collapse();
+              		else
+              			_this.expand();
+              	})
+              	
+              	if(!this.collapsed) {
+              		this.expand();
+              	} 	
+          	}   
+          	else {
+          		$(this.$.icon_expand).remove();
+          	}
+        }
+        
+        collapse() {
+        	$(this.$.content).slideUp();
+          	$(this.$.icon_expand).attr('icon', 'icons:expand-more');
+          
+        }
+        
+        expand() {
+        	$(this.$.content).removeClass('hidden');
+        	$(this.$.content).slideDown();
+        	$(this.$.icon_expand).attr('icon', 'icons:expand-less');
+ 
+        }
+        
+        remove() {
+        	$(this).remove();
+        }
+        _localizeTitle() {
+        	return localizer.get(this.title);
+        }
+	}
+	
+	
+	    
+	customElements.define(RemovableContent.is, RemovableContent);
+	    
+    </script> 
+</dom-module>

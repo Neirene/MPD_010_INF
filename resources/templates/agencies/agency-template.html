@@ -1,0 +1,44 @@
+
+<div class="container-fluid pb20">
+	<form class="mt20" id="agency-form">
+	
+		<input type="hidden" class="form-control" name="mediamathId"/>
+			<input type="hidden" class="form-control" name="resellerPrice"/>
+			<input type="hidden" class="form-control" name="resellerBidPrice"/>
+	
+		<div class="form-section-title">Datos de la agencia</div>
+
+		<div class="row mt20">
+			<div class="form-group col-sm-6">
+				<label>Nombre agencia</label> 
+				<input class="form-control required" name="name" />
+			</div>
+			
+			<div class="form-group col-sm-6">
+				<label>Estado</label> 
+				<infinia-select class="required" name="status"></infinia-select>
+			</div>
+
+			<div class="form-group col-sm-6">
+				<label>Tipo</label>
+				<infinia-select id = "type" name="type" class="required"></infinia-select>
+			</div>
+			
+			</div>
+			<div class="row mt20">
+				<div class="form-group col-sm-8" id="format-list">
+					<list-accept-block id="agencies" hide-block="true"></list-accept-block>
+				</div> 
+			</div>
+		<div class="row mt20">
+			<div class="col-sm-12 text-center">
+				<button type="button" class="btn btn-primary" id="save-agency">Guardar agencia</button>
+			</div>
+		</div>
+	</form>
+</div>
+
+<script src="/js/agencies/agency.js"></script>
+<script th:inline="javascript">
+	var id_agency = [[${id_agency}]];
+</script>

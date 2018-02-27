@@ -1,0 +1,135 @@
+
+<dom-module id="campaign-actions">
+	<template>
+		<style include="common-styles"></style>
+		
+			<infinia-context id="context">
+					<ul slot="context-slot" class="context-ul">
+						
+						<li on-click="editCampaign"> <iron-icon icon="image:edit"></iron-icon> Editar</li>
+						<li on-click="orderLines"> <iron-icon icon="icons:menu"></iron-icon> Lineas de pedido</li>
+						<li on-click="checkCampaign"> <iron-icon icon="icons:check"></iron-icon> Validar</li>
+						
+						<li on-click="publicateCampaign"> <iron-icon icon="av:play-arrow"></iron-icon> Publicar</li>
+						
+						<li on-click="dspError"> <iron-icon icon="icons:error-outline"></iron-icon> Error Dsp</li>
+						<li on-click="reporting"> <iron-icon icon="icons:assessment"></iron-icon> Reporting</li>
+						<li on-click="duplicate"> <iron-icon icon="icons:content-copy"></iron-icon> Duplicar</li>
+						<!--li> <iron-icon icon="av:pause"></iron-icon> Parar</li>
+						<li> <iron-icon icon="av:stop"></iron-icon>Finalizar</li>
+						
+						<li> <iron-icon icon="icons:assignment"></iron-icon> Reporte</li>
+						<li> <iron-icon icon="icons:archive"></iron-icon> Archivar</li>
+						<li> <iron-icon icon="icons:delete"></iron-icon> Eliminar</li-->
+					</ul>
+				</infinia-context>
+	</template> 
+	
+	<script>
+
+		class CampaignActions extends Polymer.Element {
+
+	        static get is() { return  'campaign-actions' }
+	
+	        static get properties() {
+	          return {
+	          	elemId:Number
+	          }
+	        }
+	
+	        constructor() {
+	          super();
+	        }
+	
+	        ready() {
+	          	super.ready();
+	        }
+
+	        show() {
+	        	this.$.dropdown.open();
+			}
+	        
+	        hide() {
+	        	this.$.dropdown.close();
+			}
+	        
+	        publicateCampaign() {
+	        	utils.checkCampaign(this.elemId,true);
+	        }
+	        checkCampaign() {
+	        	utils.checkCampaign(this.elemId,false);
+	        }
+	        
+	        dspError() {
+	        	
+	        	utils.lockScreen();
+				utils.get("/api/mediamath_errors/"+this.elemId+"/campaign", {}, 
+				(response) => {
+					utils.unlockScreen();
+					var messageHTML = "Errores en la campaña <br><br>";
+					var max = 100;
+					if(response.length<max)
+						max = response.length;
+					for (var i = 0; i < max; i++){
+					    var obj = response[i];
+					    var linkToFix = "";
+					    if(obj.object == "campaign")
+					    	linkToFix="<a href='/campaigns/"+this.elemId+"' >Modificar Campaña</a>";
+					    	
+					    if(obj.object=="order_line")
+							linkToFix = "<a href='/order_lines/" + obj.idObject + "?idCampaign=" + this.elemId + "' >Modificar Linea de Pedido</a>";
+							    
+					    messageHTML += "Fecha: " + new Date(obj.createdAt) + "<br>";
+					    if (obj.object)
+					    	messageHTML += "Entidad: " + obj.object + "<br>";
+				    	if (obj.field)
+					    	messageHTML += "Campo: " + obj.field + "<br>";
+				    	
+					    messageHTML += "Detalle: " + obj.message + "<br><br>" + linkToFix;
+					}
+					
+					if(response.length==0)
+						messageHTML="La campaña no tiene errores de envío a DSP<br><br>"
+					
+					
+					utils.modal("Campaña creada", messageHTML, {closeClick:true});	
+				}, 
+				(error) => {
+					utils.unlockScreen();
+					console.log('Error publicating order line', this.elemId, error);
+				});
+				
+				
+	        }
+	        
+	        editCampaign() {
+	        	window.location.href = "/campaigns/"+this.elemId;
+	        }
+	        
+	        orderLines() {
+	        	window.location.href = "/campaigns/"+this.elemId+"/order_lines";
+	        }
+	        
+	        reporting() {
+	        	window.location.href = "/campaigns/"+this.elemId+"/reporting";
+	        }
+	        
+	        duplicate() {
+				utils.lockScreen();
+				utils.get('/api/campaigns/' + this.elemId + '/duplicate', {}, 
+				(response) => {
+					utils.unlockScreen();
+					window.location.href = "/campaigns";
+				}, 
+				(error) => {
+					utils.unlockScreen();
+					console.log('Error duplicating order line', this.elemId, error);
+				});
+	        }
+	        
+	    }
+	    
+	    customElements.define(CampaignActions.is, CampaignActions);
+	    
+    </script> 
+</dom-module>

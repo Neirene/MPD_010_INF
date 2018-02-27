@@ -1,0 +1,96 @@
+<div>
+	<ul class="section-breadcrumb mt20">
+		<li th:unless="${id_beacon}" class="active"><a>Nuevo Beacon</a></li>
+		<li th:if="${id_beacon}" th:classappend="active"><a th:href="@{/beacons/{id_beacon}(id_beacon=${id_beacon},id_location=${id_location},id_retailer=${id_retailer})}" class="campaign_name" id="beacon-name-breadcrumb"></a></li>
+	</ul>
+</div>
+
+<div class="container-fluid pb20">
+	<form class="mt20" id="beacon-form">
+	
+		<input type="hidden" class="form-control" name="idLocation"/>
+		
+		<div class="form-section-title" data-text="-beaconData"></div>
+		<div class="row mt20">
+			<div class="form-group col-sm-4">
+				<label data-text="-name"></label> <input class="form-control required" name="name" />
+			</div>
+			<div class="form-group col-sm-4">
+				<label data-text="-status"></label>
+				<infinia-select class="required" name="status"></infinia-select>
+			</div>
+		</div>
+		
+		<div class="row mt20">
+			<div class="form-group col-sm-4">
+				<label>UUID</label>
+				<input class="form-control required" name="uuid" />
+			</div>
+			<div class="form-group col-sm-4">
+	    		<label>Minor</label>
+				<input class="form-control required" type="number" min="0" name="minor" />
+			</div>
+			<div class="form-group col-sm-4">
+	    		<label>Major</label>
+				<input class="form-control required" type="number" min="0" name="major" />
+			</div>
+		</div>
+		
+		<div class="row mt20">
+			<div id="agencyManagement" class="form-group col-sm-4">
+				<label data-text="-agency"></label>
+				<infinia-select name="idAgency"></infinia-select>
+			</div>
+			<div class="form-group col-sm-4">
+				<label>Section</label>
+				<infinia-select name="idSection"></infinia-select>
+			</div>
+			<div class="form-group col-sm-4">
+				<label data-text="-technicalContact"></label>
+				<input class="form-control" name="technicalContact" />
+			</div>
+		</div>
+
+		<collapsible-content title="Hardware" style-class="gold">
+			<div class="row">
+				<div class="form-group col-sm-4">
+					<label>Model</label>
+					<input class="form-control" name="model" />
+				</div>
+				<div class="form-group col-sm-4">
+					<label>Fabricante</label>
+					<input class="form-control" name="manufacturer" />
+		    	</div>
+			</div>
+		</collapsible-content>
+		
+		<collapsible-content title="Localización" style-class="gold">
+			<div class="row">
+				<div class="form-group col-sm-4">
+					<label data-text="-country"></label>
+					<input class="form-control" name="country" />
+				</div>
+				<div class="form-group col-sm-4">
+					<label data-text="-region"></label>
+					<input class="form-control" name="region" />
+		    	</div>
+		    	<div class="form-group col-sm-4">
+					<label data-text="-address"></label>
+					<input class="form-control" name="address" />
+		    	</div>
+			</div>
+		</collapsible-content>
+		
+		<div class="row mt20">
+			<div class="col-sm-12 text-center">
+				<button type="button" class="btn btn-primary" id="save-beacon" data-text="-save"></button>
+			</div>
+		</div>
+	</form>
+</div>
+<script src="/js/indoor_analytics/beacon.js"></script>
+<script th:inline="javascript">
+	var id_retailer = [[${id_retailer}]];
+	var id_location = [[${id_location}]];
+	var id_beacon = [[${id_beacon}]];
+</script>

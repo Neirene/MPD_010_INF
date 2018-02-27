@@ -1,0 +1,48 @@
+
+<dom-module id="styles-conf">
+  <template>
+    <style>
+    
+    	:host {
+    		--primary-color:#DA324F;
+			--dark-background:rgb(122, 27, 43);
+			--light-background:rgb(189, 43, 67);
+			--lighter-background:rgb(233, 233, 233);
+			--input-border:#ccc;
+			--input-label:#676a6c;
+			--success: #60B660;
+			--error:#D25251;
+			--box-shadow:none;
+			--card-title-bg:rgb(122, 27, 43);
+			--card-title-color:white;
+			--map-action-selection:#012c40;
+			--text-color:white;
+			--hover-highlight-color: rgb(221, 201, 176);
+    	}
+    	
+    	:host(.has-error) {
+			--input-border:#cc0000;
+			--input-label:#cc0000;
+			--primary-color:#cc0000;
+			--box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #ce8483 !important;
+			--paper-input-container-color: red;
+			--paper-input-container-input-color: red;
+		}
+		
+		paper-radio-button {
+		  --paper-radio-button-checked-color: var(--primary-color);
+		  --paper-radio-button-checked-ink-color: var(--primary-color);
+		  --paper-radio-button-unchecked-color: var(--primary-color);
+		  --paper-radio-button-unchecked-ink-color: var(--primary-color);
+		}
+		
+		
+		
+		paper-input.has-error {
+			-webkit-box-shadow:none!important;
+			box-shadow:none!important;
+		}
+		
+    </style>
+  </template>
+</dom-module>

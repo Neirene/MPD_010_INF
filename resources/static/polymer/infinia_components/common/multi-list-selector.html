@@ -1,0 +1,192 @@
+
+<dom-module id="multi-list-selector">
+	<template>
+		<style include="common-styles"></style>
+		
+		
+		<style>
+			.flex {
+				display:flex;
+				flex-wrap:wrap;
+				justify-content:flex-start;
+			}
+		
+			.between {
+				justify-content:space-between;
+				
+			}
+			
+			.accept-block-container {
+				width:35%;
+			}
+			
+			selectable-list {
+				margin:10px 10px 10px;
+				width:45%;
+			}
+			
+			@media (min-width:800px) {
+				#lists-container {
+					width:60%;
+				} 
+			}
+			
+			.content-center {
+				display:flex;
+				justify-content:center;
+				align-items:center;
+				padding:20px;
+			}
+			
+		</style>
+		
+		<div class="flex between">
+				<div class="flex" id="lists-container">
+				</div>
+				<div class="accept-block-container">
+					<accept-block id="accept-block" hide-block$="{{hideBlock}}"></accept-block>
+				</div>
+		</div>
+	</template> 
+	
+	<script>
+
+		class MultiListSelector extends Polymer.Element {
+
+	        static get is() { return  'multi-list-selector' }
+	
+	        static get properties() {
+	          return {
+	        	filterValue:{type:String,observer:"_filterList"},
+	           	list:{type:Object, value:function(){return []}, notify:true},
+	           	componentData:{type:Object, value: function(){return {}}},
+	           	selectedList:{type:Object, value:function(){return []}, notify:true},
+				hideBlock:{type:String, value:false}
+	          }
+	        }
+	
+	        constructor() {
+	          super();
+	        }
+	
+	        ready() {
+	          	super.ready();
+	          	var _this = this;
+	          	
+	          	$(this.$['accept-block']).on('elemRemoved', function(e) {
+	          		let id = e.detail.id;
+	          		$(_this.$['lists-container']).find('selectable-list').each(function(index, elem) {
+	          			elem.clear(id);
+	          		})
+	          	})
+	        }
+	        
+	        addList(listData) {
+				
+          		let list = customElements.get('selectable-list');
+          		var firstList = new list;
+          		firstList.showChevron = true;
+          		firstList.selectable="true";
+          		firstList.hideBlock = this.hideBlock;
+          		
+          		$(this.$['lists-container']).children().last().remove();
+          		
+          		$(this.$['lists-container']).append(firstList);
+          		this.list = listData;
+          		firstList.setList(listData);
+          		this.setEvents(firstList);
+	        }
+	        
+	        setEvents(elem) {
+	        	$(elem).on('itemAccepted', (e) => {
+					this.$['accept-block'].accept(e.detail)
+				})
+				$(elem).on('itemBlocked', (e) => {
+					this.$['accept-block'].block(e.detail)
+				})
+				
+				$(elem).on('acceptedRemoved', (e) =>{
+					this.$['accept-block'].removeAccepted(e.detail.id);
+	          	})
+	          	
+	          	$(elem).on('blockedRemoved', (e) => {
+	          		this.$['accept-block'].removeBlocked(e.detail.id);
+	          	})
+				
+				
+				$(elem).on('elemClicked', (e) => {
+					var listSelected = (e.target);
+					var i;
+					var event = new CustomEvent('elemClicked', {'detail':e.detail});
+					this.dispatchEvent(event);
+					$(this.root).find('selectable-list').each((index, elem) => {
+						if(elem == listSelected) 
+							i = index;
+						else {
+							if(index > i)
+								$(elem).remove();
+						}	
+					})
+				})
+	        }
+	        
+	        _search(item) {
+	        	var str = item.value.toLowerCase()
+	        	return !this.filterValue || str.indexOf(this.filterValue.toLowerCase()) !== -1;
+	        }
+	        
+	        _filterList() {
+	        	this.list = this.list.slice();
+	        }
+	        
+	        getData() {
+	        	return this.$['accept-block'].getData(); 
+	        }
+	        
+	        acceptList(list) {
+	        	list.forEach(function(item) {
+	        		this.$["accept-block"].accept(item);
+	        	})
+	        }
+	        
+	       	blockList(list) {
+	        	list.forEach(function(item) {
+	        		this.$["accept-block"].block(item);
+	        	})
+	        }
+	        
+	        accept(item) {
+	        	$(this.root).find('selectable-list').each((index, elem) => {
+	        		elem.acceptItem(item);
+	        	})
+	        	this.$["accept-block"].accept(item);
+	        }
+	        
+	        block(item) {
+	        	this.$["accept-block"].block(item);
+	        	$(this.root).find('selectable-list').each((index, elem) => {
+	        		elem.blockItem(item);
+	        	})
+	        }
+	        
+	        setLoader() {
+	        	let div = document.createElement('div');
+	        	div.className="content-center loader";
+	        	let paperSpinner = customElements.get('paper-spinner');
+	        	let spinner = new paperSpinner();
+	        	
+	        	spinner.active = "active";
+	        	div.append(spinner);
+	        	this.removeLoader();
+	        	$(this.$['lists-container']).append(div);
+	        }
+	        
+	        removeLoader() {
+	        	$(this.$['lists-container']).find('div.loader').remove();
+	        }
+	    }
+	    
+	    customElements.define(MultiListSelector.is, MultiListSelector);
+	    
+    </script> 
+</dom-module>

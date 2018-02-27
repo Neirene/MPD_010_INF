@@ -1,0 +1,45 @@
+<form class="mt20" id="campaign_ds-form">
+
+	<input type="hidden" class="form-control" name="admiraId"/>
+	<div class="row mt10">
+		<div class="form-group col-sm-6">
+			<paper-input label="name" name="name" class="required"></paper-input>
+		</div>
+		<div class="col-sm-6 form-group">
+			<paper-input label="description" name="description"></paper-input>
+		</div>
+	</div>
+	
+	<div class="row">
+		<div class="form-group col-sm-4">
+			<paper-typeahead label="resellerName" name="idReseller" class="required"></paper-typeahead>
+			<!-- infinia-select class="required" name="idReseller"></infinia-select-->
+		</div>
+		<div class="form-group col-sm-4">
+			<paper-typeahead label="advertiser" name="idAdvertiser" class="required"></paper-typeahead>
+		</div>
+		<div class="form-group col-sm-4">
+			<paper-typeahead label="category" name="idCategoryTag"></paper-typeahead>
+		</div>
+	</div>
+	
+	<div class="row">
+		<div class="col-sm-2 col-xs-6 form-group">
+			<label>Fecha inicio</label>
+			<date-picker text="Fecha inicio"  id="startDate" name="startDate" class="required"></date-picker>
+		</div>
+		<div class="col-sm-2 col-xs-6 form-group">
+			<label>Fecha fin</label>
+			<date-picker text="Fecha fin" id="endDate" name="endDate" class="required"></date-picker>
+		</div>
+	</div>
+	<div class="row mt60">
+		<div class="col-sm-5 text-right">
+			<button type="button" class="btn btn-primary save-ds-campaign">Guardar campaña (Outdoor)</button>
+		</div>
+		<div class="col-sm-5 col-sm-offset-1">
+			<button type="button" class="btn btn-primary" id="add-ds">Añadir opciones de Digital Signage</button>
+		</div>
+	</div>
+	
+</form>

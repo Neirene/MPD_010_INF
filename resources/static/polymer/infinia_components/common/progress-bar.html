@@ -1,0 +1,70 @@
+
+<dom-module id="progress-bar">
+	<template>
+		<style include="common-styles"></style>
+		
+		<style>
+			
+			.container {
+				margin:0;
+				width:100%;
+				border:1px solid var(--dark-background);
+				height:100%;
+				border-radius:8px;
+				overflow:hidden;
+			}
+			
+			.progress {
+				height:100%;
+				font-size:10pt;
+				padding:3px 0;
+				max-width:100%;
+			}
+			
+			.value {
+				margin-left:10px;
+			}
+		</style>
+		
+		<div class="container" style$="border-color:{{color}}">
+			<div class="progress" style$="width:{{progress}}%; background-color:{{color}}">
+				<span class="value">{{progress}}%</span>
+			</div>
+		
+		</div>
+	</template> 
+	
+	<script>
+
+		class ProgressBar extends Polymer.Element {
+
+	        static get is() { return  'progress-bar' }
+	
+	        static get properties() {
+	          return {
+				   progress:{type:Number, value:0, observer: 'updateColor'},
+	          }
+	        }
+	
+	        constructor() {
+	          super();
+	        }
+	
+	        ready() {
+	          	super.ready();
+	        }
+	        
+	        updateColor() {
+	        	if(this.progress < 70) 
+					  this.color = "#E75954";
+	          	else if(this.progress < 94)
+					  this.color = "#FECC50";
+	          	else 
+					  this.color = "#2FD566";
+	        }
+	    }
+	    
+	    customElements.define(ProgressBar.is, ProgressBar);
+	    
+    </script> 
+</dom-module>

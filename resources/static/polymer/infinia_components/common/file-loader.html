@@ -1,0 +1,464 @@
+
+<dom-module id="file-loader">
+	<template>
+		<style include="common-styles"></style>
+		<style>
+		
+		.container{
+			position:relative;
+			margin:5px;
+		}
+
+		iron-input, input {
+			width:100%;
+			background-color:transparent;
+			display:none;
+		}
+
+		input {
+			padding:3px 5px;
+			margin-top:3px;
+			border:0;
+			border-bottom:1px solid var(--input-bottom);
+    		outline: none;
+    		font-size:14px;
+    		display:none;
+		}
+
+		label {
+			
+			left:5px;
+			top:20px;
+			cursor:text;
+			color:var(--input-label);
+			font-size:14px;
+		}
+		
+		iron-icon {
+			cursor:pointer;
+			color:var(--input-label)
+		}
+		
+		#files-container {
+			display:flex;
+			padding:5px;
+			flex-wrap:wrap;
+		}
+		
+		#files-container .file-wrapper {
+			height:130px;
+			width:200px;
+			margin-right:10px;
+			display:flex;
+			justify-content:center;
+			align-items:center;
+		}
+		
+		#files-container .file-wrapper img {
+			max-height:100%;
+			max-width:80%;
+		}
+		
+		.image-resize {
+			max-height:70px;
+			max-width:70px;
+			margin-left:20px;
+			opacity:1!important;
+		}
+		
+		.vertical-container {
+			display:flex;
+			flex-direction:column;
+			justify-content:center;
+		}
+		
+		#actions-container {
+			margin-left:10px;
+		}
+		
+		.center-content {
+			display:flex;
+			align-items:center;
+			justify-content:center;
+		}
+	
+		
+		
+		</style>
+		
+		<div class="container">
+			
+			<label for="input" >{{text}}</label>
+			
+			<div class="mt10">
+				
+					<div style="display:flex">
+						<label class="cursor-pointer" for="input" >
+							<iron-icon icon="icons:file-upload"></iron-icon>
+							<span>{{_localize('uploadFiles')}}</span>
+						</label>
+						<iron-input>
+							<input id="input" name="file" type="file" multiple$={{multipleFiles}}>
+						</iron-input>
+					</div>
+					
+				
+				
+				<div id="files-container"></div>
+				
+			</div>
+			
+			
+		</div>
+	</template> 
+	
+	<script>
+		
+		class FileLoader extends Polymer.Element {
+
+	        static get is() { return  'file-loader' }
+	
+	        static get properties() {
+	          return {
+	           	text:String,
+	           	maxSize:{type:Number, value: 22582912},
+	           	maxHeight:{type:Number, value: 2000},
+	           	maxWidth:{type:Number, value: 2000},
+	           	accept:String,
+	           	multipleFiles:{type:String}
+	          }
+	        }
+	
+	        constructor() {
+	          super();
+	        }
+	
+	        ready() {
+	          	super.ready();
+	          	var _this = this;
+	          	
+	          	this.newFiles = [];
+	          	
+	          	var fileInput = this.$.input;
+	          	fileInput.addEventListener('change', function(e){
+	          		_this.onImageSelect();
+	          		
+	          	})
+	        }
+	       
+	        onImageSelect () {
+	        	let fileInput = this.$.input;
+				let _this = this;
+	          		
+	          		if(!_this.multipleFiles) {
+	          			$(_this.$['files-container']).empty();
+	          		}
+	          		
+          			let acceptedFiles = "";
+          			if(this.accept)
+          				acceptedFiles = this.accept.split(',');
+          			
+          			let imagesArray = ["gif", "jpeg", "png", "jpg"];
+          			let videoArray = ["mp4", "avi", "mov"];
+          			let otherTypesArray = ["zip", "rar", "pdf"];
+          			
+	          		$(fileInput.files).each(function(index, file) {
+	          			
+	          			if(file) {
+	          				let split = file.name.split('.');
+	              			let fileExtension = split[split.length-1];
+	          				
+	          				
+	              			let fileType= file.type;
+		          			if(!fileType){
+		          				if(imagesArray.indexOf(fileExtension) >= 0)
+		          					fileType = "image";
+		          				else if(videoArray.indexOf(fileExtension) >= 0)
+		          					fileType = "video";
+		          				else 
+		          					fileType = fileExtension;
+		          			}
+	              			
+			          		var reader = new FileReader();
+			          		reader.onload = function(e) {
+			          			
+			          			if(file.size > _this.maxSize) {
+			          				_this.deleteFile();
+			          				alert("El archivo supera el tamaño máximo permitido ("+utils.bytesToSize(_this.maxSize)+"): "+file.name );
+			          				return;
+			          			}
+			          			
+			          			if(_this.accept) {
+			          			 	
+			          				let accepted = false;
+			          				
+			          				acceptedFiles.some((ft) => {
+			          					if(file.type.startsWith(ft) || fileType == ft){
+			          						accepted = true;
+			          						return true;
+			          					}
+			          				})
+			          				if(!accepted) {
+			          					if(acceptedFiles.indexOf(fileExtension) >= 0){
+			          						accepted = true;
+			          					}
+			          					else if(acceptedFiles.indexOf(fileExtension) >= 0) {
+			          						accepted = true;
+			          					}
+			          					else if(acceptedFiles.indexOf(fileExtension) >= 0) {
+			          						accepted = true;
+			          					}
+			          				}
+			          				
+				          			
+			          				if(!accepted) {
+			          					if(!file.name.endsWith(_this.accept)) {
+				          					alert("El tipo de archivo no está permitido");
+					          				_this.deleteFile();
+					          				return;
+			          					}
+			          				}
+			          				
+			          			}
+			          			
+			          			
+			          			
+			          			if(fileType.startsWith("image")){
+			          				
+			          				var image = new Image();
+			        				image.src = reader.result;
+			          				
+									image.onload = function(e) {
+										var height = image.height;
+										var width = image.width;
+										
+										if(height > _this.maxHeight || width > _this.maxWidth) {
+											_this.deleteFile();
+											alert("El archivo supera las dimensiones máximas permitidas ("+_this.maxWidth+"x"+_this.maxHeight+")");
+											return;
+										}
+										_this.newFiles.push(file);
+										_this.addImage(file.name, reader.result);
+										var event = new CustomEvent('fileSelected');
+							        	_this.dispatchEvent(event);
+									}
+								}
+			          			else if(file.type.startsWith("video") || videoArray.indexOf(fileExtension) >= 0) {
+			          				_this.newFiles.push(file);
+			          				_this.addVideo(file.name, reader.result);
+			          			}
+			          			else {
+			          				_this.newFiles.push(file);
+			          				let fileType = file.name.split('\.');
+			          				fileType = fileType[fileType.length-1];
+			          				_this.addFileNoPreview(file.name, file.name, reader.result, fileType);
+			          			}
+			          		}
+			          		reader.readAsDataURL(file);	
+		          		}
+		          	})
+		          	
+		          
+	        }
+	        
+	        addImage(fileName, imgSrc) {
+	        	var _this = this;
+				var image = new Image();
+				image.src = imgSrc;
+				this.addFile(fileName, image, imgSrc, "image");
+				
+	        }
+	        
+	        addVideo(fileName, videoSrc) {
+	        	
+	        	var video = document.createElement("video");
+  				video.controls="controls";
+  				video.height="130";
+  				video.width="150";
+  				var source = document.createElement("source");
+  				source.src = videoSrc;
+  				$(video).append(source);
+  				this.addFile(fileName, video, videoSrc, "video");
+  				
+	        }
+	        
+	        addFile(fileName, fileHTML, fileUrl, fileType) {
+	        	
+				let _this = this;
+	        	let form = document.createElement('form');
+				form.fileName = fileName;
+				form.fileType = fileType;
+				form.fileUrl = fileUrl;
+				
+				let div = document.createElement('div');
+				div.className='file-wrapper';
+				
+				div.append(fileHTML);
+				
+				let deleteButton = document.createElement('iron-icon');
+				deleteButton.icon = 'icons:delete';
+				
+				$(deleteButton).on('click', function(e) {_this.deleteFile(this)});
+				div.append(deleteButton);
+				form.append(div);
+				
+				let divCenter = document.createElement('div');
+				divCenter.className="center-content";
+				let span = document.createElement('span');
+				span.className='';
+				span.innerHTML = fileName;
+				divCenter.append(span);
+				form.append(divCenter);
+				
+				$(this.$['files-container']).append(form);
+				var event = new CustomEvent('fileLoaded',{'detail':{name:fileName}});
+	        	this.dispatchEvent(event); 
+	        }
+	        
+			addFileNoPreview(fileName, fileHTML, fileUrl, fileType) {
+	        	
+				let _this = this;
+	        	let form = document.createElement('form');
+				form.fileName = fileName;
+				form.fileType = fileType;
+				form.fileUrl = fileUrl;
+				
+				let div = document.createElement('div');
+				
+				div.append(fileHTML);
+				
+				let deleteButton = document.createElement('iron-icon');
+				deleteButton.icon = 'icons:delete';
+				
+				$(deleteButton).on('click', function(e) {_this.deleteFile(this)});
+				div.append(deleteButton);
+				form.append(div);
+				
+				
+				$(this.$['files-container']).append(form);
+				var event = new CustomEvent('fileLoaded',{'detail':{name:fileName}});
+	        	this.dispatchEvent(event); 
+	        }
+	        
+	        _localize(text) {
+	        	return localizer.get(text) ||text;
+	        }
+	        
+	        deleteFile(button) {
+	        	let form = $(button).closest('form');
+	        	let fileName = $(form.find('div').last()).find('span').html();
+	        	form.remove();
+	        	var event = new CustomEvent('fileDeleted',{'detail':{name:fileName}});
+	        	this.dispatchEvent(event); 
+	        }
+	        
+	        uploadFiles(bucket) {
+	        	let _this = this;
+	        	
+	        	var promise = new Promise((resolve, reject) => {
+	        		
+	        		var filePromises = [];
+        			$(this.$['files-container']).find('form').each(function(index, form) {
+        				let isNew = false;
+       					
+        				$(_this.newFiles).each( (index, elem) => {
+       						if(elem.name == form.fileName) {
+        						isNew = true;
+       							let fd = new FormData();
+       							fd.append('file', elem);
+       							fd.append('bucket', bucket);
+       							fd.append('fileName', form.fileName);
+       							var fPromise = new Promise((resolve, reject) => {
+	        						utils.fileAjax('/utility/uploadFile', fd, 
+		        			        		(response) => {
+		        			        			let rsp = {name:form.fileName, url:response, fileType:form.fileType};
+		        			        			resolve(rsp);
+		        			        		}, 
+		        			        		() => {resolve("")});
+	        					})
+        						filePromises.push(fPromise);
+        						return false;
+       						}
+       					})
+        				
+        				if(!isNew) {
+        					filePromises.push( new Promise((resolve, reject) => {
+        						let rsp = {name:form.fileName, url:form.fileUrl, fileType:form.fileType};
+        						resolve(rsp);
+        					}))
+        				}
+        			})
+	        		
+	        		
+	        		Promise.all(filePromises).then(values => {
+	        			if(values.length > 0)
+	        				resolve(values);
+	        			else resolve("");
+	        		})
+	        	});
+	        	return promise;
+	        }
+	        
+	        setFiles(filesJSON) {
+	        	$(this.$['files-container']).empty();
+	        	let files = JSON.parse(filesJSON);
+	        	
+	        	if(files) {
+	        		
+	        		if(files instanceof Array) {
+	        		
+		        		files.forEach((elem) => {
+		        			addElem.call(this, elem);
+			        	})
+	        		}
+	        		else {
+	        			addElem.call(this, files);
+	        		}
+	        	}
+	        	
+	        	function addElem(elem) {
+	        		if(elem.fileType == "video"){
+	        			this.addVideo(elem.name, elem.url, elem.fileType);
+	        		}
+	        		else if(elem.fileType == "image"){
+	        			this.addImage(elem.name, elem.url, elem.fileType);
+	        		}
+	        		else {
+	        			this.addFileNoPreview(elem.name, elem.name, elem.url, elem.fileType);
+	        		}
+	        	}
+	        }
+	        
+	        
+	        getFiles() {
+	        	let rsp=[];
+	        	$(this.$['files-container']).find('form').each((index, form) => {
+	        		rsp.push({name:form.fileName, url:form.fileUrl, fileType:form.fileType});
+	        	})
+	        	return rsp;
+	        }
+	        
+	        hasFiles () {
+	        	return $(this.$['files-container']).find('form').length > 0;
+	        }
+
+	        hideThumbnails() {
+	        	$(this.$['files-container']).hide();
+	        }
+	        showThumbnails() {
+	        	$(this.$['files-container']).hide();
+	        }
+	        
+	        disable() {
+        			$(this.$['input']).attr('disabled', true);
+	        }
+	        
+	        enable() {
+        			$(this.$['input']).attr('disabled', false);
+        		}
+	    }
+	    
+	    customElements.define(FileLoader.is, FileLoader);
+	    
+    </script> 
+</dom-module>

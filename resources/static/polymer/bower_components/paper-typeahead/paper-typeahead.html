@@ -1,0 +1,143 @@
+
+<dom-module id="paper-typeahead">
+	<template>
+		<style include="common-styles"></style>
+		
+		<style>
+			
+			.dropdown {
+				position:absolute;
+				width:100%;
+				background-color:white;
+				z-index:100;
+				border:1px solid #aaa;
+				border-bottom:none;
+				top:54px;
+				max-height:200px;
+				overflow:scroll;
+				border-bottom:1px solid #aaa;
+			}
+			
+			.dropdown li {
+				padding:10px;
+				border-bottom:1px solid #aaa;
+				width:100%;
+			}
+			
+			.dropdown li:hover, .highlighted {
+				background-color:#eee;
+			}
+			
+			
+			
+			.container {
+				position:relative;
+			}
+		</style>
+		
+		<div class="container">
+			<paper-input label=[[label]] id="input" value={{text}} on-click="_openOptions"></paper-input>
+			<ul id="optionsList" class="dropdown hidden" >
+				<template is="dom-repeat" items=[[optionsFilter]] sort=[[_sort]]>
+					<li data-id=[[item.id]] on-click="_selectValue">[[item.value]]</li>
+				</template>
+			</ul>
+		</div>
+	</template> 
+	
+	<script>
+
+		class PaperTypeahead extends Polymer.Element {
+
+	        static get is() { return  'paper-typeahead' }
+	
+	        static get properties() {
+	          return {
+				text:{type:String, observer:'_textChanged'},
+	        	label:String,
+	           	options:{type:Object, value:function(){return [];}, observer:'_setOptionsFilter'},
+	           	optionsFilter:{type:Object, value:function(){return [];}},
+	        	disableSort:{type:Boolean, value:false},
+	           	value:{type:String, observer:'_valueChanged'},
+	           
+	          }
+	        }
+	
+	        constructor() {
+	          super();
+	        }
+	
+	        ready() {
+	          	super.ready();
+	          	
+	          	$(window).click((e) => {
+	    			if(e.target != this && !e.originalEvent.path.includes(this)) {
+	    				$(this.$.optionsList).addClass('hidden');
+	    			}
+	    			
+	    			if(!this.text) {
+	    				this.value = "";
+	    				this.optionsFilter = this.options;
+	    			}
+	    			
+	    			this.options.forEach(option => {
+	    				if(option.id == this.value)
+	    					this.text = option.value;
+	    			})
+	    		})
+	          	
+	          	this.$.input.addEventListener('value-changed', (e)=> {
+	          		let value = e.detail.value;
+	          		this.text = value;
+	          		let filterList = [];
+	          		this.options.forEach(elem => {
+	          			if(elem.value.toLowerCase().includes(value.toLowerCase())) {
+	          				filterList.push(elem)
+	          			}
+	          		})
+	          		if(!e.detail.value) filterList = this.options;
+	          		this.optionsFilter = filterList;
+	          	})
+	        }
+	        
+	        _valueChanged() {
+    			this.options.forEach(option => {
+    				if(option.id == this.value)
+    					this.text = option.value;
+    			})
+    			let event = new CustomEvent('change', {detail:this.value});
+          		this.dispatchEvent(event);
+	        }
+	        
+	        _setOptionsFilter() {
+	        	this.optionsFilter = this.options;
+	        }
+
+	        _openOptions() {
+	        	$(this.$.optionsList).removeClass('hidden');
+	        }
+	        
+	        _selectValue(e) {
+	        	this.text = e.target.innerText;
+	        	this.value = e.target.dataId;
+	        	$(this.$.optionsList).addClass('hidden');
+	        	e.stopPropagation();
+	        }
+	        
+	        _listElemHover(e) {
+	        	this.text = e.target.innerText;
+	        }
+	        
+	        _textChanged() {
+	        	let event = new CustomEvent('textchanged', {detail:this.text});
+          		this.dispatchEvent(event);
+	        }
+	        
+	       
+	        
+	    }
+	    
+	    customElements.define(PaperTypeahead.is, PaperTypeahead);
+	    
+    </script> 
+</dom-module>

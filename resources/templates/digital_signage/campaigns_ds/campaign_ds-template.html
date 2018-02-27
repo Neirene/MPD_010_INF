@@ -1,0 +1,18 @@
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDW_hi5jQm2Ffb4GIa98vJdszgrma-qlJM&amp;libraries=places,drawing"></script>
+<script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js"></script>
+<script src="/js/libraries/maps/CartoUtils.js"></script>
+
+<div class="container-fluid">
+<infinia-tabs data-text="Selección de ubicaciones, Datos de la campaña">
+		<div slot="0" th:include="digital_signage/campaigns_ds/tabs/campaign-ds-location"></div>
+		<div slot="1" th:include="digital_signage/campaigns_ds/tabs/campaign-ds-data"></div>
+		<div slot="2" th:include="digital_signage/campaigns_ds/tabs/campaign-ds-content"></div>
+</infinia-tabs>
+</div>
+<script th:inline="javascript">
+	var id_campaign_ds = [[${id_campaign_ds}]];
+</script>
+<script src="/js/digital_signage/campaigns_ds/campaign_ds.js"></script>
+
+
+

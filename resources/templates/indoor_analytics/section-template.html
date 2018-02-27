@@ -1,0 +1,37 @@
+<div>
+	<ul class="section-breadcrumb mt20">
+		<li th:unless="${id_section}" class="active"><a>Nueva sección</a></li>
+		<li th:if="${id_section}" th:classappend="active"><a th:href="@{/section/{id_section}(id_section=${id_section},id_location=${id_location},id_retailer=${id_retailer})}" class="campaign_name" id="section-name-breadcrumb"></a></li>
+	</ul>
+</div>
+
+<div class="container-fluid pb20">
+	<form class="mt20" id="section-form">
+	
+		<input type="hidden" class="form-control" name="idLocation"/>
+		
+		<div class="form-section-title" data-text="-sectionData"></div>
+		<div class="row mt20">
+			<div class="form-group col-sm-4">
+				<label data-text="-name"></label>
+				<input class="form-control required" name="name" />
+			</div>
+			<div class="form-group col-sm-4">
+				<label data-text="-status"></label>
+				<infinia-select class="required" name="status"></infinia-select>
+			</div>
+		</div>
+		
+		<div class="row mt20">
+			<div class="col-sm-12 text-center">
+				<button type="button" class="btn btn-primary" id="save-section" data-text="-save"></button>
+			</div>
+		</div>
+	</form>
+</div>
+<script src="/js/indoor_analytics/section.js"></script>
+<script th:inline="javascript">
+	var id_retailer = [[${id_retailer}]];
+	var id_location = [[${id_location}]];
+	var id_section = [[${id_section}]];
+</script>

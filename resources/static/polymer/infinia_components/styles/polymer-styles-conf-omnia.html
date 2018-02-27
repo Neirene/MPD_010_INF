@@ -1,0 +1,33 @@
+
+<dom-module id="styles-conf">
+  <template>
+    <style>
+    
+    	:host {
+    		--primary-color:#009fe3;
+			--dark-background:#006c99;
+			--light-background:#009fe3;
+			--lighter-background:  #daebf2;
+			--input-border:#ccc;
+			--input-label:#676a6c;
+			--success: #60B660;
+			--error:#D25251;
+			--box-shadow:none;
+			--card-title-bg:#006c99;
+			--card-title-color:white;
+			--map-action-selection:#012c40;
+			--text-color:white;
+			--hover-highlight-color: rgb(221, 201, 176);
+    	}
+    	
+    	:host(.has-error) {
+			--input-border:#cc0000;
+			--input-label:#cc0000;
+			--primary-color:#cc0000;
+			--box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #ce8483 !important;
+			
+		}
+		
+    </style>
+  </template>
+</dom-module>

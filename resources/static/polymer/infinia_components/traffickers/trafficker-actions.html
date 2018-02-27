@@ -1,0 +1,51 @@
+
+<dom-module id="trafficker-actions">
+	<template>
+	
+		<style include="common-styles"></style>
+		<infinia-context id="context">
+					<ul slot="context-slot">
+
+						<li on-click="editTrafficker"> <iron-icon icon="image:edit"></iron-icon>
+							Editar
+						</li>
+					</ul>
+				
+	</template> 
+	<script>
+
+		class TraffickerActions extends Polymer.Element {
+
+	        static get is() { return  'trafficker-actions' }
+	
+	        static get properties() {
+	          return {
+	          	elemId:Number
+	          }
+	        }
+	
+	        constructor() {
+	          super();
+	        }
+	
+	        ready() {
+	          	super.ready();
+	        }
+
+	        show(e) {
+	        	var path = utils.getPath(e.target);
+				$(path[0]).next()[0].open();
+			}
+	        
+	        editTrafficker() {
+	        	window.location.href = "/traffickers/" + this.elemId;
+	        }
+	        
+	    }
+	    
+	    customElements.define(TraffickerActions.is, TraffickerActions);
+	    
+
+    </script> 
+
+</dom-module>

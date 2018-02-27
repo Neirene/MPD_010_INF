@@ -1,0 +1,50 @@
+<div class="new_button" style="display: none;" id="btn_pushwoosh_campaign_publicate">
+	<a class="btn btn-primary" onclick="utils.publicatePushwooshCampaign(idPushwooshCampaign)">Publicar campaña pushwoosh</a>
+</div>
+
+
+<div th:include="pushwoosh_campaigns/pushwoosh_campaign-breadcrumb"></div>
+
+<div class="container-fluid pb20">
+    <form class="mt20" id="campaign_pushwoosh-form">
+    		<input type="hidden" class="form-control" name="idNotifications"/>
+    		
+        <div class="form-section-title">
+            Datos de la campaña pushwoosh
+        </div>
+       
+        <div class="row mt20">
+            <div class="col-sm-6 form-group">
+                <label>Nombre</label>
+                <input class="form-control required" name="name" />
+            </div>         
+        </div>
+        
+        <div class="row mt20">
+	        	<div class="col-sm-6 form-group">
+	        		<label>Descripción</label>
+	        		<textarea class="form-control" name="description"></textarea>
+	        	</div>
+        </div>
+    </form>
+   
+    <div class="row mt20">
+        <div class="col-sm-12 text-center">
+            <button type="button" class="btn btn-primary" id="save-pushwoosh-campaign">Guardar</button>
+        </div>
+    </div>
+</div>
+ 
+<script th:inline="javascript">
+	var idPushwooshCampaign = [[${idPushwooshCampaign}]];
+	
+	utils.get('/api/pushwoosh_campaigns/' + idPushwooshCampaign, {}, function(response) {
+		if(response.sendingStatus == "SENDED") {
+			$("#btn_pushwoosh_campaign_publicate").hide();
+		}
+		else {
+			$("#btn_pushwoosh_campaign_publicate").show();
+		}
+	});
+</script>
+<script src="/js/pushwoosh_campaigns/pushwoosh_campaign.js"></script>

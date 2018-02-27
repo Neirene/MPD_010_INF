@@ -1,0 +1,71 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="icon" type="image/png" href="/img/favicon_infinia_v1.png"/>
+
+    <!--  
+ 	<script src="/polymer/bower_components/webcomponentsjs/webcomponents-loader.js"></script> 
+ 	<script src="/js/application.js"></script> 
+	 --> 
+	<script src="/polymer/bower_components/webcomponentsjs/webcomponents-loader.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+	<script src="/js/libraries/infinia-slider.js"></script>
+	<script src="/js/libraries/localization/localizer.js"></script>
+	<script src="/js/libraries/localization/texts.js"></script>
+	<script src="/js/common/tableManager.js"></script>
+	<script src="/js/libraries/jstz.min.js"></script>
+	<script src="/js/login/login.js"></script>
+	<script src="/js/common/utils.js"></script>
+	<script src="/js/common/common.js"></script>
+	
+
+	<script>
+		let style = utils.getWebStyles();
+		/*Polymer color styles conf*/
+		document.write('<link rel="import" href="/polymer/infinia_components/styles/polymer-styles-conf-'+style+'.html"></link>');
+		/*CSS color conf*/
+		document.write('<link href="/styles/css/styles-conf-'+style+'.css" rel="stylesheet"/>')
+		
+		if(utils.getWebStyles() == 'digital_signage') {
+			 document.write('\x3Cscript type="text/javascript" src="/js/libraries/localization/texts-digital_signage.js">\x3C/script>');
+		}
+		
+	</script>
+
+    <link rel="import" href="/polymer/polymer-conf.html"/>
+
+    <link href="/styles/styles.min.css" rel="stylesheet"/>
+
+    <title></title>
+    
+</head>
+
+<body style="visibility:hidden;">
+	
+	<paper-dialog id="modal" modal="true" class="popup-container">
+			<iron-icon icon="icons:close" class="btn-action" onclick="modal.close()"></iron-icon>
+			<div id="modalTitle" class="title"></div>
+			<div id="modalContents" class="content"></div>
+	</paper-dialog>
+	
+	<side-bar></side-bar>
+
+	<div class="infinia-container">
+		<infinia-header id="header_area"></infinia-header>
+	
+	<div class="title-section" >
+		<h3 id="title"></h3>
+		
+		<div class="breadcrumbs">
+		</div>		
+	</div>
+	<div th:include="${file}" style="padding:0 10px 50px 10px;"></div>
+	</div>
+</body>
+
+</html>

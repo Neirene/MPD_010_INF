@@ -1,0 +1,152 @@
+
+<dom-module id="order_line-actions">
+	<template>
+		<style include="common-styles"></style>
+			<infinia-context id="context">
+					<ul slot="context-slot">
+					<li id="activate" on-click="activate"><iron-icon icon="av:play-arrow"></iron-icon>Activar</li>
+					<li id="deactivate" on-click="stop"><iron-icon icon="av:pause"></iron-icon> Parar</li>
+					<!-- li on-click="finalize"><iron-icon icon="av:stop"></iron-icon>Finalizar</li-->
+					<li on-click="edit"><iron-icon icon="image:edit"></iron-icon> Editar</li>
+					<li on-click="duplicate"><iron-icon icon="icons:content-copy"></iron-icon>Duplicar</li>
+					<li on-click="remove"><iron-icon icon="icons:delete"></iron-icon>Eliminar</li>
+				</ul>
+			</infinia-context>
+		
+	</template>
+	<script>
+
+		class OrderLineActions extends Polymer.Element {
+
+	        static get is() { return  'order_line-actions' }
+	
+	        static get properties() {
+	          return {
+	          	elemId:Number
+	          }
+	        }
+	
+	        constructor() {
+	          super();
+	        }
+	
+	        ready() {
+	          	super.ready();
+	        }
+
+	        show(e) {
+	        	$(utils.getClickedElement(e)).next()[0].open();
+			}
+	        
+	        activate() {
+	        	utils.lockScreen();
+	        	
+	        	utils.get('/api/order_lines/' + this.elemId + '/check-creatives', {}, 
+	    				(response) => {
+	    					
+							var executeActivation = true;
+
+							
+	    					if (response.resultCode == -1){
+	    						executeActivation = confirm(response.message);
+	    					}
+	    					
+	    					if (response.resultCode == -2){
+	    						
+	    						alert(response.message);
+	    						executeActivation = false;
+	    					}
+	    					
+	    					if(executeActivation){
+	    			        	utils.lockScreen();
+
+	    						utils.get('/api/order_lines/' + this.elemId + '/activate', {}, 
+		    							(response) => {
+		    								
+		    								if (response.resultCode == -1){
+		    									alert(response.message);
+		    								}
+		    								else {
+		    									window.location.href = "/campaigns/" + id_campaign + "/order_lines";
+		    								}
+		    								utils.unlockScreen();
+		    							}, 
+		    							(error) => {
+		    								alert(JSON.stringify(error));
+		    								utils.unlockScreen();
+		    							});
+		    					
+	    					}else{
+		    					utils.unlockScreen();
+
+	    					}
+	    					
+	    					
+	    					
+	    				}, 
+	    				(error) => {
+	    					alert(JSON.stringify(error));
+	    					utils.unlockScreen();
+	    				});
+	        	
+	        	
+			
+	        }
+	        
+			stop() {
+				utils.lockScreen();
+				utils.get('/api/order_lines/' + this.elemId + '/deactivate', {}, 
+				(response) => {
+					if (response.resultCode == -1){
+						alert(response.message);
+					}
+					else {
+						window.location.href = "/campaigns/" + id_campaign + "/order_lines";
+					}
+					utils.unlockScreen();
+					
+				}, 
+				(error) => {
+					alert(JSON.stringify(error));
+					utils.unlockScreen();
+				});
+	        }
+		
+			duplicate() {
+				utils.lockScreen();
+				utils.get('/api/order_lines/' + this.elemId + '/duplicate', {}, 
+				(response) => {
+					utils.unlockScreen();
+					window.location.href = "/campaigns/" + id_campaign + "/order_lines";
+				}, 
+				(error) => {
+					utils.unlockScreen();
+					console.log('Error duplicating order line', this.elemId, error);
+				});
+	        }
+			
+			remove() {
+				utils.get('/api/order_lines/' + this.elemId + '/delete', {}, 
+				(response) => {
+					if (response.resultCode == 0) {
+						window.location.href = "/campaigns/" + id_campaign + "/order_lines";
+					}
+					else{
+						utils.modal("Error", response.message);
+					}
+				}, 
+				(error) => {
+					console.log('Error stopping order line', this.elemId);
+				});	
+	        }
+	        
+	        edit() {
+	        	window.location.href = "/order_lines/" + this.elemId + '?id_campaign=' + id_campaign;
+	        }
+	        
+	    }
+	    
+	    customElements.define(OrderLineActions.is, OrderLineActions);
+	    
+	</script>
+</dom-module>

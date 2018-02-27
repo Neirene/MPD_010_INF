@@ -1,0 +1,14 @@
+<div class="container-fluid pb20">
+	<div>
+		<infinia-tabs data-text="Retailer, Circuitos, Localizaciones">
+			<div slot="0" th:include="indoor_analytics/retailer-data"></div>
+			<div slot="1" th:include="indoor_analytics/circuits-list"></div>
+			<div slot="2" th:include="indoor_analytics/locations-list"></div>
+		</infinia-tabs>
+		
+	</div>
+</div>
+<script src="/js/indoor_analytics/retailer.js"></script>
+<script th:inline="javascript">
+	var id_retailer = [[${id_retailer}]];
+</script>

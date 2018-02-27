@@ -1,0 +1,48 @@
+
+
+<div class="container-fluid pb20">
+	<form class="mt20" id="advertiser-form">
+	
+		<input type="hidden" class="form-control" name="mediamathId"/>
+
+		<div class="form-section-title" data-text="-advertiserData"></div>
+
+		<div class="row mt20">
+			<div class="form-group col-sm-6">
+				<label data-text="-name"></label> <input class="form-control required" name="name" />
+			</div>
+			<div class="form-group col-sm-6">
+				<label data-text="-domain"></label> <input class="form-control required" name="domain" />
+			</div>
+			<div class="col-sm-4 form-group">
+				<label data-text="-status"></label>
+				<infinia-select class="required" name="status"></infinia-select>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="form-group col-sm-4">
+				<label data-text="-agency"></label>
+				<infinia-select id="idAgency" name="idAgency" class="required"></infinia-select>
+			</div>
+			<div class="form-group col-sm-4">
+				<label>IAB</label>
+				<infinia-select  name="iab" class="required"></infinia-select>
+			</div>
+		</div>
+		<div class="row">
+			<div class="form-group col-sm-4">
+				<file-loader id="file-loader" name="logo" accept="image"></file-loader>
+			</div>
+		</div>
+		<div class="row mt20">
+			<div class="col-sm-12 text-center">
+				<button type="button" class="btn btn-primary" id="save-advertiser" data-text="-save"></button>
+			</div>
+		</div>
+	</form>
+</div>
+<script src="/js/advertisers/advertiser.js"></script>
+<script th:inline="javascript">
+	var advertiserId = [[${id_advertiser}]];
+</script>

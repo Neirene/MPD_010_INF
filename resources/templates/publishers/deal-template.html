@@ -1,0 +1,59 @@
+
+
+<div class="container-fluid pb20">
+
+	<form class="mt20" id="deal-form">
+	
+		<input type="hidden" class="form-control" name="mediamathId"/>
+	<input type="hidden" class="form-control" name="idOrderLines"/>
+		<div class="row mt20">
+			<div class="col-sm-12 form-group">
+				<label>Nombre del deal</label>
+				<input class="form-control required" name="name"/>
+			</div>
+			<div class="col-sm-12 form-group">
+				<label>Identificador</label>
+				<input class="form-control required" name="dealIdentifier"/>
+			</div>
+			
+			<div class="col-sm-4 form-group">
+				<label data-text="-price"></label>
+				<input class="form-control required" name="price"/>
+			</div>
+		
+			<div class="col-sm-4 form-group">
+				<label>Tamaño</label>
+				<select id="idSize" name="idSize" class="form-control required">
+					<option value="" data-text="-select"></option>
+				</select>
+			</div>
+			
+		</div>
+		
+		<div class="row">
+			<div class="col-sm-6 form-group">
+				<label>Provider</label>
+				<select id="idProvider" name="idProvider" class="form-control required">
+					<option value="" data-text="-select"></option>
+				</select>
+			</div>
+			<div class="form-group col-sm-6">
+				<label>Estado</label> 
+				<select id="status" name="status" class="form-control required">
+					<option value='1'>Activo</option>
+					<option value='0'>Desactivado</option>
+				</select>
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-sm-12 text-center">
+				<button type="button" class="btn btn-primary" id="save-deal">Guardar deal</button>
+			</div>
+		</div>
+	</form>
+</div>
+
+<script th:inline="javascript">
+	localizer.translate();
+</script>

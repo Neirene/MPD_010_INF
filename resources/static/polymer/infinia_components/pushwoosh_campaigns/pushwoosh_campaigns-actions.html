@@ -1,0 +1,102 @@
+<dom-module id="pushwoosh_campaigns-actions">
+	<template>
+		<style include="common-styles"></style>
+
+		
+		<infinia-context id="context">
+					<ul slot="context-slot">
+
+						
+						<li on-click="editPushwooshCampaign" id="pushwooshCampaignsEdit"> 
+							<iron-icon icon="image:edit"></iron-icon> Editar
+						</li>
+						<li on-click="notifications"> 
+							<iron-icon icon="icons:menu"></iron-icon> Notificaciones
+						</li>					
+						<li on-click="publicatePushwooshCampaign" id="pushwooshCampaignsPublicate"> 
+							<iron-icon icon="av:play-arrow"></iron-icon> Publicar
+						</li>
+<!-- 						<li on-click="stopPublishPushwooshCampaign"> -->
+<!-- 							<iron-icon icon="av:pause"></iron-icon> Parar -->
+<!-- 						</li> -->
+						<li on-click="duplicatePushwooshCampaign"> <iron-icon icon="icons:content-copy"></iron-icon> Duplicar</li>
+<!-- 						<li on-click="reporting"> <iron-icon icon="icons:assessment"></iron-icon> Reporting</li> -->						
+					</ul>
+		</infinia-context>
+	</template> 
+	
+	<script>
+
+		class PushwooshCampaignsActions extends Polymer.Element {
+
+	        static get is() { return  'pushwoosh_campaigns-actions'; }
+	
+	        static get properties() {
+	          return {
+	          	elemId: Number
+	          }
+	        }
+	
+	        constructor() {
+	          super();
+	        }
+	
+	        ready() {
+	          	super.ready();
+	          	
+	          	var _this = this;
+        	  	
+	    	  		utils.get('/api/pushwoosh_campaigns/' + this.elemId, {}, function(response) {
+	    				if(response.sendingStatus && response.sendingStatus == "SENDED") {
+						_this.$.pushwooshCampaignsEdit.style.display = "none";
+						_this.$.pushwooshCampaignsPublicate.style.display = "none";
+	    				}
+	    				else {
+	    					_this.$.pushwooshCampaignsEdit.style.display = "block";
+						_this.$.pushwooshCampaignsPublicate.style.display = "block";
+	    				}
+				});
+      		}
+	        
+	        show(e) {
+	        		$(utils.getClickedElement(e)).next()[0].open();
+			}
+	        
+	        publicatePushwooshCampaign() {
+	        		utils.publicatePushwooshCampaign(this.elemId);
+	        }
+	        
+// 	        stopPublishPushwooshCampaign() {
+// 	        		utils.stopPublishPushwooshCampaign(this.elemId);
+// 	        }
+	        
+	        editPushwooshCampaign() {
+	        		window.location.href = "/pushwoosh_campaigns/" + this.elemId;
+	        }
+	        
+	        notifications() {
+	        		window.location.href = "/pushwoosh_campaigns/"+ this.elemId + "/pushwoosh_notifications";
+	        }
+	        
+// 	        reporting() {
+// 	        		window.location.href = "/campaigns/"+this.elemId+"/reporting";
+// 	        }
+	        
+	        duplicatePushwooshCampaign() {
+				utils.lockScreen();
+				utils.get('/api/pushwoosh_campaigns/' + this.elemId + '/duplicate', {},
+				(response) => {
+					utils.unlockScreen();
+					window.location.href = "/pushwoosh_campaigns";
+				}, 
+				(error) => {
+					utils.unlockScreen();
+					console.log('Error duplicating campaign', this.elemId, error);
+				});
+	        }
+	        
+	    }
+	    
+	    customElements.define(PushwooshCampaignsActions.is, PushwooshCampaignsActions);	    
+    </script> 
+</dom-module>

@@ -1,0 +1,46 @@
+<form id="content-form" style="background-color:white; padding:10px;margin-bottom:10px;">
+	<input type="hidden" class="form-control" name="admiraId"/>
+
+	<div class="row">
+		<div class="col-sm-4 ">
+			<paper-input label="name" name="name" class="required"></paper-input>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-sm-2 form-group">
+			<paper-input type="number" label="Duracion (segundos)" name="duration"></paper-input>
+		</div>
+		
+		<div class="col-sm-2 ">
+			<paper-input label="category" name="category" ></paper-input>
+		</div>
+		<div class="col-sm-2 ">
+			<paper-input label="Campaña publicitaria" name="advertising_campaign"></paper-input>
+		</div>
+	</div>
+	
+	<div class="row mt10">
+		
+		<div class="col-sm-2 form-group">
+			<label>Fecha inicio</label>
+			<date-picker input-class="gold" text="Fecha inicio" id="startDate"  name="startDate" class="required" hour="00" min="00"></date-picker>
+		</div>
+		<div class="col-sm-2 form-group">
+			<label>Fecha fin</label>
+			<date-picker input-class="gold" text="Fecha fin" id="endDate"   name="endDate" class="required" hour="23" min="59"></date-picker>
+		</div>
+		
+	</div>
+	
+	<div class="row">
+		<div class="col-sm-12">
+			<file-loader name="files"></file-loader>
+		</div>
+	</div>
+	
+	<div class="row mt20">
+		<div class="col-sm-6 text-center">
+			<button class="btn btn-primary" type="button" id="save-content" data-text="-save"></button>
+		</div>
+	</div>
+</form>	

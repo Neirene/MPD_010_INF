@@ -1,0 +1,64 @@
+
+<dom-module id="infinia-context">
+	<template>
+		<style include="common-styles"></style>
+		
+		<style>
+			iron-dropdown {
+				left:auto!important;
+				right:60px!important;
+			}
+
+		</style>
+		
+		<div style="position:relative;">
+		<iron-icon on-click="toggle" icon="icons:settings" class="settings"></iron-icon>
+		<iron-dropdown horizontal-align="right" vertical-align="top" id="dropdown">
+			<div class="right-arrow"></div>
+			<div class="drop-down" slot="dropdown-content">
+				<slot name="context-slot"></slot>
+			</div>
+		</iron-dropdown>
+	</div>
+
+	</template> 
+	
+	<script>
+
+		class infiniaContext extends Polymer.Element {
+
+	        static get is() { return  'infinia-context' }
+	
+	        static get properties() {
+	          return {
+	           	
+	          }
+	        }
+	
+	        constructor() {
+	          super();
+	        }
+	
+	        ready() {
+	          	super.ready();
+	        }			
+
+	        show() {
+	        	this.$.dropdown.show();
+			}
+
+			toggle() {
+	        	this.$.dropdown.toggle();
+			}
+	        
+	        
+	        hide() {
+	        	this.$.dropdown.close();
+			}
+
+	    }
+	    
+	    customElements.define(infiniaContext.is, infiniaContext);
+	    
+    </script> 
+</dom-module>

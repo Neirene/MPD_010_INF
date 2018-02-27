@@ -1,0 +1,80 @@
+
+<dom-module id="cluster-typeahead">
+	<template>
+		<style include="common-styles"></style>
+		
+		<style>
+				
+		
+		</style>
+		
+		
+		<div>
+			<paper-typeahead label=[[label]] id="clusters_list"></paper-typeahead>
+		</div>
+	</template> 
+	
+	<script>
+
+		class ClusterTypeahead extends InfiniaPolymer {
+
+	        static get is() { return  'cluster-typeahead' }
+	
+	        static get properties() {
+	          return {
+	        	  value:String, 
+	        	  label:String
+	          }
+	        }
+	
+	        constructor() {
+	          super();
+	        }
+	
+	        ready() {
+	          	super.ready();
+	          	let _this = this;
+	          	
+	          //Load clusters
+	        	//this.doSearch(this.$.clusters_list, "");
+	        	
+	        	$(this.$.clusters_list).on('textchanged', function(e) {
+	        		_this.doSearch(this, e.detail);
+	        	})
+	        	
+	          	$(this.$.clusters_list).on('change', function(e) {
+	          		this.value = e.detail;
+	          		if(e.detail){
+	          			var event = new CustomEvent('clusterSelected', {'detail':e.detail.id});
+	        			_this.dispatchEvent(event);
+	          		}
+	        		
+	        	})
+	        }			
+	        
+	        doSearch(selList, filter) {
+	        	if(!selList) {
+	        		selList = this.$.clusters_list;
+	        	}
+	        	if(!filter) {
+	        		filter = "";
+	        	}
+	        	utils.get('/api/clusters?filters=cluster_status|completed&filters=name|'+filter+'&numRecords=100',{}, (response) => {
+	        		let list = [];
+	        		response.tableRows.forEach((row) => {
+	        			let elem = {id:row.id, value:row.cells[0].value};
+	        			list.push(elem);
+	        		})
+	        		this.$.clusters_list.options = list;
+	        	})
+	        }
+	        
+	        getData() {
+	        	return this.$.clusters_list.getData();
+	        }
+	    }
+	    
+	    customElements.define(ClusterTypeahead.is, ClusterTypeahead);
+	    
+    </script> 
+</dom-module>

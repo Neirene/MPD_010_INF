@@ -1,0 +1,96 @@
+
+<dom-module id="creative-actions">
+	<template>
+		<style include="common-styles"></style>
+<infinia-context id="context">
+					<ul slot="context-slot">
+						
+						<li on-click="editCreative"> <iron-icon icon="image:edit"></iron-icon> Editar</li>
+						<li on-click="preview"> <iron-icon icon="icons:visibility"></iron-icon> Preview</li>
+						<li on-click="duplicate"> <iron-icon icon="icons:content-copy"></iron-icon> Duplicar</li>
+						<!--li> <iron-icon icon="av:pause"></iron-icon> Parar</li>
+						<li> <iron-icon icon="av:stop"></iron-icon>Finalizar</li>
+						
+						<li> <iron-icon icon="icons:assignment"></iron-icon> Reporte</li>
+						<li> <iron-icon icon="icons:content-copy"></iron-icon> Duplicar</li>
+						<li> <iron-icon icon="icons:archive"></iron-icon> Archivar</li>
+						<li> <iron-icon icon="icons:delete"></iron-icon> Eliminar</li-->
+					</ul>
+				</infinia-context>
+	</template> 
+	
+	<script>
+
+		class CreativeActions extends Polymer.Element {
+
+	        static get is() { return  'creative-actions' }
+	
+	        static get properties() {
+	          return {
+	          	elemId:Number
+	          }
+	        }
+	
+	        constructor() {
+	          super();
+	        }
+	
+	        ready() {
+	          	super.ready();
+	        }
+
+	        show(e) {
+	        	$(utils.getClickedElement(e)).next()[0].open();
+			}
+	        
+	        publicateCampaign() {
+	        	window.location.href = "/campaigns/dsp/upload/"+this.elemId;
+	        }
+	        
+	        editCreative() {
+	        	utils.get('/api/creatives/'+this.elemId, {}, (response) => {
+	        		window.location.href = "/creatives/"+response.creativeType+"/"+this.elemId;
+	        	})
+	        }
+	        
+	        preview() {
+	        	utils.get('/api/creatives/'+this.elemId, {}, function(response) {
+	        		if(response) {
+	        			if(response.creativeType =="assets") {
+		        			if(response.files) {
+		        				var file = JSON.parse(response.files)[0];  
+		        				utils.modal(localizer.get("creative.preview"),'<a href="'+response.clickThroughUrl+'"><img src="'+file.url+'"/></a>', {unBlock:true});
+		        			}
+	        			}
+	        			
+	        			else if(response.creativeType =="video") {
+		        			console.log(response);
+	        				if(response.files) {
+	        					var file = JSON.parse(response.files)[0];  
+		        				utils.modal(localizer.get("creative.preview"),'<a href="'+response.clickThroughUrl+'">'+
+		        						'<video controls="controls"><source src="'+file.url+'"/></video></a>', {unBlock:true});
+		        			}
+	        			}
+	        			else {
+	        				utils.modal(localizer.get("creative.preview"),'Las creatividades de este tipo no pueden visualizarse', {unBlock:true});
+	        			}
+	        		}
+	        	})
+	        }
+	        
+	        duplicate() {
+	        	utils.get('/api/creatives/'+this.elemId, {}, (response) => {
+		        	window.location.href = "/creatives/"+response.creativeType+"/"+this.elemId+"?duplicate=true";
+		        })
+	        }
+	        
+	        orderLines() {
+	        	window.location.href = "/campaigns/"+this.elemId+"/order_lines";
+	        }
+	        
+	    }
+	    
+	    customElements.define(CreativeActions.is, CreativeActions);
+	    
+    </script> 
+</dom-module>

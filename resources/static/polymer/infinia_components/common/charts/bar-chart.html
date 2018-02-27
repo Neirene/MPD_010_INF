@@ -1,0 +1,76 @@
+
+<dom-module id="bar-chart">
+	<template>
+		<style include="common-styles"></style>
+		
+		<style>
+			#chart {
+				height:250px;
+			}
+		</style>
+		<div id="chart">
+			
+		</div>	
+	</template> 
+	
+	
+	<script>
+
+	
+	
+	class BarChart extends Polymer.Element {
+
+        static get is() { return  'bar-chart' }
+
+        static get properties() {
+          	return {
+        	  	title:String,
+          		data:{type:Object, value:function(){return [];}}
+          	}
+        }
+
+        constructor() {
+          super();
+        }
+
+        ready() {
+          	super.ready();
+          	
+        }
+        
+        drawChart() {
+        	let _this = this;
+        	google.charts.load('current', {'packages':['bar']});
+            google.charts.setOnLoadCallback(function() {
+            	
+	            var options = {
+	              title: _this.title,
+	              legend: { position: 'right' },
+	              bar: { groupWidth: '60%' },
+	              stacked: true,
+	              colors:['#7a1b2b'],
+	              bars: 'horizontal'
+	            };
+	
+	            var chart = new google.charts.Bar(_this.$.chart);
+	            let data =  google.visualization.arrayToDataTable(_this.data);
+	            chart.draw(data, google.charts.Bar.convertOptions(options));
+        	})
+        
+		}
+        
+        setData(dat) {
+        	this.data = dat;
+        }
+        
+        
+        setTitle(tit) {
+        	this.title = localizer.get(tit);
+        }
+	
+	}
+	    
+	customElements.define(BarChart.is, BarChart);
+	    
+    </script> 
+</dom-module>

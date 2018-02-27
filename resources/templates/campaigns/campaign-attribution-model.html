@@ -1,0 +1,22 @@
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDW_hi5jQm2Ffb4GIa98vJdszgrma-qlJM&amp;libraries=places,drawing"></script>
+<script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js"></script>
+<script src="/js/libraries/maps/CartoUtils.js"></script>
+
+<div class="new_button">
+	<a th:href="@{/campaigns/} + ${id_campaign} + @{/attribution_model/new}" class="btn btn-primary ma-create">Nuevo modelo de atribución</a>
+</div>
+<div th:include="campaigns/campaign-breadcrumb"></div>
+
+<div class="container-fluid">
+	<div class="row mt10">
+		<div class="col-sm-12" id="models-list">
+		</div>
+	</div>
+</div>
+
+<script th:inline="javascript">
+	var id_campaign = [[${id_campaign}]];
+	var id_model = [[${id_model}]];
+</script>
+<script src="/js/campaigns/campaign_attribution-model.js"></script>

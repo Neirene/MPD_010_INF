@@ -1,0 +1,89 @@
+<dom-module id="pushwoosh_notifications-actions">
+	<template>
+		<style include="common-styles"></style>
+		<infinia-context id="context">
+					<ul slot="context-slot">
+			
+						<li on-click="editNotification" id="pushwooshNotificationEdit"> 
+							<iron-icon icon="image:edit"></iron-icon> Editar
+						</li>
+						<li on-click="publicateNotification" id="pushwooshNotificationPublicate">
+							<iron-icon icon="av:play-arrow"></iron-icon> Publicar
+						</li>
+						<li on-click="stopNotification" id="pushwooshNotificationStopPublish">
+							<iron-icon icon="av:pause"></iron-icon> Parar
+						</li>
+						<li on-click="duplicateNotification"> 
+							<iron-icon icon="icons:content-copy"></iron-icon> Duplicar
+						</li>
+					</ul>
+			</infinia-context>
+	</template> 
+	
+	<script>
+
+		class PushwooshNotificationsActions extends Polymer.Element {
+
+	        static get is() { return  'pushwoosh_notifications-actions'; }
+	
+	        static get properties() {
+	          return {
+	          	elemId: Number
+	          }
+	        }
+	
+	        constructor() {
+          		super();
+	        }
+	
+	        ready() {
+          		super.ready();
+          		
+          		var _this = this;
+        	  	
+	        	  	utils.get('/api/pushwoosh_notifications/' + this.elemId, {}, function(response) {
+	    				if(response.sendingStatus && response.sendingStatus == "SENDED") {
+						_this.$.pushwooshNotificationEdit.style.display = "none";
+						_this.$.pushwooshNotificationPublicate.style.display = "none";
+	    				}
+	    				else {
+	    					_this.$.pushwooshNotificationEdit.style.display = "block";
+						_this.$.pushwooshNotificationPublicate.style.display = "block";
+	    				}
+				});
+	        }
+	        
+	        show(e) {
+	        		$(utils.getClickedElement(e)).next()[0].open();
+			}
+	        
+	        publicateNotification() { 
+	        		utils.publicateNotificationPushwoosh(this.elemId, idPushwooshCampaign);
+	        }
+	        
+	        stopNotification() {
+	        		utils.stopPublishPushwooshNotification(this.elemId, idPushwooshCampaign);
+        		}
+	        
+	        editNotification() {
+	        		window.location.href = "/pushwoosh_notifications/" + this.elemId + '?idPushwooshCampaign=' + idPushwooshCampaign;
+	        }
+	        
+	        duplicateNotification() {
+				utils.lockScreen();
+				
+				utils.get('/api/pushwoosh_notifications/' + this.elemId + '/duplicate', {}, 
+				(response) => {
+					utils.unlockScreen();
+					window.location.href = "/pushwoosh_campaigns/" + idPushwooshCampaign + "/pushwoosh_notifications";
+				}, 
+				(error) => {
+					utils.unlockScreen();					
+					console.log('Error duplicating notification', this.elemId, error);
+				});
+	        }
+	    }
+	    
+	    customElements.define(PushwooshNotificationsActions.is, PushwooshNotificationsActions);	    
+    </script> 
+</dom-module>

@@ -1,0 +1,494 @@
+
+<dom-module id="infinia-table">
+	<template>
+		<style include="common-styles"></style>
+		
+		<style>
+			.pagination {
+				display:flex;
+				justify-content:flex-end;
+				margin-right:50px;
+				margin-top:20px;
+			}
+			
+			.pagination li {
+				padding:5px 10px;
+				cursor:pointer;
+				border:1px solid var(--primary-color);
+			}
+			
+			.pagination li.active {
+				color:white;
+				background-color: var(--primary-color);
+			}
+			
+			.filter-div {
+				display:flex;
+				padding-left:10px;
+				margin-top:10px;
+				z-index:100;
+			}
+			
+			.filter-container {
+				position:absolute;
+				z-index:20;
+				right:10px;
+				background-color:white;
+			}
+			
+			.close {
+				display:flex;
+				justify-content:flex-end;
+				padding:5px;
+			}
+			
+			 .small {
+			    --iron-icon-height: 16px;
+			    --iron-icon-width: 16px;
+			  }
+			
+			.flex-between {
+				display:flex;
+				justify-content:space-between;
+				align-items:center;
+			}
+
+			table {
+				width:100%;
+			}
+			th {
+				box-sizing:border-box;
+				text-transform:uppercase;
+				padding:10px;
+			}
+			
+			td {
+				box-sizing:border-box;
+				padding:10px;
+			}
+
+			th, tr {
+				cursor:pointer;
+			}
+
+			tbody tr:hover {
+				background-color:var(--lighter-background);
+			}
+			thead tr:first-child {
+				cursor:pointer;
+				border-bottom: 3px solid rgb(17, 46, 54);
+			}
+
+			tbody tr {
+				border-bottom:1px solid var(--primary-color);
+			}
+
+			
+			.errorRow {
+				background-color:#ff9999!important;
+			}
+			
+			.errorPartialRow {
+				background-color:rgba(255, 130, 3, 0.61);
+			}
+			
+			.finalColumn {
+				width:60px;
+				text-align:right;
+			}
+			
+			
+			.headFixed {
+				position:fixed;
+				background-color:white;
+				top:83px;
+				z-index:1;
+			}
+			
+			.noBorder {
+				border:0!important;
+			}
+		</style>
+		
+		<div id="title">
+			<b>[[title]]</b>
+		</div>
+		
+		
+		
+		<div id="filter-container" class="filter-div">
+		</div>
+		
+		<table id="table" class="">
+				<thead id="tableHead">
+					<tr>
+						<template is="dom-repeat" items="{{tableColumns}}">
+							<th on-click="_sortClick">
+								<div class="flex-between">  {{_localize(item.value)}}
+								<template is="dom-if" if="{{_sortingEnabled()}}"> 
+									<iron-icon class="sort-icon small" icon="icons:unfold-more"></iron-icon>
+								</template>
+								<input type="hidden" value="{{item.value}}">
+								</div> 
+							</th>
+						</template>
+						
+						<th id="download"><iron-icon on-click="show" style="cursor:pointer" icon="icons:file-download">CSV</iron-icon>
+							<iron-dropdown horizontal-align="right" vertical-align="top">
+								<div class="drop-down" slot="dropdown-content">
+									<ul>		
+										<li on-click="_exportCSV"> <iron-icon icon="image:edit"></iron-icon> CSV</li>
+										<li on-click="_exportXLS"> <iron-icon icon="icons:menu"></iron-icon> XLS</li>
+									</ul>
+								</div>
+							</iron-dropdown>
+						</th>
+					</tr>
+				</thead>
+			
+				<tbody>
+				
+				
+					<template id="tableTemplate" is="dom-repeat" items="{{tableRows}}" as="row">
+						<tr  on-click="_rowClick">					
+						<template id="rowTemplate" is="dom-repeat" items="{{row.cells}}" as="cell">
+							<td>{{_manageValue(cell)}}</td>
+						</template>
+						<td class="actions finalColumn"><input type="hidden" value="{{row.id}}"></td>
+						</tr>
+					</template>
+					
+								
+				</tbody>
+			</table>
+			
+			<div class="pagination-container">
+			<ul class="pagination">
+				<template is="dom-repeat" items="{{pages}}">
+					<li on-click="pageClick">{{item}}</li>			
+				</template>
+			</ul>
+			<div class="pagination mt10">
+				mostrando [[currentCount]] de [[totalResults]]
+			</div>
+			</div>
+	</template> 
+	
+	<script>
+
+		class InfiniaTable extends Polymer.Element {
+
+	        static get is() { return  'infinia-table' }
+	
+	        static get properties() {
+	          return {
+	           	tableColumns:{type:Object, value:function(){return[]}},
+	           	tableRows:{type:Object, value:function(){return[]}},
+	           	totalPages:{type:Number},
+	           	disableRowClick:String,
+	           	sortingDisabled:{type:String,value:"false"},
+	           	currentPage:{type:Number, value:1},
+	           	totalResults:{type:Number, value:0},
+	           	rowsPerPage:{type:Number, value:15},
+	           	currentCount:{type:Number, value:0},
+	           	title:{type:String, value:""},
+	           	errorColumn:{type:Number, value:0},
+	           	disableNumberFormatting:{type:Boolean, value:false},
+	           	disableHeadFixed:{type:Boolean, value:false},
+	          }
+	        }
+	
+	        constructor() {
+	          super();
+	        }
+	
+	        ready() {
+	          	super.ready();
+	          	var _this = this;
+	          	_this.startingPosition = $(_this).position().top;
+	          	this.$.tableTemplate.addEventListener("dom-change", (event) => {
+		          	if(_this.errorColumn) {
+		          		$(_this.root).find('.errorRow').removeClass('errorRow');
+		          		setTimeout(function() {
+		          			_this.tableRows.forEach(function(row) {
+		          				let errorClass = "";
+		          				if(row.cells[_this.errorColumn].value == "ERROR") {
+		          					errorClass = "errorRow";
+		          				}
+		          				if(row.cells[_this.errorColumn].value == "ERROR_PARTIAL") {
+		          					errorClass = "errorPartialRow";
+		          				}
+		          				
+		          				$(_this.root).find('tr').each(function(index, tr) {
+	          						if($(tr).find('.actions').find('input').val() == row.id) {
+	          							$(tr).addClass(errorClass);
+	          						}
+	          					})
+		          			})
+		          		}, 100);
+	        		}
+		          	
+		          	if(typeof _this.onHTMLLoaded == "function") {
+	      				setTimeout(() => {
+	      					_this.onHTMLLoaded(_this, _this.root);
+	      				}, 100)
+	      			}
+	          	});
+	          	
+	          	$(window).scroll(function(e) {
+	          		      	
+	          		if(!_this.disableHeadFixed) {
+		          		if($(this).scrollTop() > 100) {
+		          			
+			          		$(_this.$.tableHead).find('th').each(function(index, elem) {
+			          			if(!_this.headWidths) _this.headWidths = [];
+			          			_this.headWidths.push($(elem).css('width'));
+			          		})
+		          			
+			          		let copy = $(_this.$.tableHead).clone();
+			          		copy.attr('id', 'headCopy');
+			          		$(copy).addClass('headFixed');
+			          		$(_this.$.tableHead).find('tr').addClass('noBorder');
+			          		if($(_this.root).find('#headCopy').length == 0)
+			          			$(_this.$.table).prepend(copy);
+		          			$(_this.$.tableHead).css('visibility', 'hidden');
+			          		
+			          		$(copy).find('th').each(function(index, elem) {
+			          			$(elem).css('width', _this.headWidths[index]);
+			          		})
+		          		}
+		          		else{
+		          			$(_this.$.tableHead).find('tr').removeClass('noBorder');
+		          			$(_this.$.tableHead).css('visibility', 'visible');
+		          			$(_this.root).find('#headCopy').remove();
+		          		}
+	          		}
+	          	})
+	        }
+	        
+	        pageClick(e) {
+	        	var page = $(e.target).html();
+	        	if(this.currentPage != page && page != "...") {
+	        		this.currentPage = page;
+	        		var event = new CustomEvent('pageClick', {'detail':{page:page}});
+		        	this.dispatchEvent(event);
+	        	}
+	        }
+	        
+	        drawPagination() {
+	        	var _this = this;
+				this.pages = utils.pagination(this.currentPage, this.totalPages);
+				
+				
+				setTimeout(function() {
+					_this.activateCurrent();
+					
+					var showing = (_this.currentPage-1) * _this.rowsPerPage;
+					var max = showing+_this.rowsPerPage;
+					if(max > _this.totalResults) 
+						max = _this.totalResults;
+					
+					var correct = 1;
+					if(_this.totalResults == 0){
+						$(_this.root).find('.pagination').addClass('hidden')
+					}
+					else{
+						_this.currentCount = (showing+correct) +"-"+ (max);
+					}
+					
+				}, 100)
+	        }
+	        
+	        activateCurrent() {
+	        	$(this.root).find('.pagination .active').removeClass('active');
+	        	$(this.root).find('.pagination li').each((index, elem) => {
+					if($(elem).html() == this.currentPage){
+						$(elem).addClass("active");
+						return;
+					}
+				});
+	        }
+	        
+	        
+	        show(e) {
+	        	$(utils.getClickedElement(e)).next()[0].open();
+			}
+	        
+	        
+	        showFilter() {
+	        	$(this.$["filter-container"]).toggleClass('hidden');
+	        }
+	        
+	        /**
+        		The action must be the name of a polymer element, e.g "campaign-actions"
+	        */
+			addAction(action) {
+				var _this = this;
+				$(this.root).find('.actions').each(function(index, elem) {
+					
+					$(elem).find('input').next().remove();	
+					let actionObject = customElements.get(action);
+					if(actionObject) {
+						let act = new actionObject;
+						act.elemId = $(elem).find('input').val();
+						$(elem).append(act);
+						$(act).on('click', (e) => {
+							e.stopPropagation();
+							$(_this.root).find('.actions').each((index, el)  => {
+								if(el != elem && $(el).children().last()[0].$)
+									
+									$(el).children().last()[0].$.context.hide(); 
+							})
+						});
+						$(act).on('rowDelete', (e) => {
+							var event = new CustomEvent('rowDelete');
+							_this.dispatchEvent(event);
+						});
+					}
+				})
+			}
+	        
+			 /**
+        		The filter must be the name of a polymer element, e.g "campaign-filter"
+	        */
+			addFilter(fil) {
+				 
+					
+					$(this.$["filter-container"]).append(fil);
+					
+					$(fil).on('applyFilter', (e) => {
+						var event = new CustomEvent('applyFilter', {'detail':e.detail});
+						this.dispatchEvent(event);
+					})
+				
+			}
+	        
+	        _localize(text) {
+	        	return localizer.get(text) ||text;
+	        }
+	        
+	        _rowClick(e) {
+	        	
+	        	if(!this.disableRowClick) {
+	        	
+		        	var elem = utils.getClickedElement(e);
+		        	let tr = elem;
+		        	if(elem.nodeName != "TR") {
+		        		tr = $(elem).closest('tr');
+		        	}
+		        	var event = new CustomEvent('rowClick', {'detail':$(tr).find('.actions input').val()});
+					this.dispatchEvent(event);
+	        	}
+	        }
+	        _exportCSV(e) {
+	        	var event = new CustomEvent('exportCSV', {});
+				this.dispatchEvent(event);	        	
+	        }
+	        _exportXLS(e) {
+	        	var event = new CustomEvent('exportXLS', {});
+				this.dispatchEvent(event);	        	
+	        }
+	        _sortClick(e) {
+	        	
+	        	if(this._sortingEnabled()) {
+	        	
+		        	let th = utils.getClickedElement(e);
+		           	if(th.nodeName != "TH") {
+		        		th = $(th).closest('th');
+		        	}
+		           	
+		           	var id = $(th).find('input').val();
+		        	var current = $(th).find('iron-icon').attr('icon');
+		        	var sort = "";
+		        	var next;
+		        	if(current == 'icons:unfold-more') {
+		        		next =  'icons:arrow-drop-up';
+		        		sort = 'asc';
+		        	}
+		        	else if(current == 'icons:arrow-drop-down') {
+		        		next =  'icons:unfold-more';
+		        		sort = ''
+		        	}
+		        	
+		        	else if(current == 'icons:arrow-drop-up') {
+		        		next =  'icons:arrow-drop-down';
+		        		sort = 'desc';
+		        	}
+		        	$(this.root).find('th').find('iron-icon').attr('icon', 'icons:unfold-more');
+		        	$(th).find('iron-icon').attr('icon', next);
+		        	
+		        	var detail = {id:id, sort: sort};
+		        	var event = new CustomEvent('sortClick', {'detail':detail});
+					this.dispatchEvent(event);
+	        	}
+	        }
+	        
+	        _manageValue(item) {
+	        	let found=false;
+	        	var retValue = item.value;
+	        	
+	        	if(typeof this.valueManager === "function") {
+	        		$(this.tableColumns).each((index, elem) => {
+	        			if(item.id == elem.id)
+	        				retValue =  this.valueManager(item, elem);
+		        	})
+	        	}
+	        	
+	        	
+	        	
+        		var n = Number(retValue);
+        		if(isNaN(n) || this.disableNumberFormatting){
+        			if(retValue.startsWith('date_')) {
+    	        		let d = new Date(Number(retValue.replace("date_", "")));
+    	        		retValue =  utils.formatDate(d);
+    	        	}
+        		}
+        		else 
+        			retValue = n.toLocaleString();
+        		
+	        	return retValue.replace('&amp;', '&');
+	        }
+	        
+	        
+	        update(data) {
+	        	
+	    		this.tableColumns = data.tableColumns;
+	    		this.tableRows = data.tableRows;
+	    		this.totalResults = data.totalResults;
+	    		this.rowsPerPage = data.rowsPerPage;
+	    		this.currentPage = data.numPage+1;
+	    		this.totalPages = data.totalPages;
+				this.drawPagination();
+	        	
+	        }
+	        
+	        hidePagination() {
+	        	$(this.root).find('.pagination-container').hide();
+	        }
+	        
+	        setTitle(tit) {
+	        	this.title = tit;
+	        }
+	        
+	        disableDownload() {
+                $(this.$.download).remove();
+            }
+	        
+	        _sortingEnabled() {
+	        	return this.sortingDisabled == "false";
+	        }
+	        
+	        disableSorting() {
+	        	this.sortingDisabled = "true";
+	        	$(this.root).find('.sort-icon').remove();
+	        }
+	        
+	        disableDownload() {
+                $(this.$.download).remove();
+            }
+	    }
+	    
+	    customElements.define(InfiniaTable.is, InfiniaTable);
+	    
+    </script> 
+</dom-module>

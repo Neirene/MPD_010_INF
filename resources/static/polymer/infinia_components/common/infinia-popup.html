@@ -1,0 +1,317 @@
+
+<dom-module id="infinia-popup">
+	<template>
+		<style include="common-styles"></style>
+		
+		<style>
+		
+		/*Format, Containers and Overall Structure of the Component*/
+		
+		.float-container {
+	  		display:none; 
+	        justify-content:center; 
+	        align-items:center;
+	        position:fixed;
+	        z-index:10000;
+	        width:90%;
+	        height:70%;
+	        left: 50%;
+  			top: 50%;
+	        transform: translate(-50%, -50%);
+	       	
+		}
+		
+		.backdrop-area {
+	  		display:none; 
+	        justify-content:center; 
+	        align-items:center;
+	        background-color:white;
+	        opacity:0;
+	        position:fixed;
+	        z-index:9999;
+	        width:100%;
+	        height:100%;
+	        left: 50%;
+  			top: 50%;
+	        transform: translate(-50%, -50%);
+	       	
+		}
+		
+		.enable-popup-area {
+		display:flex;
+		}
+		
+
+		
+		.close-icon {
+			position:absolute;
+			top:-1rem;
+			right: -1rem;
+			background-color:white;
+			color:rgba(0,0,0,0.6);
+			border-radius:50px;
+			font-size:2rem;
+			box-shadow:0px 0px 10px 0px rgba(0,0,0,0.3);
+			cursor-pointer;
+			opacity:0;
+		}
+		
+		.show-close-icon {
+		opacity:1;
+		}
+		
+		
+		.angle-background {
+		width:100%;
+		height:100%;
+		}
+		
+		.angle-background > svg {
+		width:100%;
+		height:100%;
+		}
+		
+		/*Animated Elements, Initial Animation (Forwards)*/
+		
+		.slot-area {
+		position:absolute;
+        width:100%;
+        height:100%;
+        left: 50%;
+		top: 50%;
+		opacity:0;
+        transform: translate(-50%, -50%);
+  		display:flex; 
+        justify-content:center; 
+        align-items:center;
+        overflow:hidden;
+        
+		}
+		
+		.slot-anim {
+		animation: slide-contents 0.5s cubic-bezier(0.86, 0, 0.07, 1) 2s forwards;
+		}
+		
+		.stripe-1 {
+		fill: #182d35;
+		transform: translate(0rem, 0rem) rotate(-10deg);
+		}
+		
+		.stripe-1-anim {
+		animation: slide-1 2.5s cubic-bezier(0.86, 0, 0.07, 1) 0.3s forwards;
+		}
+		
+		.stripe-2 {
+		fill: #c0a27d;
+		transform: translate(-20rem, 0rem) rotate(-10deg);
+		
+		}
+		
+		.stripe-2-anim {
+		animation: slide-2 2.5s cubic-bezier(0.86, 0, 0.07, 1) 0.4s forwards;
+		}
+		
+		.stripe-3 {
+		fill: #f2f2f2;
+		width:200px;
+		transform: translate(-40rem, 0rem) rotate(-10deg);
+		
+		}
+		
+		.stripe-3-anim {
+		animation: slide-3 2.5s cubic-bezier(0.86, 0, 0.07, 1) 0.4s forwards;
+		}
+		
+		
+		/*Animation Resets/Rewind*/
+		
+		.slot-anim-reset {
+		animation: slide-contents 0.5s cubic-bezier(0.86, 0, 0.07, 1) 0s reverse backwards;
+		}
+		
+		.stripe-1-anim-reset {
+		animation: slide-1 2.5s cubic-bezier(0.86, 0, 0.07, 1) 0.5s reverse backwards;
+		}
+		
+		.stripe-2-anim-reset {
+		animation: slide-2 2.5s cubic-bezier(0.86, 0, 0.07, 1) 0.4s reverse backwards;
+		}
+		
+		.stripe-3-anim-reset {
+		animation: slide-3 2.5s cubic-bezier(0.86, 0, 0.07, 1) 0.45s reverse backwards;
+		}
+		
+		/*Animation Logic Section */
+		
+		@keyframes slide-1 {
+			0%{
+				transform: translate(0rem, 0rem) ;
+			}
+			100%{
+				transform: translate(-35rem, 0rem) ;
+			}
+		}
+		
+		@keyframes slide-2 {
+			0%{
+				transform: translate(-20rem, 0rem) ;
+			}
+			100%{
+				transform: translate(-55rem, 0rem) ;
+			}
+		}
+		
+		@keyframes slide-3 {
+			0%{
+				transform: translate(-40rem, 0rem) ;
+			}
+			100%{
+				transform: translate(-57rem, 0rem) ;
+			}
+		}
+		
+		@keyframes slide-contents {
+			0%{
+				opacity:0;
+				top:40%;
+			}
+			100%{
+				opacity:1;
+				top:50%;
+			}
+		}
+		
+		</style>
+		
+		<div class="float-container" id="visualArea" on-click="beginClosingSequence">
+			<iron-icon class="close-icon" icon="icons:close" id="closeIcon" on-click="beginClosingSequence"></iron-icon>
+			<div class="slot-area" id="slotArea"><slot name="pop-contents">[SLOT CONTENT AREA]</slot></div>
+			<div class="angle-background">
+			<svg viewBox="0 0 100 100" preserveAspectRatio="none">
+			  <g id="teal-square">
+			    <polygon id="stripe1" class="element-stripe stripe-1" style$="fill:{{stripeMainColor}}" points="170 323.36 0 323.36 150.62 0.36 320.62 0.36 170 323.36"/>
+			  </g>
+			  <g id="bronze-square">
+			    <polygon id="stripe2" class="element-stripe stripe-2" style$="fill:{{stripeSubColor}}" points="371 323.36 201 323.36 351.62 0.36 521.62 0.36 371 323.36"/>
+			  </g>
+			  <g id="white-square">
+			    <polygon id="stripe3" class="element-stripe stripe-3" style$="fill:{{backgroundColor}}" points="580 323.36 410 323.36 560.62 0.36 730.62 0.36 580 323.36"/>
+			  </g>
+		  </svg>
+			</div>
+		</div>
+		<div class="backdrop-area" id="backArea" on-click="beginClosingSequence">optional background</div>
+			
+	</template> 
+	
+	<script>
+
+		class InfiniaPopup extends Polymer.Element {
+
+	        static get is() { return  'infinia-popup' }
+	
+	        static get properties() {
+	          return {
+	           	stripeMainColor: String,
+	           	stripeSubColor: String,
+	           	backgroundColor: String,
+	           	enablePopup: Boolean
+	          }
+	        }
+	
+	        constructor() {
+	          super();
+	        }
+	
+	        ready() {
+	          	super.ready();	
+	        }
+	        
+	        startPopup() {
+	        	
+	          	
+	          	var infiniaColors = ["#182d35","#c0a27d","#f2f2f2"];
+	          	var omniaColors = ["#182d35","#c0a27d","#000000"];
+	          	var admiraColors = ["#182d35","#c0a27d","#000000"];
+	        	var designType = utils.getWebStyles();
+	        	var themeColors = [];
+	        	
+	        	if (designType === "infinia"){
+	        		themeColors = infiniaColors;
+	        	}else if (this.designType === "omnia"){
+	        		themeColors = omniaColors;
+	        	}else{
+	        		themeColors = admiraColors;
+	        	}
+	        	
+	        	this.stripeMainColor = themeColors[0];
+	        	this.stripeSubColor = themeColors[1];
+	        	this.backgroundColor = themeColors[2];
+	        	
+	        	
+	        	
+	        	$(this.$.visualArea).addClass("enable-popup-area")
+	        	$(this.$.backArea).addClass("enable-popup-area")
+	        	$(this.$.closeIcon).addClass("show-close-icon")
+	        	$(this.$.slotArea).addClass("slot-anim")
+	        	$(this.$.stripe1).addClass("stripe-1-anim")
+	        	$(this.$.stripe2).addClass("stripe-2-anim")
+	        	$(this.$.stripe3).addClass("stripe-3-anim")
+	        	
+	        	
+	        	
+	        	
+	        }
+	        
+	        restartPopup() {
+	        		
+        		//disable popup
+        		this.enablePopup = false;
+
+        		//remove all classes
+	        	$(this.$.visualArea).removeClass("enable-popup-area")
+	        	$(this.$.backArea).removeClass("enable-popup-area")
+	        	$(this.$.closeIcon).removeClass("show-close-icon")
+	        	$(this.$.slotArea).removeClass("slot-anim")
+	        	$(this.$.stripe1).removeClass("stripe-1-anim")
+	        	$(this.$.stripe2).removeClass("stripe-2-anim")
+	        	$(this.$.stripe3).removeClass("stripe-3-anim")	
+	        	$(this.$.slotArea).removeClass("slot-anim-reset")
+	        	$(this.$.stripe1).removeClass("stripe-1-anim-reset")
+	        	$(this.$.stripe2).removeClass("stripe-2-anim-reset")
+	        	$(this.$.stripe3).removeClass("stripe-3-anim-reset")	
+	        	
+	        	//remove event listener
+	        	$(this.$.stripe1).off();
+	        }
+	        
+	        
+	        beginClosingSequence() {
+	        	
+	        	$(this.$.slotArea).removeClass("slot-anim")
+	        	$(this.$.slotArea).width();
+	        	$(this.$.slotArea).addClass("slot-anim-reset")
+	        	$(this.$.stripe1).removeClass("stripe-1-anim")
+	        	$(this.$.stripe1).width()
+	        	$(this.$.stripe1).addClass("stripe-1-anim-reset")
+	        	$(this.$.stripe2).removeClass("stripe-2-anim")
+	        	$(this.$.stripe2).width()
+	        	$(this.$.stripe2).addClass("stripe-2-anim-reset")   
+	        	$(this.$.stripe3).removeClass("stripe-3-anim")
+	        	$(this.$.stripe3).width()
+	        	$(this.$.stripe3).addClass("stripe-3-anim-reset")
+	        	$(this.$.closeIcon).removeClass("show-close-icon")
+	        	
+	        	var _this = this;
+	        	$(this.$.stripe1).on('animationend', function(){_this.restartPopup()});
+	        	
+	        }
+	        
+	        
+	        
+	    }
+	    
+	    customElements.define(InfiniaPopup.is, InfiniaPopup);
+	    
+    </script> 
+</dom-module>

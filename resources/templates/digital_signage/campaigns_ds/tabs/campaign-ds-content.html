@@ -1,0 +1,40 @@
+
+<div class="container-fluid pb20">
+	<div class="form-section-title">
+			Asignar contenido y horario
+	</div>
+	<div class="mt20">
+	<collapsible-content title="Emision">		
+		<paper-radio-group selected="emission">
+			
+			<paper-radio-button name="emission">
+				Pases por hora 
+				<input type="number" id="hour-pass-count" style="margin-left:10px;width:60px; padding:5px;"/>
+				</paper-radio-button>	
+			<paper-radio-button style="margin-left:30px;" name="unlimited">Ilimitado</paper-radio-button>
+				
+		</paper-radio-group>
+	</collapsible-content>
+	</div>	
+	<collapsible-content title="Rango de fechas">
+		<div id="date-day-picker-container"></div>
+		<div class="text-center mt10">
+			<iron-icon id="add-datedaypicker" icon="add-circle-outline" class="cursor-pointer"></iron-icon>
+		</div>
+	</collapsible-content>
+	
+	<collapsible-content title="Contenidos">
+		<div id="contents-container"></div>
+		<div class="text-center mt10">
+			<iron-icon id="add-content" icon="add-circle-outline" class="cursor-pointer"></iron-icon>
+		</div>
+	</collapsible-content>
+	<hr/>
+	<div class="mt10 center-content">
+		<button type="button" class="btn btn-primary save-ds-campaign" data-text="-save"></button>
+	</div>
+		
+</div>
+	
+	
+

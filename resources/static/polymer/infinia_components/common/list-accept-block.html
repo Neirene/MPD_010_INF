@@ -1,0 +1,120 @@
+
+<dom-module id="list-accept-block">
+	<template>
+		<style include="common-styles"></style>
+		
+		<style>
+			.content {
+				display:flex;
+				justify-content:space-between;
+				flex-wrap:wrap;
+			}
+			
+			.content > div {
+				max-width:49%;
+			}
+		</style>
+		<div class="content">
+			<div><selectable-list id="list" hide-block$="[[hideBlock]]" hide-accept="[[hideAccept]]"></selectable-list></div>
+			<div><accept-block  id="ab" hide-block$="[[hideBlock]]" hide-accept="[[hideAccept]]"></accept-block></div>
+		</div>	
+	</template> 
+	
+	<script>
+
+		class ListAcceptBlock extends Polymer.Element {
+
+	        static get is() { return  'list-accept-block' }
+	
+	        static get properties() {
+	          return {
+	        	  hideBlock:String,
+	        	  hideAccept:String
+	          }
+	        }
+	
+	        constructor() {
+	          super();
+	        }
+	
+	        ready() {
+	          	super.ready();
+	          	var _this = this;
+	          	
+	          	$(this.$.list).on('itemAccepted', function(e){
+	          		_this.$.ab.accept(e.detail);
+	          		var event = new CustomEvent('elem-added', {'detail':e.detail});
+	 	        	_this.dispatchEvent(event);
+	          	})
+	          	
+	          	
+	          	$(this.$.list).on('acceptedRemoved', function(e){
+	          		_this.$.ab.removeAccepted(e.detail.id);
+	          		var event = new CustomEvent('elem-removed', {'detail':e.detail});
+	 	        	_this.dispatchEvent(event);
+	          	})
+	          	
+	          	$(this.$.list).on('blockedRemoved', function(e){
+	          		_this.$.ab.removeBlocked(e.detail.id);
+	          		var event = new CustomEvent('elem-removed', {'detail':e.detail});
+	 	        	_this.dispatchEvent(event);
+	          	})
+	          	
+	          	$(this.$.list).on('itemBlocked', function(e){
+	          		_this.$.ab.block(e.detail);
+	          		var event = new CustomEvent('elem-blocked', {'detail':e.detail});
+	 	        	_this.dispatchEvent(event);
+	          	})
+	          	
+	          	$(this.$.ab).on('elemRemoved', function(e) {
+	          		_this.$.list.removeAccepted(e.detail);
+	          		_this.$.list.removeBlocked(e.detail);
+	          		var event = new CustomEvent('elem-removed', {'detail':e.detail});
+	 	        	_this.dispatchEvent(event);
+	          	});
+	          	
+
+	          	$(this.$.list).on('filterList', function(e) {
+	          		var event = new CustomEvent('filterList', {'detail':e.detail});
+	 	        	_this.dispatchEvent(event);
+	          	});
+	        }
+
+	        getData() {
+	        	if(this.hideBlock == "true")
+	        		return this.$.ab.getData().accepted;
+	        	else
+	        		return this.$.ab.getData();
+	        }
+	        
+	        getList() {
+	        	return this.$.list.list;
+	        }
+	        
+	        setList(data) {
+	        	this.$.list.setList(data);
+	        }
+	        
+	        accept(item) {
+	        	this.$.list.acceptItem(item);
+	        }
+	        
+	        block(item) {
+	        	this.$.list.blockItem(item);
+	        }
+	        
+	        removeAccepted(item) {
+	        	this.$.list.removeAccepted(item);
+	        	this.$.ab.removeAccepted(item.id);
+	        }
+	        
+	        removeBlocked(item) {
+	        	this.$.list.removeBlocked(item);
+	        	this.$.ab.removeBlocked(item.id);
+	        }
+	    }
+	    
+	    customElements.define(ListAcceptBlock.is, ListAcceptBlock);
+	    
+    </script> 
+</dom-module>

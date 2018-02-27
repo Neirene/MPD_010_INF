@@ -1,0 +1,4 @@
+index.php file is just to test the SDK, to run it just go to the folder in console and run the following:
+php -S localhost:8080
+
+Then open a browser and open developer console and set screen as mobile phone and open localhost:8080

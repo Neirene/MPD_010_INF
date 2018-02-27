@@ -1,0 +1,285 @@
+
+<dom-module id="infinia-bullet">
+	<template>
+		<style include="common-styles"></style>
+		
+		<style>
+		
+		
+		.bullet-container {
+			width: calc(100% - 2rem);
+			margin: 0.5rem;
+			height:100px;
+			display:flex;
+			flex-wrap: nowrap;
+			flex-direction: row;
+			justify-content: space-around;
+			align-items:stretch;
+		}
+		
+		.bullet-container:hover {
+		background-color:rgb(249,249,249);
+		}
+		
+		.name-area {
+			width:15%;
+			display:flex; 
+			justify-content:flex-end; 
+			align-items:center;
+			font-size:1.6rem;
+			overflow:hidden;
+			text-align:right;
+			padding: 1rem;
+		}
+		
+		.bullet-area {
+			position:relative;
+			width:70%;
+			
+		}
+		
+		.bullet-area > .scale-grid {
+			position:absolute;
+			top:0px;
+			left:0px;
+			display:flex;
+			flex-wrap: nowrap;
+			flex-direction: row;
+			justify-content: space-around;
+			align-items:stretch;
+			width:100%;
+			height:100%;
+			opacity:0;
+		}
+		
+		.bullet-area > .scale-grid li {
+			width:25%;
+			height:100%;
+			background-color:rgba(211, 211, 211,1)
+		}
+		
+		.scale-grid li:nth-child(1) {
+			background-color:rgba(211, 211, 211,1)
+		}
+		
+		.scale-grid li:nth-child(2) {
+			background-color:rgba(211, 211, 211,0.8)
+		}
+		
+		.scale-grid li:nth-child(3) {
+			background-color:rgba(211, 211, 211,0.6)
+		}
+		
+		.scale-grid li:nth-child(4) {
+			background-color:rgba(211, 211, 211,0.4)
+		}
+		
+		
+		.bullet-area > .scale-grid-values {
+			position:absolute;
+			top:0px;
+			left:0px;
+			display:flex;
+			flex-wrap: nowrap;
+			flex-direction: row;
+			justify-content: space-around;
+			align-items:flex-end;
+			width:100%;
+			height:100%;
+			
+		}
+		
+		.bullet-area > .scale-grid-values li {
+			width:calc(100% / 3);
+			text-align:center;
+			border-top: 2px solid #ccc;
+		}
+		
+		.scale-grid-values li:nth-child(1) {
+			text-align:left;
+		}
+		
+		.scale-grid-values li:nth-child(2) {
+			text-align:center;
+		}
+		
+		.scale-grid-values li:nth-child(3) {
+			text-align:right;
+		}
+		
+		.bullet-area > .scale-grid-values li p{
+			margin:0px;
+			margin-bottom:1.2rem;
+			position:relative;
+			width:auto;
+		}
+		
+
+		.bullet-area > .main-gauge {
+			position:absolute;
+			top:calc(3.5em /2);
+			display:flex; 
+			justify-content:flex-end; 
+			align-items:center;
+			background-color:rgb(92, 92, 92);
+			height:3.5rem;
+			width:100%;
+			overflow:hidden;
+			text-align:right;
+			color:white;
+			padding:1rem;
+		}
+		
+		.main-gauge:hover {
+		opacity:0.8;
+		}
+		
+		.bullet-area > .sub-gauge {
+		
+			position:absolute;
+			top:1rem;
+			z-index:5;
+			left:23%;
+			display:flex; 
+			justify-content:center; 
+			align-items:center;
+			background-color:white;
+			width:0px;
+			height:70%;
+			border: 2px solid red;
+		}
+		
+		.sub-gauge:hover {
+		opacity:0.6;
+		}
+		
+		.bullet-area > .sub-gauge p {
+			margin:0px;
+			position:absolute;
+			bottom:-2.3rem;
+			white-space:nowrap;
+			font-size:1.3rem;
+			font-weight:bold;
+			color:red;
+			text-transform:uppercase;
+		}
+		
+		.totals-area {
+			width:15%;
+			display:flex; 
+			justify-content:center; 
+			align-items:center;
+			flex-direction:column;
+			font-size:1.6rem;
+			overflow:hidden;
+			padding:1rem;
+		}
+		
+		.totals-area > p {
+		margin:0px;
+		font-weight:bold;
+		font-size:2.5rem;
+		}
+		
+
+		
+		</style>
+		
+		<div class="bullet-container">
+			<div class="name-area">{{appName}}</div>
+			<div class="bullet-area">
+				<ul class="scale-grid">
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+				</ul>
+				<ul class="scale-grid-values">
+					<li style$="border-color:{{colorC}}"><p>0</p></li>
+					<li style$="border-color:{{colorC}}"><p>50</p></li>
+					<li style$="border-color:{{colorC}}"><p>100</p></li>
+				</ul>
+				<div class="main-gauge" id="mainGauge" style$="width:{{weightValue}}%;background-color:{{colorA}}">
+					<div class="gauge-value">{{weightValue}}</div>
+					
+				</div>
+				<div class="sub-gauge" id="subGauge" style$="left:{{baseValue}}%;border-color:{{colorB}}">
+				<p style$="color:{{colorB}}">{{_localize('globalProfilePsyco')}}: {{baseValue}}</p>
+				
+				</div>
+			</div>
+			<div class="totals-area"><p id="totalsArea" style$="color:{{colorA}}">{{totalValue}}</p>{{_localize('differencePsyco')}}</div>
+			
+			<paper-tooltip for="totalsArea" position="right" animation-delay="0">{{_localize('differenceExplanation')}}</paper-tooltip>
+			<paper-tooltip for="mainGauge" position="right" animation-delay="0">{{_localize('globalValuePsyco')}}</paper-tooltip>
+			<paper-tooltip for="subGauge" position="bottom" animation-delay="0">{{_localize('globalProfilePsyco')}}: {{baseValue}}</paper-tooltip>
+		</div>
+		
+			
+	</template> 
+	
+	<script>
+
+		class InfiniaBullet extends InfiniaPolymer {
+
+	        static get is() { return  'infinia-bullet' }
+	
+	        static get properties() {
+	          return {
+		           	appName: String,
+		           	weightValue: Number,
+		           	baseValue: Number,
+		           	totalValue: Number,
+		           	colorA: String,
+		           	colorB: String,
+		           	colorC: String
+	          }
+	        }
+	
+	        constructor() {
+	          super();
+	        }
+	
+	        ready() {
+	          	super.ready();
+	          	this.bulletInitialize();
+	        }			
+	        
+	        
+	        bulletInitialize() {
+	        	
+
+	        	
+	          	var infiniaColors = ["#182d35","#c0a27d","#f2f2f2"];
+	          	var omniaColors = ["#182d35","#c0a27d","#000000"];
+	          	var admiraColors = ["#7a1b2b","#DA324F","#f2f2f2"];
+	        	var designType = utils.getWebStyles();
+	        	var themeColors = [];
+	        	
+	        	if (designType === "infinia"){
+	        		themeColors = infiniaColors;
+	        	}else if (this.designType === "omnia"){
+	        		themeColors = omniaColors;
+	        	}else{
+	        		themeColors = admiraColors;
+	        	}
+	        	
+	        	this.colorA = themeColors[0];
+	        	this.colorB = themeColors[1];
+	        	this.colorC = themeColors[2];
+	        	
+	        	
+	        	// paint all
+	        	// weightValue - baseValue = totalValue
+	        	this.totalValue = this.weightValue - this.baseValue;
+	        	this.totalValue = Math.trunc(this.totalValue)
+	        }
+	        
+	        
+	        
+	    }
+	    
+	    customElements.define(InfiniaBullet.is, InfiniaBullet);
+	    
+    </script> 
+</dom-module>

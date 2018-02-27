@@ -1,0 +1,28 @@
+<dom-module id="loc-text">
+   <template>
+    <div>{{localize('hello', 'name', 'Batman')}}</div>
+   </template>
+   <script>
+      Polymer({
+        is: "loc-text",
+
+        behaviors: [
+          Polymer.AppLocalizeBehavior
+        ],
+
+        properties: {
+          language: {
+            value: 'en'
+          },
+          resources: {
+            value: function() {
+              return {
+                'en': { 'hello': 'My name is {name}.' },
+                'fr': { 'hello': 'Je m\'apelle {name}.' }
+              }
+          }
+        }
+      }
+    });
+   </script>
+</dom-module>

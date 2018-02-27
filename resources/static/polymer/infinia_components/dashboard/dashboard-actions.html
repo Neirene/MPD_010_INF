@@ -1,0 +1,49 @@
+
+<dom-module id="dashboard-actions">
+	<template>
+		<style include="common-styles"></style>
+				<infinia-context id="context">
+					<ul slot="context-slot">
+						<li on-click="showCampaign"> <iron-icon icon="image:edit"></iron-icon> Ver Campaña</li>
+						<li on-click="showReporting"> <iron-icon icon="image:edit"></iron-icon> Ver Reporting</li>
+					</ul>
+				</infinia-context>
+		
+	</template> 
+	
+	<script>
+
+		class DashboardActions extends Polymer.Element {
+
+	        static get is() { return  'dashboard-actions' }
+	
+	        static get properties() {
+	          return {
+	          	elemId:Number
+	          }
+	        }
+	
+	        constructor() {
+	          super();
+	        }
+	
+	        ready() {
+	          	super.ready();
+	        }
+
+	        
+	        
+	        showCampaign() {
+	        	window.location.href = "/campaigns/"+this.elemId;
+	        }
+	        
+	        showReporting() {
+	        	window.location.href = "/campaigns/"+this.elemId+"/reporting";
+	        }
+	        
+	    }
+	    
+	    customElements.define(DashboardActions.is, DashboardActions);
+	    
+    </script> 
+</dom-module>

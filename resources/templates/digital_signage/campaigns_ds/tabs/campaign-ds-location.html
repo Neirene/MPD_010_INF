@@ -1,0 +1,41 @@
+
+<div class="container-fluid pb20">
+	
+	<div class="mt20" id="rules-container"></div>
+	
+	<div class="row mt20 flex space-around">
+		
+		<div class="col-sm-3">
+			<label>Cluster</label>
+			<cluster-selector id="cluster-list" select-one="true"></cluster-selector>
+		</div>
+		<div class="col-sm-3"  id="publisher-container">
+			<label style="margin-bottom:5px;">Vendor</label>
+			<selectable-list id="publisher-list" hide-block="true" select-one="true"  hide-accept="true"></selectable-list>
+		</div>
+		
+		<div class="col-sm-3" id="circuits-container">
+			<label style="margin-bottom:5px;">Circuitos</label>
+			<selectable-list id="circuits-list" hide-block="true" hide-loader="true" select-one="true"  hide-accept="true"></selectable-list>
+		</div>
+	</div>
+	<div class="row mt60" style="position:relative;">
+		<div class="col-sm-12" id="map-container">
+			<profile-map id="waypointMap" hidden-list="hidden" map-type="cluster" map-section="vitalzone"></profile-map>
+		</div>
+		
+		<div class="col-sm-3" style="position:absolute;right:0;z-index: 1;background-color: white;height: 100%;">
+			<p>Porcentaje de afinidad de ubicaciones</p>
+			<selectable-list id="count-list" hide-block="true" disable-search="true" disable-sort="true" hide-loader="true"></selectable-list>
+		</div>
+	</div>
+	<div class="row mt20">
+		
+	</div>
+	<hr/>
+	<div class="mt20 center-content">
+		<button type="button" class="btn btn-primary next-step">Siguiente</button>
+	</div>
+</div>
+
+

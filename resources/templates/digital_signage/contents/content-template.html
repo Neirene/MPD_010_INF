@@ -1,0 +1,19 @@
+
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-sm-12">
+			<infinia-tabs data-text="Nuevo contenido">		
+				<div slot="0" th:include="digital_signage/contents/content-create-template">
+						
+				</div>
+			</infinia-tabs>		
+		</div>
+	</div>
+</div>
+
+
+<script th:inline="javascript">
+	var id_content = [[${id_content}]];
+</script>
+
+<script src="/js/digital_signage/contents/content.js"></script>

@@ -1,0 +1,117 @@
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDW_hi5jQm2Ffb4GIa98vJdszgrma-qlJM&amp;libraries=places,drawing"></script>
+<script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js"></script>
+<script src="/js/libraries/maps/CartoUtils.js"></script>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+<div class="container-fluid clusters">
+
+	<div class="new_button">
+		<a class="btn btn-primary validate-cluster" >Validar</a>&nbsp;&nbsp;
+	</div>
+
+
+	<div class="row space-between mt20">
+		<div class="col-sm-12"><h3>Total: <span class="demographic-total"></span></h3></div>
+		<div><cluster-actions id="clusterActions"></cluster-actions></div>
+		<div><cluster-outdoor-actions id="clusterOutdoorActions"></cluster-outdoor-actions></div>
+	</div>
+
+	<infinia-tabs
+				data-text="cluster.demographic,cluster.psychographic,cluster.behavioral,cluster.lookalike,summary"
+				icons="icons:supervisor-account,hardware:phone-android,social:public,image:compare,icons:turned-in">
+				
+				<div slot="0" th:include="clusters/cluster-profile/cluster-profile-demographic"></div>
+				<div slot="1" th:include="common/psychographic"></div>
+				<div slot="2" th:include="common/behavioral"></div>
+				<div slot="3" th:include="clusters/cluster-profile/cluster-profile-lookalike"></div>
+				<div slot="4"><summary-data id="summary-data"></summary-data></div>
+			</infinia-tabs>
+
+
+	
+	
+	<collapsible-content id="clusterStatsEdition" title="Editar Estadísticas" style-class="gold" collapsed="true">
+		<div class="row mt10">
+			<div class="col-sm-4">
+				<div class="form-section-title">
+					Género
+				</div>
+				<div class="form-group col-sm-12">
+					<label>Hombres</label>
+					<input class="form-control stats" name="male" type="number" min="0" value="0" placeholder="Hombres" />
+				</div>
+				<div class="form-group col-sm-12">
+					<label>Mujeres</label>
+					<input class="form-control stats" name="female" type="number" min="0" value="0" placeholder="Mujeres" />
+
+				</div>
+			</div>
+			<div class="col-sm-4">
+				<div class="form-section-title">
+					Edad
+				</div>
+				<div class="form-group col-sm-12">
+					<label>&lt;12</label>
+					<input class="form-control stats" name="&lt;12" type="number" min="0" value="0" placeholder="&lt;12"/>
+				</div>
+				<div class="form-group col-sm-12">
+					<label>12-17</label>
+					<input class="form-control stats" name="12-17" type="number" min="0" value="0" placeholder="12-17" />
+				</div>
+				<div class="form-group col-sm-12">
+					<label>18-25</label>
+					<input class="form-control stats" name="18-25" type="number" min="0" value="0" placeholder="18-25" />
+				</div>
+				<div class="form-group col-sm-12">
+					<label>26-40</label>
+					<input class="form-control stats" name="26-40" type="number" min="0" value="0" placeholder="26-40" />
+				</div>
+				<div class="form-group col-sm-12">
+					<label>41-55</label>
+					<input class="form-control stats" name="41-55" type="number" min="0" value="0" placeholder="41-55" />
+				</div>
+				<div class="form-group col-sm-12">
+					<label>&gt;55</label>
+					<input class="form-control stats" name="&gt;55" type="number" min="0" value="0" placeholder="&gt;55" />
+				</div>
+			</div>
+			<div class="col-sm-4">
+				<div class="form-section-title">
+					Nivel Socioeconómico
+				</div>
+				<div class="form-group col-sm-12">
+					<label>Alto</label>
+					<input class="form-control stats" name="income_A" type="number" min="0" value="0" placeholder="Alto" />
+				</div>
+				<div class="form-group col-sm-12">
+					<label>Medio-Alto</label>
+					<input class="form-control stats" name="income_B" type="number" min="0" value="0" placeholder="Medio-Alto" />
+				</div>
+				<div class="form-group col-sm-12">
+					<label>Medio</label>
+					<input class="form-control stats" name="income_C" type="number" min="0" value="0" placeholder="Medio" />
+				</div>
+				<div class="form-group col-sm-12">
+					<label>Medio-Bajo</label>
+					<input class="form-control stats" name="income_D" type="number" min="0" value="0" placeholder="Medio-Bajo" />
+				</div>
+				<div class="form-group col-sm-12">
+					<label>Bajo</label>
+					<input class="form-control stats" name="income_E" type="number" min="0" value="0" placeholder="Bajo" />
+				</div>
+			</div>
+		</div>
+		
+		<div class="row mt10">
+			<button type="button" class="btn btn-primary" id="save-statistics">Guardar Estadísticas</button>
+		</div>
+		
+	</collapsible-content>
+
+</div>
+
+<script src="/js/clusters/cluster-profile.js"></script>
+
+<script th:inline="javascript">
+	var id_cluster = [[${id_cluster}]];
+</script>

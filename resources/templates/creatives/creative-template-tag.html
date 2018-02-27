@@ -1,0 +1,90 @@
+
+
+
+<div class="container-fluid pb20">
+	<form id="creative-form">
+	
+		<input type="hidden" class="form-control" name="mediamathId"/>
+		<input type="hidden" class="form-control" name="mediamathConceptId"/>
+		<input type="hidden" class="form-control" name="idOrderLines"/>
+		<div class="row mt20">
+			<div class="form-group col-sm-3">
+				<label data-text="-advertiser"></label>
+				<infinia-select name="idAdvertiser" class="required"></infinia-select>
+			</div>
+		</div>
+		
+		<div class="row ">
+			<div class="form-group col-sm-6">
+				<label data-text="-name"></label>
+				<input class="form-control required" name="name"/>
+			</div>
+		</div>
+		<div class="row">
+			<div class="form-group col-sm-3">
+				<label data-text="-fileType"></label>
+				<infinia-select name="fileType" class="required"></infinia-select>
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="form-group col-sm-3">
+				<label>Ad server</label>
+				<infinia-select name="adServer" class="required"></infinia-select>
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="form-group col-sm-3">
+				<label>Ad tag type</label>
+				<infinia-select name="tagType" class="required"></infinia-select>
+			</div>
+			
+			<div class="form-group col-sm-3">
+				<label>Ad format</label>
+				<infinia-select name="adFormat" class="required"></infinia-select>
+			</div>
+			<div class="form-group col-sm-3">
+				<label data-text="-dimensions"></label>
+				<div class="row">
+					<div class="col-sm-6">
+						<input class="form-control required" name="width"/>
+					</div>
+					<div class="col-sm-6">
+						<input class="form-control required" name="height"/>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<div class="row mt10">
+			<div class="form-group col-sm-6">
+				<label>Ad tag code</label>
+				<textarea class="form-control required" name="adTagCode" rows="15"></textarea>
+			</div>
+			<div class="form-group col-sm-6 mt20">
+				<p>Macros de ejemplo</p>
+				<div id="macros-example">
+					<ul><li>[UNENCODED_CLICK_REDIRECT] </li>
+					<li>[ENCODED_CLICK_REDIRECT] </li>
+					<li>[DBL_ENCODED_CLICK_REDIRECT] </li>
+					<li class="mt10">[RANDOM_NUMBER] - Cache busting</li>
+					</ul>
+				</div>
+			
+			</div>
+		</div>
+		
+		<div class="row mt20">
+			<div class="col-sm-6 text-center">
+				<button class="btn btn-primary" type="button" id="save" data-text="-save"></button>
+			</div>
+		</div>
+	</form>
+</div>
+
+<script th:inline="javascript">
+	var id_creative = [[${id_creative}]];
+	var creativeType="tag";
+</script>
+<script src="/js/creatives/creative.js"></script>

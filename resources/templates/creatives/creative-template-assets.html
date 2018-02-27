@@ -1,0 +1,46 @@
+
+
+
+<div class="container-fluid pb20">
+	<form id="creative-form">
+	
+		<input type="hidden" class="form-control" name="mediamathId"/>
+		<input type="hidden" class="form-control" name="mediamathConceptId"/>
+		<input type="hidden" class="form-control" name="idOrderLines"/>
+		<div class="row mt20">
+			<div class="form-group col-sm-3">
+				<label data-text="-advertiser"></label>
+				<infinia-select name="idAdvertiser" class="required"></infinia-select>
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-sm-8">
+				<ul class="list-group" id="files-list">
+				
+				</ul>
+			</div>
+		</div>	
+		
+		<div class="row">
+			<div class="col-sm-12">
+				<file-loader class="required" name="files" accept="image" multiple-files="multiple" max-size="102400"></file-loader>
+			</div>
+		</div>
+				
+		
+		
+		
+		<div class="row mt20">
+			<div class="col-sm-6 text-center">
+				<button class="btn btn-primary" type="button" id="save" data-text="-save"></button>
+			</div>
+		</div>
+	</form>
+</div>
+
+<script th:inline="javascript">
+	var id_creative = [[${id_creative}]];
+	var creativeType="assets";
+</script>
+<script src="/js/creatives/creative-assets.js"></script>

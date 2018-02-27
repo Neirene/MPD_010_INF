@@ -1,0 +1,83 @@
+
+<div class="new_button">	
+</div>
+
+<div th:include="users/users-breadcrumb"></div>
+
+<div class="container-fluid pb20">
+
+	<form class="mt20" id="user-form">	
+		<div class="form-section-title">
+			Datos del usuario
+		</div>
+		
+		<div class="row mt20">
+			<div class="form-group col-sm-4">
+				<label>Nombre de usuario</label>
+				<input class="form-control required" name="username" maxlength="150" />
+			</div>			
+			<div class="form-group col-sm-4" id="passwordDiv">
+				<label>Contraseña</label>
+				<input class="form-control" name="password" type="password" maxlength="150" />
+			</div>
+			<div class="form-group col-sm-4">
+				<label>Email</label>
+				<input class="form-control" name="email" type="email" maxlength="150" />
+			</div>			
+		</div>
+		<div class="row">
+			<div class="form-group col-sm-4">
+				<label>Empresa</label>
+				<input class="form-control required" name="company" maxlength="150" />
+			</div>
+			<div class="form-group col-sm-4">
+				<label>País</label>
+				<infinia-select name="country"></infinia-select>
+			</div>
+		</div>
+		<div class="row">
+			<div class="form-group col-sm-3">
+				<label>Roles</label>
+				<selectable-list id="roles" class="mt10" hide-block="true"
+				hide-accept="true" disable-sort="true" name="roles"></selectable-list>
+			</div>
+			<div class="form-group col-sm-3">
+				<label>Advertisers</label>
+				<selectable-list id="advertisers" class="mt10" hide-block="true"
+				hide-accept="true" disable-sort="true" name="advertisers"></selectable-list>
+			</div>			
+			<div class="form-group col-sm-3">
+				<label>Publishers</label>
+				<selectable-list id="publishers" class="mt10" hide-block="true"
+				hide-accept="true" disable-sort="true" name="publishers"></selectable-list>
+			</div>
+			<div class="form-group col-sm-3">
+				<label>Agencies</label>
+				<selectable-list id="agencies" class="mt10" hide-block="true"
+				hide-accept="true" disable-sort="true" name="agencies"></selectable-list>
+			</div>
+			<div class="form-group col-sm-3">
+				<label>Resellers</label>
+				<selectable-list id="resellers" class="mt10" hide-block="true"
+				hide-accept="true" disable-sort="true" name="resellers"></selectable-list>
+			</div>
+			<div class="form-group col-sm-3">
+				<label>Retailers</label>
+				<selectable-list id="retailers" class="mt10" hide-block="true"
+				hide-accept="true" disable-sort="true" name="retailers"></selectable-list>
+			</div>
+		</div>		
+				
+		<div class="row mt20">
+			<div class="col-sm-12 text-center">
+				<button type="button" class="btn btn-primary" id="save-user">Guardar usuario</button>
+			</div>
+		</div>
+	
+	</form>
+	
+</div>
+<script th:inline="javascript">
+	var id_user = [[${id_user}]];
+</script>
+<script src="/js/users/user.js"></script>

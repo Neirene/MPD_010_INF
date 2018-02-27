@@ -1,0 +1,75 @@
+
+<dom-module id="order_line_ds-actions">
+	<template>
+		<style include="common-styles"></style>
+			<infinia-context id="context">
+					<ul slot="context-slot">
+					<li on-click="edit"><iron-icon icon="image:edit"></iron-icon> Editar</li>
+					<li on-click="duplicate"><iron-icon icon="icons:content-copy"></iron-icon>Duplicar</li>
+					<li on-click="remove"><iron-icon icon="icons:delete"></iron-icon>Eliminar</li>
+				</ul>
+			</infinia-context>
+		
+	</template>
+	<script>
+
+		class OrderLineDSActions extends Polymer.Element {
+
+	        static get is() { return  'order_line_ds-actions' }
+	
+	        static get properties() {
+	          return {
+	          	elemId:Number
+	          }
+	        }
+	
+	        constructor() {
+	          super();
+	        }
+	
+	        ready() {
+	          	super.ready();
+	        }
+
+	        show(e) {
+	        	$(utils.getClickedElement(e)).next()[0].open();
+			}
+		
+			duplicate() {
+				utils.lockScreen();
+				utils.get('/api/order_lines_ds/' + this.elemId + '/duplicate', {}, 
+				(response) => {
+					utils.unlockScreen();
+					window.location.href = "/campaigns_ds/" + id_campaign + "/order_lines_ds";
+				}, 
+				(error) => {
+					utils.unlockScreen();
+					console.log('Error duplicating order line ds', this.elemId, error);
+				});
+	        }
+			
+			remove() {
+				utils.get('/api/order_lines_ds/' + this.elemId + '/delete', {}, 
+				(response) => {
+					if (response.resultCode == 0) {
+						window.location.href = "/campaigns_ds/" + id_campaign + "/order_lines_ds";
+					}
+					else{
+						utils.modal("Error", response.message);
+					}
+				}, 
+				(error) => {
+					console.log('Error stopping order line ds', this.elemId);
+				});	
+	        }
+	        
+	        edit() {
+	        	window.location.href = "/order_lines_ds/" + this.elemId + '?id_campaign_ds=' + id_campaign_ds;
+	        }
+	        
+	    }
+	    
+	    customElements.define(OrderLineDSActions.is, OrderLineDSActions);
+	    
+	</script>
+</dom-module>

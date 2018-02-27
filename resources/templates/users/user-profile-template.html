@@ -1,0 +1,46 @@
+<div th:include="users/users-profile-breadcrumb"></div>
+
+<div class="container-fluid pb20">
+	<form class="mt20" id="user-profile-form">
+		<div class="row">
+			<div class="form-group col-sm-4">
+				<label>Nombre de usuario</label>
+				<input class="form-control" id="username" maxlength="150" disabled="true" />
+			</div>
+			<div class="form-group col-sm-4">
+				<label>Email</label>
+				<input class="form-control" id="email" maxlength="150" disabled="true" />
+			</div>
+			<div class="form-group col-sm-4">
+				<label>País</label>
+				<infinia-select name="country"></infinia-select>
+			</div>
+		</div>
+		
+		<div class="form-section-title">
+			Contraseña
+		</div>
+		
+		<div class="row mt20">
+			<div class="form-group col-sm-4">
+				<label>Contraseña antigua</label>
+				<input class="form-control" name="oldPassword" type="password" maxlength="150" />
+			</div>
+			<div class="form-group col-sm-4">
+				<label>Contraseña nueva</label>
+				<input class="form-control" name="password" type="password" maxlength="150" />
+			</div>
+		</div>
+		
+		<div class="row mt20">
+			<div class="col-sm-12 text-center">
+				<button type="button" class="btn btn-primary" id="save-changes-profile-user">Actualizar</button>
+			</div>
+		</div>
+	</form>
+</div>
+<script th:inline="javascript">
+	var id_user;
+</script>
+<script src="/js/users/user-profile.js"></script>
+

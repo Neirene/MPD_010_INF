@@ -1,0 +1,66 @@
+
+
+
+<div class="container-fluid pb20">
+	<form id="creative-form">
+	
+		<input type="hidden" class="form-control" name="mediamathId"/>
+		<input type="hidden" class="form-control" name="mediamathConceptId"/>
+		<input type="hidden" class="form-control" name="idOrderLines"/>
+		
+		<div class="row mt20">
+			<div class="form-group col-sm-3">
+				<label data-text="-name"></label>
+				<input class="form-control required" name="name"/>
+			</div>
+			<div class="form-group col-sm-3">
+				<label data-text="-advertiser"></label>
+				<infinia-select name="idAdvertiser" class="required"></infinia-select>
+			</div>
+		</div>
+		
+		<div class="row mt10">
+			<div class="form-group col-sm-3">
+				<label>Clickthrough url</label>
+				<input class="form-control required" name="clickThroughUrl"/>
+			</div>
+			<div class="form-group col-sm-3">
+				<label>Third party url</label>
+				<input class="form-control" name="creativeThirdPartyUrl"/>
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-sm-8">
+				<ul class="list-group" id="files-list">
+				
+				</ul>
+			</div>
+		</div>	
+		
+		<div class="row">
+			
+			<div class="col-sm-3">
+				<label data-text="-image"></label>
+				<file-loader name="image-file" accept="image" max-size="102400"></file-loader>
+			</div>
+			
+			<div class="col-sm-2">
+				<label data-text="-zipFile"></label>
+				<file-loader name="zip-file" accept="zip,rar" max-size="1024000"></file-loader>
+			</div>
+		</div>
+		
+		<div class="row mt20">
+			<div class="col-sm-6 text-center">
+				<button class="btn btn-primary" type="button" id="save" data-text="-save"></button>
+			</div>
+		</div>
+	</form>
+</div>
+
+<script th:inline="javascript">
+	var id_creative = [[${id_creative}]];
+	var creativeType="zip";
+</script>
+<script src="/js/creatives/creative-zip.js"></script>

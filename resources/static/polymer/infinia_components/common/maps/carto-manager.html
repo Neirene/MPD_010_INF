@@ -1,0 +1,360 @@
+
+<dom-module id="carto-manager">
+	<template>
+		<style include="common-styles"></style>
+		
+		<style>
+			
+			.section {
+				margin:15px 5px;
+			}
+			
+			.options {
+				display:flex;
+				list-style:none;
+				flex:1;
+			}
+			
+			.options li {
+				padding:5px;
+				display:flex;
+				justify-content:center;
+				align-items:center;
+				flex:1;
+				background-color: #ededed;
+		    	border: 1px solid #dedede;
+		    	cursor:pointer;
+			}
+			
+			.section-title {
+				display:block;
+				text-align:center;
+			}
+		
+			.active {
+				background-color:var(--light-background)!important;
+			}
+			
+			/*.active.income_E, .active.lt12  {
+				color: #E040FB!important;
+			}
+			.active.income_D, .active.gt12, .active.female {
+				color: #2979FF!important;
+			}
+			.active.income_C, .active.gt18 {
+				color: #00E5FF!important;
+			}
+			.active.income_B, .active.gt26 {
+				color: #AEEA00!important;
+			}
+			.active.income_A, .active.gt41,.active.male {
+				color: #E65100!important;
+			}
+			.active.gt55 {
+				color: #00E676!important;
+			}*/
+			
+			#clusters_container {
+				position:absolute; 
+				background-color:white; 
+				height:100%;
+				width:98%; 
+				top:30px; 
+				padding:10px;
+			}
+ 			
+		</style>
+
+		
+		
+		<div class="section" data-section="gender">
+			<label class="section-title">{{_localize('gender')}}</label>
+			<ul class="options">
+				<li class="male" data-query="gender:male">{{_localize('male')}}</lil>
+				<li class="female" data-query="gender:female">{{_localize('female')}}</li>
+			</ul>
+		</div>
+		<div class="section" data-section="age">
+			<label class="section-title">{{_localize('age')}}</label>
+			<ul class="options">
+				<li class="lt12" data-query="age:<12">&lt;12</li>
+				<li class="gt12" data-query="age:12-17">12-17</li>
+				<li class="gt18" data-query="age:18-25">18-25</li>
+				<li class="gt26" data-query="age:26-40">26-40</li>
+				<li class="gt41" data-query="age:41-55">41-55</li>
+				<li class="gt55" data-query="age:>55">&gt;55</li>
+			</ul>
+		</div>
+		
+		<div class="section" data-section="income_level">
+			<label class="section-title">{{_localize('income.level')}}</label>
+			<ul class="options">
+				<li class="income_E" data-query="income_level:income_E">{{_localize('income.income_E')}}</li>
+				<li class="income_D"  data-query="income_level:income_D">{{_localize('income.income_D')}}</li>
+				<li class="income_C" data-query="income_level:income_C">{{_localize('income.income_C')}}</li>
+				<li class="income_B" data-query="income_level:income_B">{{_localize('income.income_B')}}</li>
+				<li class="income_A" data-query="income_level:income_A">{{_localize('income.income_A')}}</li>
+			</ul>
+		</div>
+
+</template> 
+	
+	<script>
+
+		class CartoManager extends Polymer.Element {
+
+	        static get is() { return  'carto-manager' }
+	
+	        static get properties() {
+	          return {
+	        	  mainLayer:{type:String,value:""},
+	        	  cartoCss:{type:String,value:""}
+	          }
+	        }
+	
+	        constructor() {
+	          super();
+	        }
+	
+	        ready() {
+	        	super.ready();
+	        	let _this = this;
+	        	$(this.root).find('li').on('click', function(e) {
+	        		let selectedLi = this;
+	        		let selected = [];
+	        		
+	        		let split = $(this).data('query').split(":");
+	        		let sectionName = split[0];
+	        		
+	        		$(_this.root).find('.section').each((i, section) => {
+	        			if($(section).data('section') == sectionName) {
+	        				
+	        				let currentActive = $(selectedLi).hasClass('active');
+	        				
+	        				$(section).find('li').removeClass('active');
+	        				if(!currentActive)
+	        					$(selectedLi).addClass('active');
+	        			}
+	        		})
+	        		
+	        		
+	        		$(_this.root).find('li.active').each(function(index, elem){
+	        			selected.push($(elem).data('query'));
+	        		})
+	        	
+	        		
+					_this.clearCarto();
+					
+					let sql =  _this.mainLayer.sql;
+					name="";
+					if(selected.length > 0) {
+						selected.forEach((elem) => {
+							let split=elem.split(":");
+							
+							if(sql.indexOf('where') > -1)
+								sql+=" AND "+split[0]+" = '"+split[1]+"'";
+							else
+								sql += " where "+split[0]+" = '"+split[1]+"'";
+							name+=split[1];
+						})
+						
+						if(_this.subLayers && _this.subLayers[name]){
+							_this.subLayers[name].show();
+						}
+						else {
+							_this.addCartoLayer(name, sql);
+						}
+					}
+					else{
+						_this.addCartoLayer('main', sql);
+					}
+	        	})
+	        }
+	        
+	        
+	        
+	        
+	        _localize(text) {
+	        	return localizer.get(text);
+	        }
+
+	        addCartoLayer(name, sql, css) {
+	        	
+	        	css = css || this.cartoCss;
+	        	this.activeLayer = name;
+				if(this.subLayers && this.subLayers[name]) {
+					this.subLayers[name].show();
+					return;
+				}
+				
+				let _this = this;
+				
+				if(name=="main") {
+					this.mainLayer = {sql:sql, css:_this.cartoCss};
+					if(typeof this.mainSql == "undefined")
+						this.mainSql = this.mainLayer.sql;
+				}
+				
+				if(!sql) return false;
+				
+				if(typeof this.subLayers == "undefined" || typeof this.subLayers[name] == "undefined"){
+					
+					let promise = new Promise((resolve, reject) => {
+						if(typeof this.cartoLayer == 'undefined') {
+							cartodb.createLayer(
+			          				this.map, 
+			          				{
+			          					user_name: 'infiniamaps',
+				                		type: 'cartodb',
+				                		sublayers:[],
+				                	},
+				                	{ 
+				          				cartodb_logo:false, 
+				          				https:true, 
+				          				legends:false
+				          			})
+				          	.addTo(this.map).on('done', (layer) => {
+				              	_this.cartoLayer = layer;
+				              	_this.subLayers = {};
+				              	resolve();
+				          	})
+						}
+						else resolve();
+					})
+					
+					promise.then(() => {
+			        	_this.addSubLayer(name, sql, css)
+					})
+				}
+				else {
+					_this.addSubLayer(name, sql, css)
+				}
+				
+				
+			}
+			
+	        overlapLayer(name, sql, cartocss) {
+	        	if(!this.subLayers || this.subLayers.length == 0) {
+	        		this.addCartoLayer(name, sql, cartocss);	
+	        	}
+	        	else {
+	        		this.addSubLayer(name, sql, cartocss)
+	        	}
+	        }
+			
+	        addSubLayer(name, sql, cartocss) {
+	        	cartocss = cartocss || this.cartoCss;
+				this.subLayers[name] = this.cartoLayer.createSubLayer({
+	        		sql:sql,
+	        		cartocss:cartocss
+	        	})
+			}
+	        
+	        //Carto
+	        clearCarto() {
+	        	
+	        	if(this.subLayers){
+	        		Object.keys(this.subLayers).forEach((key) => {
+		        		this.subLayers[key].hide();
+		        	})
+	        	}
+	        }
+	        
+	        removeCartoLayer(name) {
+	        	if(this.subLayers && this.subLayers[name]){
+			        this.subLayers[name].remove();
+			        delete this.subLayers[name];
+	        	}
+	        }
+
+	        _showClusters() {
+	        	$(this.$.clusters_container).toggleClass('hidden');
+	        }
+	        
+	        getOptionsSelected() {
+	        	let options = [];
+	        	$(this.root).find('.section').find('li.active').each((index, elem) => {
+	        		options.push($(elem).data('query'));
+	        	})
+	        	return options;
+	        }
+	        
+	        
+	        getCartoImage() {
+	        	
+	        	
+	        	var mapconfig = {
+       				"version": "1.3.1",
+       				"layers": [
+       			  	{
+       			      "type": "http",
+       			      "options": {
+       			        "urlTemplate": "http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+       			      }
+       			    },
+       			  	{
+       			    	"type": "cartodb",
+       			    	"options": {
+       			      		"cartocss_version": "2.1.1",
+       			      		"cartocss": this.subLayers[this.activeLayer].getCartoCSS(),
+       			      		"sql": this.subLayers[this.activeLayer].getSQL()
+       			    	}
+       				},
+       				]
+       			}
+
+	        	utils.lockScreen();
+	        	var newWindow = window.open();
+	        	
+	        	$.ajax({
+       			  crossOrigin: true,
+       			  type: 'POST',
+       			  dataType: 'json',
+       			  contentType: 'application/json',
+       			  url: 'https://infiniamaps.carto.com/api/v1/map',
+       			  data: JSON.stringify(mapconfig),
+       			  success: (data) => {
+       				utils.unlockScreen();
+       			    var url = 
+       			    'https://infiniamaps.carto.com/api/v1/map/static/center/' + data.layergroupid + '/'+this.map.getZoom()
+       			    +'/'+this.map.getCenter().lat()+'/'+this.map.getCenter().lng()+'/1000/600.png';
+       			 	newWindow.location = url;
+       			  }
+       			})
+	        }
+	        
+	        //carto sql from point radius
+	        //SELECT *
+	       // FROM infiniamaps.dp_zgz
+	        //WHERE ST_Distance_Sphere(the_geom, ST_MakePoint(-3.8196239,40.4378698)) <= 30 * 1609.34
+
+	        //Ojo, el orden es longitud, latitud
+	        
+	        /*
+	        ///////////////INSERTAR PUNTOS PLAYERS
+
+	        	INSERT INTO players(the_geom, name, description) values (geometry(ST_Buffer(ST_MakePoint(2.0086817,41.3947051)::geography, 1000)), 'Media Markt BCN', 'BCN')
+
+	        //////////////Conteo de los puntos del cluster en el rango del player
+	        
+				SELECT players.name, count(*) AS count
+				FROM players LEFT JOIN cluster_homeplace 
+				ON st_contains(players.the_geom,cluster_homeplace.the_geom) 
+				where cluster_homeplace.id_cluster = '5a69993e46e0fb000524dbab'
+				GROUP BY players.name
+				
+			//////////// Selección de los puntos en el rango del player
+			
+				SELECT cluster_homeplace.the_geom, cluster_homeplace.the_geom_webmercator, cluster_homeplace.cartodb_id, players.name  AS count
+				FROM players LEFT JOIN cluster_homeplace 
+				ON st_contains(players.the_geom,cluster_homeplace.the_geom) 
+				where cluster_homeplace.id_cluster = '5a69993e46e0fb000524dbab'
+
+
+	        */
+	    }
+	    
+	    customElements.define(CartoManager.is, CartoManager);
+	    
+    </script> 
+</dom-module>

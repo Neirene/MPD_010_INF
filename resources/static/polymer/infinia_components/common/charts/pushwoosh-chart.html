@@ -1,0 +1,106 @@
+<dom-module id="pushwoosh-chart">
+	<template>
+		<style include="common-styles"></style>
+		
+		<style>
+			#chart {
+				width: 100%;
+				height: 300px;
+			}
+		</style>
+		
+		<div id="chart">
+		</div>
+	</template>
+	<script>
+		class PushwooshChart extends Polymer.Element {
+			static get is() {
+				return "pushwoosh-chart";
+			}
+			
+			static get properties() {
+				return {
+					title: String,
+					subtitle: String,
+					data: {
+						type: Object, 
+						value: function() {return [];}
+					},
+					width: String,
+					height: String,
+					margin: String,
+					colors: {
+						type: Object,
+						value: function() {return [];}
+					}
+				};
+			}
+			
+			constructor() {
+				super();
+			}
+			
+			ready() {
+				super.ready();
+			}			
+			
+			drawChart() {
+				let _this = this;
+				
+				google.charts.load('current', {'packages':['bar']});
+	            google.charts.setOnLoadCallback(function() {	            	
+		            var options = {
+		              title: _this.title,
+		              subtitle: _this.subtitle,
+		              colors: _this.colors
+		            };
+		
+		            var chart = new google.charts.Bar(_this.$.chart);
+		            
+		            if(_this.width)
+		            		_this.$.chart.style.width = _this.width;
+		            
+		            if(_this.height)
+	            			_this.$.chart.style.height = _this.height;
+		            
+		            if(_this.margin)
+	            			_this.$.chart.style.margin = _this.margin;
+		            
+		            let dat = _this.data;
+		            let data =  google.visualization.arrayToDataTable(dat);
+		            chart.draw(data, google.charts.Bar.convertOptions(options));
+	        		});
+			}
+			
+			setData(dat) {
+				this.data = dat;
+			}
+			
+			setTitle(tit) {
+				this.title = tit;
+			}
+			
+			setSubtitle(sub) {
+				this.subtitle = sub;
+			}
+			
+			setWidth(width) {
+				this.width = width;
+			}
+			
+			setHeight(height) {
+				this.height = height;
+			}
+			
+			setMargin(margin) {
+				this.margin = margin;
+			}
+			
+			setColors(colors) {
+				this.colors = colors;
+			}
+		}
+		
+		customElements.define(PushwooshChart.is, PushwooshChart);
+	</script>
+</dom-module>
